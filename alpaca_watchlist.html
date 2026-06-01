@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowDesk</title>
+  <style>
+    /* ===================================================================
+       BASE / RESET
+    =================================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #0d0d0f;
+      --surface:      #16181d;
+      --surface2:     #1e2028;
+      --border:       #2a2d36;
+      --text:         #e2e5ed;
+      --text-dim:     #8a8fa8;
+      --accent-blue:  #4a90d9;
+      --accent-green: #27ae60;
+      --accent-red:   #e74c3c;
+      --accent-amber: #f39c12;
+      --accent-cyan:  #00bcd4;
+      --radius:       8px;
+      --font-mono:    "JetBrains Mono", "Fira Code", "Consolas", monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    h1 { font-size: 18px; color: var(--accent-blue); margin-bottom: 4px; }
+    .subtitle { color: var(--text-dim); font-size: 11px; margin-bottom: 20px; }
+
+    /* ===================================================================
+       WATCHLIST GRID
+    =================================================================== */
+    #watchlist {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
+    }
+
+    /* ===================================================================
+       TICKER CARD
+    =================================================================== */
+    .ticker-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    /* --- Alpaca header strip --- */
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .card-ticker { font-size: 16px; font-weight: 700; color: var(--text); }
+    .card-price  { font-size: 15px; }
+    .card-price.up   { color: var(--accent-green); }
+    .card-price.down { color: var(--accent-red); }
+
+    /* --- Alpaca body (volume, change, etc.) --- */
+    .alpaca-body {
+      padding: 10px 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .alpaca-row { display: flex; justify-content: space-between; }
+    .alpaca-label { color: var(--text-dim); }
+    .alpaca-value { color: var(--text); }
+
+    /* ===================================================================
+       BOOKMAP PANEL
+    =================================================================== */
+    .bookmap-panel {
+      padding: 10px 14px 12px;
+    }
+
+    .bm-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .bm-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+    }
+    .bm-timestamp { font-size: 10px; color: var(--text-dim); margin-left: auto; }
+
+    /* No-data state */
+    .bm-no-data {
+      color: var(--text-dim);
+      font-size: 11px;
+      padding: 6px 0;
+      font-style: italic;
+    }
+
+    /* --- Summary row: CVD + imbalance --- */
+    .bm-summary {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .bm-metric {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .bm-metric-label { font-size: 10px; color: var(--text-dim); }
+    .bm-metric-value { font-size: 13px; font-weight: 700; }
+    .bm-cvd-rising    { color: var(--accent-green); }
+    .bm-cvd-falling   { color: var(--accent-red); }
+    .bm-cvd-flattening{ color: var(--accent-amber); }
+    .bm-imbalance-pos  { color: var(--accent-green); }
+    .bm-imbalance-neg  { color: var(--accent-red); }
+
+    /* --- Walls row --- */
+    .bm-walls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .bm-wall { font-size: 11px; }
+    .bm-wall-bid { color: var(--accent-green); }
+    .bm-wall-ask { color: var(--accent-red); }
+
+    /* --- Book depth table --- */
+    .bm-book {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .bm-side-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .bm-side-bids .bm-side-label { color: var(--accent-green); }
+    .bm-side-asks .bm-side-label { color: var(--accent-red); }
+
+    .bm-level {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      padding: 2px 0;
+      border-bottom: 1px solid #1a1c22;
+    }
+    .bm-level-price { color: var(--text); }
+    .bm-level-size  { color: var(--text-dim); }
+    .bm-level-cob   { color: var(--text-dim); font-size: 10px; }
+
+    /* --- Alert badges --- */
+    .bm-alerts { display: flex; flex-wrap: wrap; gap: 5px; }
+    .bm-badge {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .bm-badge-red   { background: rgba(231,76,60,0.20); color: #ff6b6b; border: 1px solid rgba(231,76,60,0.4); }
+    .bm-badge-amber { background: rgba(243,156,18,0.15); color: #f5c842; border: 1px solid rgba(243,156,18,0.35); }
+
+    /* ===================================================================
+       STATUS BAR
+    =================================================================== */
+    #status-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--surface2);
+      border-top: 1px solid var(--border);
+      padding: 6px 16px;
+      display: flex;
+      gap: 24px;
+      font-size: 11px;
+      color: var(--text-dim);
+      z-index: 100;
+    }
+    #status-bar span { color: var(--text); }
+    .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 4px; }
+    .dot-green  { background: var(--accent-green); }
+    .dot-red    { background: var(--accent-red); }
+    .dot-amber  { background: var(--accent-amber); }
+  </style>
+</head>
+<body>
+
+<h1>FlowDesk</h1>
+<p class="subtitle" id="last-update">Initializing…</p>
+
+<div id="watchlist"></div>
+
+<div id="status-bar">
+  <div>Alpaca: <span id="alpaca-status">…</span></div>
+  <div>Bookmap: <span id="bookmap-status">…</span></div>
+  <div>Updated: <span id="status-time">—</span></div>
+</div>
+
+<script>
+// ============================================================================
+// CONFIGURATION — replace TAILSCALE_IP_PLACEHOLDER with your Windows
+// Tailscale IP (e.g. 100.64.0.1) before running.
+// ============================================================================
+const TAILSCALE_IP   = "TAILSCALE_IP_PLACEHOLDER";
+const BOOKMAP_URL    = `http://${TAILSCALE_IP}:8766`;
+
+// Alpaca paper trading base URL
+const ALPACA_BASE    = "https://paper-api.alpaca.markets";
+
+// Your Alpaca API keys (paper trading)
+const ALPACA_KEY_ID  = "YOUR_ALPACA_KEY_ID";
+const ALPACA_SECRET  = "YOUR_ALPACA_SECRET_KEY";
+
+// Tickers to watch
+const WATCHLIST = ["AAPL", "TSLA", "NVDA", "SPY", "QQQ"];
+
+// Refresh intervals (milliseconds)
+const ALPACA_INTERVAL   = 5_000;
+const BOOKMAP_INTERVAL  = 3_000;
+// ============================================================================
+
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
+const state = {};          // ticker -> { alpaca: {...}, bookmap: {...} }
+let bookmapReachable = false;
+let alpacaReachable  = false;
+
+WATCHLIST.forEach(t => { state[t] = { alpaca: null, bookmap: null }; });
+
+// ---------------------------------------------------------------------------
+// Alpaca fetch
+// ---------------------------------------------------------------------------
+async function fetchAlpaca() {
+  const symbols = WATCHLIST.join(",");
+  const url = `${ALPACA_BASE}/v2/stocks/bars/latest?symbols=${symbols}&feed=iex`;
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "APCA-API-KEY-ID":     ALPACA_KEY_ID,
+        "APCA-API-SECRET-KEY": ALPACA_SECRET,
+      },
+    });
+    if (!res.ok) throw new Error(`Alpaca HTTP ${res.status}`);
+    const data = await res.json();
+    alpacaReachable = true;
+
+    // Also fetch latest quotes for bid/ask
+    const qUrl = `${ALPACA_BASE}/v2/stocks/quotes/latest?symbols=${symbols}&feed=iex`;
+    const qRes = await fetch(qUrl, {
+      headers: {
+        "APCA-API-KEY-ID":     ALPACA_KEY_ID,
+        "APCA-API-SECRET-KEY": ALPACA_SECRET,
+      },
+    });
+    const qData = qRes.ok ? await qRes.json() : { quotes: {} };
+
+    WATCHLIST.forEach(ticker => {
+      const bar   = data.bars?.[ticker];
+      const quote = qData.quotes?.[ticker];
+      if (bar) {
+        state[ticker].alpaca = {
+          close:  bar.c,
+          open:   bar.o,
+          high:   bar.h,
+          low:    bar.l,
+          volume: bar.v,
+          vwap:   bar.vw,
+          bid:    quote?.bp ?? null,
+          ask:    quote?.ap ?? null,
+          change_pct: bar.o ? ((bar.c - bar.o) / bar.o * 100) : null,
+        };
+      }
+    });
+  } catch (e) {
+    alpacaReachable = false;
+    console.warn("Alpaca fetch error:", e.message);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Bookmap fetch (single /watchlist call, then distribute)
+// ---------------------------------------------------------------------------
+async function fetchBookmap() {
+  try {
+    const res = await fetch(`${BOOKMAP_URL}/watchlist`, {
+      signal: AbortSignal.timeout(4000),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();   // { TICKER: snapshot, ... }
+    bookmapReachable = true;
+    WATCHLIST.forEach(ticker => {
+      if (data[ticker]) state[ticker].bookmap = data[ticker];
+    });
+  } catch (e) {
+    bookmapReachable = false;
+    // Graceful degradation — don't clear existing data, just stop updating
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Render helpers
+// ---------------------------------------------------------------------------
+function fmt(n, decimals = 2) {
+  if (n == null) return "—";
+  return Number(n).toFixed(decimals);
+}
+
+function fmtVol(n) {
+  if (n == null) return "—";
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
+  if (n >= 1_000)     return (n / 1_000).toFixed(0) + "K";
+  return String(n);
+}
+
+function cvdArrow(dir) {
+  return dir === "rising" ? "↑" : dir === "falling" ? "↓" : "→";
+}
+
+function relativeTime(isoStr) {
+  if (!isoStr) return "";
+  const ago = Math.round((Date.now() - new Date(isoStr).getTime()) / 1000);
+  if (ago < 5)  return "just now";
+  if (ago < 60) return `${ago}s ago`;
+  return `${Math.floor(ago/60)}m ago`;
+}
+
+// ---------------------------------------------------------------------------
+// Render a single ticker card
+// ---------------------------------------------------------------------------
+function renderCard(ticker) {
+  const { alpaca: a, bookmap: bm } = state[ticker];
+
+  // --- Alpaca section ---
+  const price      = a?.close ?? null;
+  const changePct  = a?.change_pct ?? null;
+  const priceClass = changePct == null ? "" : changePct >= 0 ? "up" : "down";
+  const changeSign = changePct != null && changePct >= 0 ? "+" : "";
+
+  const alpacaBody = `
+    <div class="alpaca-body">
+      <div class="alpaca-row"><span class="alpaca-label">Volume</span>
+        <span class="alpaca-value">${fmtVol(a?.volume)}</span></div>
+      <div class="alpaca-row"><span class="alpaca-label">VWAP</span>
+        <span class="alpaca-value">${fmt(a?.vwap)}</span></div>
+      <div class="alpaca-row"><span class="alpaca-label">Bid</span>
+        <span class="alpaca-value" style="color:var(--accent-green)">${fmt(a?.bid)}</span></div>
+      <div class="alpaca-row"><span class="alpaca-label">Ask</span>
+        <span class="alpaca-value" style="color:var(--accent-red)">${fmt(a?.ask)}</span></div>
+      <div class="alpaca-row"><span class="alpaca-label">High</span>
+        <span class="alpaca-value">${fmt(a?.high)}</span></div>
+      <div class="alpaca-row"><span class="alpaca-label">Low</span>
+        <span class="alpaca-value">${fmt(a?.low)}</span></div>
+    </div>
+  `;
+
+  // --- Bookmap section ---
+  let bookmapHtml;
+  if (!bm) {
+    bookmapHtml = `<div class="bm-no-data">No Bookmap data — bridge unreachable or ticker not tracked</div>`;
+  } else {
+    // CVD
+    const cvdClass = `bm-cvd-${bm.cvd_direction}`;
+    const arrow    = cvdArrow(bm.cvd_direction);
+
+    // Imbalance
+    const imbClass  = bm.book_imbalance_pct >= 0 ? "bm-imbalance-pos" : "bm-imbalance-neg";
+    const imbSign   = bm.book_imbalance_pct >= 0 ? "+" : "";
+
+    // Top 3 bid/ask levels
+    const bidLevels = (bm.bid_levels || []).slice(0, 3);
+    const askLevels = (bm.ask_levels || []).slice(0, 3);
+    const levelRows = (levels) => levels.map(l => `
+      <div class="bm-level">
+        <span class="bm-level-price">${fmt(l.price, 4)}</span>
+        <span class="bm-level-size">${fmtVol(l.size)}</span>
+        <span class="bm-level-cob">${fmtVol(l.cumulative_cob)}</span>
+      </div>`).join("");
+
+    // Alerts
+    const alertBadges = (bm.alerts || []).map(al => `
+      <span class="bm-badge bm-badge-${al.level}">${al.message}</span>`).join("");
+
+    bookmapHtml = `
+      <div class="bm-summary">
+        <div class="bm-metric">
+          <span class="bm-metric-label">CVD</span>
+          <span class="bm-metric-value ${cvdClass}">${arrow} ${fmt(bm.cvd, 0)}</span>
+        </div>
+        <div class="bm-metric">
+          <span class="bm-metric-label">Imbalance</span>
+          <span class="bm-metric-value ${imbClass}">${imbSign}${fmt(bm.book_imbalance_pct, 1)}%</span>
+        </div>
+        <div class="bm-metric">
+          <span class="bm-metric-label">Best Bid/Ask</span>
+          <span class="bm-metric-value" style="color:var(--text)">
+            <span style="color:var(--accent-green)">${fmt(bm.bid,4)}</span>
+            /
+            <span style="color:var(--accent-red)">${fmt(bm.ask,4)}</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="bm-walls">
+        <span class="bm-wall bm-wall-bid">
+          Bid wall: ${fmt(bm.largest_bid_wall?.price, 4)} (${fmtVol(bm.largest_bid_wall?.cob)})
+        </span>
+        <span class="bm-wall bm-wall-ask">
+          Ask wall: ${fmt(bm.largest_ask_wall?.price, 4)} (${fmtVol(bm.largest_ask_wall?.cob)})
+        </span>
+      </div>
+
+      <div class="bm-book">
+        <div class="bm-side-bids">
+          <div class="bm-side-label">Bids</div>
+          ${levelRows(bidLevels)}
+        </div>
+        <div class="bm-side-asks">
+          <div class="bm-side-label">Asks</div>
+          ${levelRows(askLevels)}
+        </div>
+      </div>
+
+      ${alertBadges ? `<div class="bm-alerts">${alertBadges}</div>` : ""}
+    `;
+  }
+
+  return `
+    <div class="ticker-card" id="card-${ticker}">
+      <div class="card-header">
+        <span class="card-ticker">${ticker}</span>
+        <span class="card-price ${priceClass}">
+          ${price != null ? "$" + fmt(price) : "—"}
+          ${changePct != null ? `<small>(${changeSign}${fmt(changePct, 2)}%)</small>` : ""}
+        </span>
+      </div>
+      ${alpacaBody}
+      <div class="bookmap-panel">
+        <div class="bm-header">
+          <span class="bm-title">&#9646; Bookmap</span>
+          ${bm ? `<span class="bm-timestamp">${relativeTime(bm.timestamp)}</span>` : ""}
+        </div>
+        ${bookmapHtml}
+      </div>
+    </div>
+  `;
+}
+
+// ---------------------------------------------------------------------------
+// Render all cards
+// ---------------------------------------------------------------------------
+function renderAll() {
+  const el = document.getElementById("watchlist");
+  el.innerHTML = WATCHLIST.map(renderCard).join("");
+
+  // Update status bar
+  const alpacaDot   = alpacaReachable  ? "dot-green" : "dot-red";
+  const bookmapDot  = bookmapReachable ? "dot-green" : "dot-amber";
+  document.getElementById("alpaca-status").innerHTML =
+    `<span class="dot ${alpacaDot}"></span>${alpacaReachable ? "Live" : "Offline"}`;
+  document.getElementById("bookmap-status").innerHTML =
+    `<span class="dot ${bookmapDot}"></span>${bookmapReachable ? "Live" : "Unreachable"}`;
+  document.getElementById("status-time").textContent =
+    new Date().toLocaleTimeString();
+  document.getElementById("last-update").textContent =
+    `Last updated: ${new Date().toLocaleTimeString()}  |  Watching: ${WATCHLIST.join(", ")}`;
+}
+
+// ---------------------------------------------------------------------------
+// Poll loops (independent intervals)
+// ---------------------------------------------------------------------------
+async function alpacaLoop() {
+  await fetchAlpaca();
+  renderAll();
+  setTimeout(alpacaLoop, ALPACA_INTERVAL);
+}
+
+async function bookmapLoop() {
+  await fetchBookmap();
+  renderAll();
+  setTimeout(bookmapLoop, BOOKMAP_INTERVAL);
+}
+
+// Initial render (blank cards) then start loops
+renderAll();
+alpacaLoop();
+bookmapLoop();
+</script>
+</body>
+</html>
