@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FlowDesk</title>
+  <style>
+    /* ===================================================================
+       TOKENS
+    =================================================================== */
+    :root {
+      --bg:        #0d0d0d;
+      --surface:   #141418;
+      --surface2:  #1a1a20;
+      --surface3:  #20202a;
+      --border:    #28283a;
+      --border2:   #32324a;
+      --text:      #e8eaf0;
+      --dim:       #7a7d96;
+      --dim2:      #50536a;
+      --green:     #26de6e;
+      --green2:    #1a9448;
+      --red:       #f04a5a;
+      --red2:      #9a2030;
+      --amber:     #f5a623;
+      --blue:      #4a9eff;
+      --cyan:      #00d4e8;
+      --gold:      #ffd700;
+      --purple:    #b06fdf;
+      --radius:    6px;
+      --mono:      "SF Mono", Menlo, "JetBrains Mono", "Fira Code", Consolas, monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* ===================================================================
+       HEADER
+    =================================================================== */
+    #header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 200;
+      flex-wrap: wrap;
+    }
+    #header h1 {
+      font-size: 16px; font-weight: 800;
+      color: var(--blue); letter-spacing: .04em;
+    }
+    .status-dot {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; color: var(--dim);
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .dot-green  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .dot-red    { background: var(--red); }
+    .dot-amber  { background: var(--amber); }
+    .dot-blue   { background: var(--blue); }
+    #market-status {
+      font-size: 11px; padding: 2px 8px;
+      border-radius: 4px; font-weight: 700; letter-spacing: .05em;
+    }
+    .ms-open       { background: rgba(38,222,110,.15); color: var(--green); border: 1px solid rgba(38,222,110,.3); }
+    .ms-pre        { background: rgba(74,158,255,.12); color: var(--blue);  border: 1px solid rgba(74,158,255,.25); }
+    .ms-after      { background: rgba(245,166,35,.12); color: var(--amber); border: 1px solid rgba(245,166,35,.25); }
+    .ms-closed     { background: rgba(122,125,150,.10); color: var(--dim);  border: 1px solid rgba(122,125,150,.2); }
+    #server-time { font-size: 10px; color: var(--dim); margin-left: auto; }
+
+    /* ===================================================================
+       TICKER INPUT
+    =================================================================== */
+    #ticker-bar {
+      display: flex; gap: 8px; align-items: center;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+    #ticker-bar label { font-size: 11px; color: var(--dim); }
+    #ticker-input {
+      background: var(--surface3); border: 1px solid var(--border2);
+      color: var(--text); font-family: var(--mono); font-size: 12px;
+      padding: 4px 10px; border-radius: var(--radius);
+      width: 340px; outline: none;
+    }
+    #ticker-input:focus { border-color: var(--blue); }
+    .btn {
+      background: var(--surface3); border: 1px solid var(--border2);
+      color: var(--text); font-family: var(--mono); font-size: 11px;
+      padding: 4px 12px; border-radius: var(--radius); cursor: pointer;
+    }
+    .btn:hover { border-color: var(--blue); color: var(--blue); }
+
+    /* ===================================================================
+       ALERTS BAR
+    =================================================================== */
+    #alerts-bar {
+      display: none;
+      padding: 6px 16px;
+      background: rgba(240,74,90,.08);
+      border-bottom: 1px solid rgba(240,74,90,.3);
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    #alerts-bar.active { display: flex; }
+    .alert-chip {
+      font-size: 11px; font-weight: 700; padding: 2px 10px;
+      border-radius: 4px; letter-spacing: .04em;
+    }
+    .chip-triple  { background: rgba(255,215,0,.18);   color: var(--gold);   border: 1px solid rgba(255,215,0,.4); }
+    .chip-conf    { background: rgba(255,215,0,.10);   color: var(--gold);   border: 1px solid rgba(255,215,0,.25); }
+    .chip-exhaust { background: rgba(240,74,90,.25);   color: #ff8090;       border: 1px solid rgba(240,74,90,.5); animation: pulse 1.2s infinite; }
+    .chip-ice     { background: rgba(0,212,232,.10);   color: var(--cyan);   border: 1px solid rgba(0,212,232,.3); }
+    .chip-bear    { background: rgba(240,74,90,.15);   color: var(--red);    border: 1px solid rgba(240,74,90,.35); }
+    .chip-vol     { background: rgba(245,166,35,.12);  color: var(--amber);  border: 1px solid rgba(245,166,35,.3); }
+
+    /* ===================================================================
+       WATCHLIST GRID
+    =================================================================== */
+    #watchlist {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 12px;
+      padding: 12px 16px;
+    }
+
+    /* ===================================================================
+       TICKER CARD
+    =================================================================== */
+    .ticker-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .ticker-card.has-confluence {
+      border-color: rgba(255,215,0,.5);
+      box-shadow: 0 0 16px rgba(255,215,0,.12);
+    }
+    .ticker-card.has-triple {
+      border-color: var(--gold);
+      box-shadow: 0 0 24px rgba(255,215,0,.25);
+      animation: card-pulse 1.5s infinite;
+    }
+
+    /* ===== Card Header ===== */
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .card-ticker { font-size: 15px; font-weight: 800; }
+    .card-remove {
+      background: none; border: none; color: var(--dim2);
+      font-size: 14px; cursor: pointer; padding: 0 4px; line-height: 1;
+    }
+    .card-remove:hover { color: var(--red); }
+    .card-status-badge {
+      font-size: 10px; font-weight: 700; padding: 1px 6px;
+      border-radius: 3px; letter-spacing: .05em;
+    }
+
+    /* ===== Price Panel ===== */
+    .price-panel {
+      padding: 8px 12px 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 3px; }
+    .price-big { font-size: 20px; font-weight: 800; }
+    .price-change { font-size: 13px; font-weight: 700; }
+    .price-bid-ask { font-size: 11px; color: var(--dim); }
+    .up   { color: var(--green); }
+    .down { color: var(--red); }
+
+    /* ===== VWAP Row ===== */
+    .vwap-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 5px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+    }
+    .vwap-label { color: var(--dim); }
+    .vwap-val   { color: var(--text); font-weight: 600; }
+    .vwap-ext   { font-weight: 700; }
+    .vwap-ext-bear { color: var(--red); }
+    .vwap-ext-bull { color: var(--green); }
+    .vwap-ext-ok   { color: var(--dim); }
+    .div-badge {
+      margin-left: auto; font-size: 10px; font-weight: 700;
+      padding: 1px 7px; border-radius: 3px;
+    }
+
+    /* ===== Stats Grid ===== */
+    .stats-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 3px 8px;
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+    }
+    .stat-row { display: flex; justify-content: space-between; }
+    .stat-label { color: var(--dim); }
+    .stat-val   { color: var(--text); }
+
+    /* ===== RelVol Section ===== */
+    .relvol-section {
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .relvol-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+    .relvol-num    { font-size: 18px; font-weight: 800; }
+    .rv-gray   { color: var(--dim); }
+    .rv-white  { color: var(--text); }
+    .rv-yellow { color: #ffe066; }
+    .rv-orange { color: var(--amber); }
+    .rv-red    { color: var(--red); animation: pulse 1s infinite; }
+    .relvol-meta { font-size: 10px; color: var(--dim); display: flex; gap: 12px; flex-wrap: wrap; }
+    .rv-sparkline { margin-top: 5px; }
+
+    /* ===== Order Book Summary ===== */
+    .book-summary {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .book-side-label {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .06em;
+      margin-bottom: 3px;
+    }
+    .book-bids .book-side-label { color: var(--green); }
+    .book-asks .book-side-label { color: var(--red); }
+    .book-level {
+      display: flex; justify-content: space-between;
+      font-size: 10px; padding: 2px 0;
+      border-bottom: 1px solid var(--surface3);
+    }
+    .bl-price { color: var(--text); }
+    .bl-size  { color: var(--dim); }
+    .bl-cob   { color: var(--dim2); }
+    .book-level.wall { background: rgba(255,255,255,.03); }
+    .book-level.wall .bl-price { font-weight: 700; }
+
+    /* ===== Bookmap Signals ===== */
+    .signals-section { padding: 7px 12px; border-bottom: 1px solid var(--border); }
+    .signals-title {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--cyan); margin-bottom: 5px;
+    }
+    .iceberg-row {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; padding: 2px 0; cursor: default;
+    }
+    .ice-bid  { color: var(--green); }
+    .ice-ask  { color: var(--red); }
+    .ice-conf { font-size: 10px; color: var(--dim); }
+    .ice-impl { font-size: 10px; font-weight: 700; }
+
+    /* ===== Signal Badges ===== */
+    .badge-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+    .badge {
+      font-size: 10px; font-weight: 700; padding: 2px 7px;
+      border-radius: 3px; letter-spacing: .03em;
+    }
+    .badge-red    { background: rgba(240,74,90,.18);  color: #ff8090; border: 1px solid rgba(240,74,90,.4); }
+    .badge-green  { background: rgba(38,222,110,.12); color: var(--green); border: 1px solid rgba(38,222,110,.3); }
+    .badge-amber  { background: rgba(245,166,35,.12); color: var(--amber); border: 1px solid rgba(245,166,35,.3); }
+    .badge-blue   { background: rgba(74,158,255,.12); color: var(--blue);  border: 1px solid rgba(74,158,255,.3); }
+    .badge-cyan   { background: rgba(0,212,232,.10);  color: var(--cyan);  border: 1px solid rgba(0,212,232,.3); }
+    .badge-gold   { background: rgba(255,215,0,.14);  color: var(--gold);  border: 1px solid rgba(255,215,0,.35); }
+    .badge-flash  { animation: flash .7s infinite; }
+
+    /* ===== TRIPLE CONFLUENCE ===== */
+    .triple-section {
+      padding: 8px 12px;
+      background: rgba(255,215,0,.04);
+      border-bottom: 1px solid rgba(255,215,0,.2);
+    }
+    .triple-title {
+      font-size: 12px; font-weight: 800; color: var(--gold);
+      letter-spacing: .06em; margin-bottom: 5px;
+    }
+    .triple-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px; font-size: 10px;
+    }
+    .triple-stat { display: flex; flex-direction: column; gap: 1px; }
+    .triple-stat-label { color: var(--dim); }
+    .triple-stat-val   { font-weight: 700; }
+
+    /* ===== Copy Button ===== */
+    .card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 12px;
+      background: var(--surface2);
+    }
+    .ts-footer { font-size: 10px; color: var(--dim2); }
+    .bm-offline { font-size: 10px; color: var(--dim2); font-style: italic; }
+    .copy-btn {
+      background: none; border: 1px solid var(--border2);
+      color: var(--dim); font-family: var(--mono); font-size: 10px;
+      padding: 2px 8px; border-radius: 3px; cursor: pointer;
+    }
+    .copy-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+    /* ===================================================================
+       ANIMATIONS
+    =================================================================== */
+    @keyframes pulse   { 0%,100%{opacity:1} 50%{opacity:.4} }
+    @keyframes flash   { 0%,100%{opacity:1} 50%{opacity:.3} }
+    @keyframes card-pulse {
+      0%,100%{box-shadow:0 0 20px rgba(255,215,0,.2)}
+      50%    {box-shadow:0 0 40px rgba(255,215,0,.45)}
+    }
+    @keyframes fadeIn  { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+    .new-signal { animation: fadeIn .4s ease; }
+  </style>
+</head>
+<body>
+
+<!-- =====================================================================
+     HEADER
+====================================================================== -->
+<div id="header">
+  <h1>FlowDesk</h1>
+  <span id="status-alpaca"  class="status-dot"><span class="dot dot-amber"></span>Alpaca</span>
+  <span id="status-bookmap" class="status-dot"><span class="dot dot-amber"></span>Bookmap</span>
+  <span id="market-status"  class="ms-closed">CLOSED</span>
+  <span id="server-time">—</span>
+</div>
+
+<!-- =====================================================================
+     ALERTS BAR
+====================================================================== -->
+<div id="alerts-bar"></div>
+
+<!-- =====================================================================
+     TICKER INPUT
+====================================================================== -->
+<div id="ticker-bar">
+  <label>Watchlist:</label>
+  <input id="ticker-input" type="text"
+         placeholder="AAPL TSLA NVDA SPY QQQ  (space-separated, press Enter)"/>
+  <button class="btn" onclick="applyTickerInput()">Apply</button>
+  <button class="btn" onclick="clearWatchlist()">Clear</button>
+</div>
+
+<!-- =====================================================================
+     WATCHLIST
+====================================================================== -->
+<div id="watchlist"></div>
+
+<script>
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+const TAILSCALE_IP      = "TAILSCALE_IP_PLACEHOLDER";
+const BOOKMAP_PORT      = 8766;
+const BOOKMAP_URL       = `http://${TAILSCALE_IP}:${BOOKMAP_PORT}`;
+
+const ALPACA_BASE       = "https://paper-api.alpaca.markets";
+const ALPACA_KEY_ID     = "YOUR_ALPACA_KEY_ID";
+const ALPACA_SECRET_KEY = "YOUR_ALPACA_SECRET_KEY";
+
+const ALPACA_REFRESH_MS  = 10_000;
+const BOOKMAP_REFRESH_MS = 3_000;
+
+// Default watchlist — edit to match your Bookmap instruments
+let WATCHLIST = ["AAPL", "TSLA", "NVDA", "SPY", "QQQ"];
+
+// Intraday RelVol time-of-day weights
+const TOD_WEIGHTS = [
+  { start: [9,30],  end: [10,0],  w: 0.6 },
+  { start: [10,0],  end: [11,0],  w: 0.8 },
+  { start: [11,0],  end: [14,0],  w: 1.0 },
+  { start: [14,0],  end: [15,30], w: 0.9 },
+  { start: [15,30], end: [16,0],  w: 0.7 },
+];
+// ============================================================================
+
+// ---------------------------------------------------------------------------
+// Global state
+// ---------------------------------------------------------------------------
+const state = {};          // ticker -> { alpaca, bookmap, relvol }
+const rvDetectors = {};    // ticker -> RelVolDetector instance
+let bookmapOk  = false;
+let alpacaOk   = false;
+
+function _ensureTicker(t) {
+  if (!state[t]) state[t] = { alpaca: null, bookmap: null };
+  if (!rvDetectors[t]) rvDetectors[t] = new RelVolDetector(t);
+}
+WATCHLIST.forEach(_ensureTicker);
+
+// ---------------------------------------------------------------------------
+// RelVolDetector
+// ---------------------------------------------------------------------------
+class RelVolDetector {
+  constructor(ticker) {
+    this.ticker = ticker;
+    this.avgDailyVol   = null;     // fetched once on init
+    this.rvCurrent     = null;
+    this.rvPeak        = 0;
+    this.volPace       = null;     // projected EOD volume
+    this.avgTradeSize  = null;
+    this.acceleration  = 0;        // % change last 15s
+    this.signal        = null;     // current RelVol signal
+    this.signalConf    = 0;
+    this._volBuckets   = [];       // [{t, vol}] 15-second buckets
+    this._lastBucket   = 0;
+    this._lastVol      = 0;
+    this._prevBucketVol= 0;
+    this._sparkPoints  = new Array(60).fill(0);  // 60-point, 10s buckets
+    this._sparkBucket  = 0;
+    this._sparkLast    = 0;
+  }
+
+  // Fetch 20-day avg volume from Alpaca historical bars (called once)
+  async fetchAvgVol() {
+    if (this.avgDailyVol !== null) return;
+    try {
+      const url = `${ALPACA_BASE}/v2/stocks/${this.ticker}/bars?timeframe=1Day&limit=20`;
+      const r = await fetch(url, {
+        headers: {
+          "APCA-API-KEY-ID":     ALPACA_KEY_ID,
+          "APCA-API-SECRET-KEY": ALPACA_SECRET_KEY,
+        },
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!r.ok) return;
+      const d = await r.json();
+      const bars = d.bars || [];
+      if (bars.length > 0) {
+        this.avgDailyVol = bars.reduce((s, b) => s + b.v, 0) / bars.length;
+      }
+    } catch (_) { /* graceful — leave avgDailyVol null */ }
+  }
+
+  // Update with fresh Alpaca bar data
+  update(volume, open, close, tradeCount) {
+    if (!volume) return;
+    const now    = Date.now();
+    const etNow  = _etTime();
+    const market = _marketMinutesElapsed(etNow);
+    if (market <= 0) return;
+
+    // EOD volume pace
+    this.volPace = Math.round(volume / market * 390);
+
+    // Time-of-day adjusted RelVol
+    const todW = _todWeight(etNow);
+    if (this.avgDailyVol && this.avgDailyVol > 0) {
+      const rawRV = volume / this.avgDailyVol;
+      this.rvCurrent = rawRV / todW;
+      if (this.rvCurrent > this.rvPeak) this.rvPeak = this.rvCurrent;
+    }
+
+    // 15-second acceleration bucket
+    const bucket = Math.floor(now / 15000);
+    if (bucket !== this._lastBucket) {
+      const bucketVol = volume - this._lastVol;
+      if (this._prevBucketVol > 0)
+        this.acceleration = (bucketVol - this._prevBucketVol) / this._prevBucketVol * 100;
+      this._prevBucketVol = bucketVol;
+      this._lastBucket    = bucket;
+    }
+    this._lastVol = volume;
+
+    // Spark 10-second buckets
+    const sparkBucket = Math.floor(now / 10000);
+    if (sparkBucket !== this._sparkBucket) {
+      this._sparkPoints.push(volume - this._sparkLast);
+      if (this._sparkPoints.length > 60) this._sparkPoints.shift();
+      this._sparkLast  = volume;
+      this._sparkBucket = sparkBucket;
+    }
+
+    // Avg trade size
+    if (tradeCount && tradeCount > 0) this.avgTradeSize = Math.round(volume / tradeCount);
+
+    this._computeSignal(volume);
+  }
+
+  _computeSignal(volume) {
+    const rv = this.rvCurrent;
+    if (rv == null) return;
+    let sig = null; let conf = 0;
+
+    if (rv >= 10) {
+      sig = "VOLUME_EXPLOSION"; conf = 0.90;
+    } else if (rv >= 5) {
+      sig = "VOLUME_SPIKE"; conf = 0.70;
+    } else if (rv >= 3) {
+      sig = "VOLUME_SURGE"; conf = 0.50;
+    }
+
+    // Acceleration bonus
+    if (this.acceleration >= 100) conf += 0.20;
+    else if (this.acceleration >= 50) conf += 0.10;
+
+    // Avg trade size institutional bonus
+    if (this.avgTradeSize && this.avgTradeSize >= 500) conf += 0.15;
+
+    // Volume climax: was >5x, now dropping >30%
+    if (this.rvPeak >= 5 && rv < this.rvPeak * 0.70) {
+      sig = "VOLUME_CLIMAX"; conf = Math.min(1, conf + 0.10);
+    }
+
+    // Dry-up after surge
+    if (this.rvPeak >= 5 && rv < 0.5) {
+      sig = "VOLUME_DRY_UP"; conf = 0.65;
+    }
+
+    this.signal     = sig;
+    this.signalConf = Math.min(1, conf);
+  }
+
+  buildSparkline() {
+    if (!this._sparkPoints.length) return "";
+    const pts  = this._sparkPoints.slice(-60);
+    const max  = Math.max(...pts, 1);
+    const W = 120, H = 40;
+    const bw = W / pts.length;
+    let rects = "";
+    pts.forEach((v, i) => {
+      const h = Math.round(v / max * H) || 1;
+      const y = H - h;
+      const color = v > (max * 0.6) ? "#f04a5a" : "#26de6e";
+      rects += `<rect x="${(i * bw).toFixed(1)}" y="${y}" width="${(bw - 1).toFixed(1)}" height="${h}" fill="${color}" opacity=".8"/>`;
+    });
+    return `<svg width="${W}" height="${H}" style="display:block">${rects}</svg>`;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// ET time helpers
+// ---------------------------------------------------------------------------
+function _etTime() {
+  // ET is UTC-4 (EDT) or UTC-5 (EST) — use UTC-4 as trading season default
+  const now = new Date();
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  return new Date(utcMs - 4 * 3600_000);
+}
+
+function _marketMinutesElapsed(etNow) {
+  const open = new Date(etNow);
+  open.setHours(9, 30, 0, 0);
+  if (etNow < open) return 0;
+  return (etNow - open) / 60_000;
+}
+
+function _todWeight(etNow) {
+  const h = etNow.getHours(), m = etNow.getMinutes();
+  const cur = h * 60 + m;
+  for (const b of TOD_WEIGHTS) {
+    const s = b.start[0] * 60 + b.start[1];
+    const e = b.end[0]   * 60 + b.end[1];
+    if (cur >= s && cur < e) return b.w;
+  }
+  return 1.0;
+}
+
+function _marketStatus() {
+  const et  = _etTime();
+  const hm  = et.getHours() * 60 + et.getMinutes();
+  const dow = et.getDay();
+  if (dow === 0 || dow === 6) return "closed";
+  if (hm >= 9*60+30  && hm < 16*60) return "open";
+  if (hm >= 4*60     && hm < 9*60+30) return "pre";
+  if (hm >= 16*60    && hm < 20*60)   return "after";
+  return "closed";
+}
+
+// ---------------------------------------------------------------------------
+// TRIPLE_CONFLUENCE detection
+// ---------------------------------------------------------------------------
+function detectTripleConfluence(ticker) {
+  const s   = state[ticker];
+  const rv  = rvDetectors[ticker];
+  if (!s || !s.bookmap || !rv) return null;
+  const bm  = s.bookmap;
+
+  const rvConf  = rv.signalConf;
+  const icebergs = bm.icebergs || [];
+  const div     = bm.vwap_divergence;
+  const conf    = bm.confluence_alert;
+
+  const bestIceConf = icebergs.length
+    ? Math.max(...icebergs.map(i => i.confidence || 0)) : 0;
+  const divConf  = div?.confidence || 0;
+
+  if (rvConf >= 0.60 && bestIceConf >= 0.60 && divConf >= 0.60) {
+    const combined = Math.min(1.0,
+      (rvConf + bestIceConf + divConf) / 3 + 0.20);
+    const price = bm.price || s.alpaca?.close || 0;
+    const vwap  = bm.vwap  || s.alpaca?.vwap  || 0;
+    const hi    = bm.day_high || s.alpaca?.high || 0;
+    return {
+      signal: "TRIPLE_CONFLUENCE",
+      confidence: +combined.toFixed(2),
+      components: {
+        relvol:  rv.signal,
+        iceberg: icebergs.find(i => i.confidence === bestIceConf)?.signal,
+        vwap:    div?.signal,
+      },
+      implication: "HIGH_CONVICTION_FADE",
+      suggested_entry:  +price.toFixed(4),
+      suggested_target: +vwap.toFixed(4),
+      suggested_stop:   +hi.toFixed(4),
+    };
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Alpaca fetch
+// ---------------------------------------------------------------------------
+async function fetchAlpaca() {
+  const symbols = WATCHLIST.join(",");
+  try {
+    const [barRes, qRes] = await Promise.all([
+      fetch(`${ALPACA_BASE}/v2/stocks/bars/latest?symbols=${symbols}&feed=iex`, {
+        headers: { "APCA-API-KEY-ID": ALPACA_KEY_ID, "APCA-API-SECRET-KEY": ALPACA_SECRET_KEY },
+        signal: AbortSignal.timeout(6000),
+      }),
+      fetch(`${ALPACA_BASE}/v2/stocks/quotes/latest?symbols=${symbols}&feed=iex`, {
+        headers: { "APCA-API-KEY-ID": ALPACA_KEY_ID, "APCA-API-SECRET-KEY": ALPACA_SECRET_KEY },
+        signal: AbortSignal.timeout(6000),
+      }),
+    ]);
+    alpacaOk = barRes.ok;
+    const bars   = barRes.ok  ? (await barRes.json()).bars   || {} : {};
+    const quotes = qRes.ok    ? (await qRes.json()).quotes   || {} : {};
+
+    WATCHLIST.forEach(t => {
+      const b = bars[t], q = quotes[t];
+      if (b) {
+        const a = state[t].alpaca || {};
+        state[t].alpaca = {
+          close:   b.c,
+          open:    b.o,
+          high:    b.h,
+          low:     b.l,
+          volume:  b.v,
+          vwap:    b.vw,
+          trades:  b.n,
+          bid:     q?.bp ?? a.bid ?? null,
+          ask:     q?.ap ?? a.ask ?? null,
+          bid_sz:  q?.bs ?? null,
+          ask_sz:  q?.as ?? null,
+          change_pct: b.o ? (b.c - b.o) / b.o * 100 : null,
+          change_abs: b.o ? b.c - b.o : null,
+          prev_close: a.prev_close ?? null,
+        };
+        rvDetectors[t].update(b.v, b.o, b.c, b.n);
+      }
+    });
+  } catch (_) { alpacaOk = false; }
+}
+
+// ---------------------------------------------------------------------------
+// Bookmap fetch
+// ---------------------------------------------------------------------------
+async function fetchBookmap() {
+  try {
+    const r = await fetch(`${BOOKMAP_URL}/watchlist`, {
+      signal: AbortSignal.timeout(3000),
+    });
+    bookmapOk = r.ok;
+    if (!r.ok) return;
+    const data = await r.json();
+    WATCHLIST.forEach(t => {
+      if (data[t]) state[t].bookmap = data[t];
+    });
+  } catch (_) { bookmapOk = false; }
+}
+
+// ---------------------------------------------------------------------------
+// Format helpers
+// ---------------------------------------------------------------------------
+const fmt  = (n, d=2)  => n == null ? "—" : (+n).toFixed(d);
+const fmtK = (n) => {
+  if (n == null) return "—";
+  if (Math.abs(n) >= 1e6) return (n/1e6).toFixed(1)+"M";
+  if (Math.abs(n) >= 1e3) return (n/1e3).toFixed(0)+"K";
+  return String(n);
+};
+const fmtSign = (n, d=2) => n == null ? "—" : (n>=0?"+":"")+fmt(n,d);
+const ago = (iso) => {
+  if (!iso) return "";
+  const s = Math.round((Date.now() - new Date(iso).getTime()) / 1000);
+  return s < 5 ? "now" : s < 60 ? s+"s ago" : Math.floor(s/60)+"m ago";
+};
+const cvdArrow = (s) => s==="rising" ? "↑" : s==="falling" ? "↓" : "→";
+
+// ---------------------------------------------------------------------------
+// Build alert chip HTML
+// ---------------------------------------------------------------------------
+function buildAlertChips() {
+  const chips = [];
+  WATCHLIST.forEach(t => {
+    const s  = state[t];
+    const bm = s?.bookmap;
+    const rv = rvDetectors[t];
+    if (!s) return;
+
+    const tc = detectTripleConfluence(t);
+    if (tc) { chips.push(`<span class="alert-chip chip-triple">🎯🎯 ${t}: TRIPLE CONFLUENCE</span>`); return; }
+
+    if (bm?.confluence_alert)
+      chips.push(`<span class="alert-chip chip-conf">🎯 ${t}: ${bm.confluence_alert.signal}</span>`);
+    if (bm?.vwap_divergence?.signal?.includes("EXHAUSTION"))
+      chips.push(`<span class="alert-chip chip-exhaust">⚡ ${t}: ${bm.vwap_divergence.signal}</span>`);
+    if ((bm?.icebergs||[]).some(i => i.signal === "ICEBERG_CONFIRMED"))
+      chips.push(`<span class="alert-chip chip-ice">🐋 ${t}: ICEBERG CONFIRMED</span>`);
+    if (bm?.vwap_divergence && !bm.vwap_divergence.signal?.includes("EXHAUSTION"))
+      chips.push(`<span class="alert-chip chip-bear">↓ ${t}: ${bm.vwap_divergence.signal}</span>`);
+    if (rv.signal === "VOLUME_EXPLOSION" || rv.signal === "VOLUME_SPIKE")
+      chips.push(`<span class="alert-chip chip-vol">🔥 ${t}: ${rv.signal}</span>`);
+  });
+  const bar = document.getElementById("alerts-bar");
+  if (chips.length) {
+    bar.innerHTML = chips.join("");
+    bar.classList.add("active");
+  } else {
+    bar.innerHTML = "";
+    bar.classList.remove("active");
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Render a single ticker card
+// ---------------------------------------------------------------------------
+function renderCard(ticker) {
+  const s   = state[ticker];
+  const a   = s?.alpaca;
+  const bm  = s?.bookmap;
+  const rv  = rvDetectors[ticker];
+  const tc  = detectTripleConfluence(ticker);
+
+  const cardClass = tc ? "has-triple" : (bm?.confluence_alert ? "has-confluence" : "");
+
+  // ---- Header ----
+  const ms = _marketStatus();
+  const msBadgeMap = {
+    open:   ["ms-open","OPEN"], pre:    ["ms-pre","PRE"],
+    after:  ["ms-after","AH"], closed: ["ms-closed","CLOSED"],
+  };
+  const [msCls, msLabel] = msBadgeMap[ms] || msBadgeMap.closed;
+  const header = `
+    <div class="card-header">
+      <span class="card-ticker">${ticker}</span>
+      <span class="card-status-badge ${msCls}">${msLabel}</span>
+      <button class="card-remove" onclick="removeTicker('${ticker}')" title="Remove">✕</button>
+    </div>`;
+
+  // ---- Price panel ----
+  const price     = a?.close ?? null;
+  const chgPct    = a?.change_pct ?? null;
+  const chgAbs    = a?.change_abs ?? null;
+  const pCls      = chgPct == null ? "" : chgPct >= 0 ? "up" : "down";
+  const spread    = (a?.bid && a?.ask) ? ((a.ask-a.bid)/a.ask*100).toFixed(2) : null;
+  const pricePanel = `
+    <div class="price-panel">
+      <div class="price-row">
+        <span class="price-big ${pCls}">${price != null ? "$"+fmt(price) : "—"}</span>
+        ${chgAbs != null ? `<span class="price-change ${pCls}">${fmtSign(chgAbs)} (${fmtSign(chgPct)}%)</span>` : ""}
+      </div>
+      <div class="price-bid-ask">
+        Bid <span style="color:var(--green)">${fmt(a?.bid)} × ${fmtK(a?.bid_sz)}</span>
+        &nbsp;·&nbsp;
+        Ask <span style="color:var(--red)">${fmt(a?.ask)} × ${fmtK(a?.ask_sz)}</span>
+        ${spread != null ? `&nbsp;·&nbsp; Spread <span style="color:var(--dim)">${spread}%</span>` : ""}
+      </div>
+    </div>`;
+
+  // ---- VWAP row ----
+  const vwap    = bm?.vwap || a?.vwap;
+  const vwapExt = bm?.price_vwap_ext ?? null;
+  const extCls  = vwapExt == null ? "vwap-ext-ok"
+                : vwapExt >= 8    ? "vwap-ext-bear"
+                : vwapExt <= -8   ? "vwap-ext-bull"
+                : "vwap-ext-ok";
+  const divBadge = (() => {
+    if (!bm?.vwap_divergence) return "";
+    const sig = bm.vwap_divergence.signal;
+    const m = {
+      BEARISH_DIVERGENCE:   ["badge-red",   "↓ BEARISH DIV"],
+      BEARISH_EXHAUSTION:   ["badge-red badge-flash", "⚡ EXHAUSTION"],
+      BULLISH_DIVERGENCE:   ["badge-green", "↑ BULLISH DIV"],
+      BULLISH_EXHAUSTION:   ["badge-green badge-flash", "⚡ EXHAUSTION"],
+      VWAP_RECLAIM_FAILURE: ["badge-amber", "✗ VWAP FAIL"],
+      VWAP_MAGNET:          ["badge-blue",  "🧲 VWAP MAGNET"],
+    };
+    const [cls, label] = m[sig] || ["badge-amber", sig];
+    return `<span class="div-badge badge ${cls}">${label}</span>`;
+  })();
+  const vwapRow = `
+    <div class="vwap-row">
+      <span class="vwap-label">VWAP</span>
+      <span class="vwap-val">${fmt(vwap)}</span>
+      ${vwapExt != null ? `<span class="vwap-ext ${extCls}">${fmtSign(vwapExt)}%</span>` : ""}
+      ${bm?.vwap_divergence?.suggested_target != null
+          ? `<span style="font-size:10px;color:var(--dim)">Target <span style="color:var(--text)">$${fmt(bm.vwap_divergence.suggested_target)}</span></span>` : ""}
+      ${divBadge}
+    </div>`;
+
+  // ---- Stats grid ----
+  const cvdSlope = bm?.cvd_slope || bm?.cvd_direction;
+  const statsGrid = `
+    <div class="stats-grid">
+      <div class="stat-row"><span class="stat-label">High</span><span class="stat-val">${fmt(a?.high)}</span></div>
+      <div class="stat-row"><span class="stat-label">Low</span><span class="stat-val">${fmt(a?.low)}</span></div>
+      <div class="stat-row"><span class="stat-label">Open</span><span class="stat-val">${fmt(a?.open)}</span></div>
+      <div class="stat-row"><span class="stat-label">Vol</span><span class="stat-val">${fmtK(a?.volume)}</span></div>
+      <div class="stat-row">
+        <span class="stat-label">CVD</span>
+        <span class="stat-val ${cvdSlope==="rising"?"up":cvdSlope==="falling"?"down":""}">
+          ${cvdArrow(cvdSlope)} ${fmtK(bm?.cvd)}
+          ${bm?.cvd_drawdown_pct > 0 ? `<span style="font-size:10px;color:var(--dim)"> −${fmt(bm.cvd_drawdown_pct,0)}%</span>` : ""}
+        </span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Imbalance</span>
+        <span class="stat-val ${(bm?.book_imbalance_pct??0)>=0?"up":"down"}">
+          ${fmtSign(bm?.book_imbalance_pct, 1)}%
+        </span>
+      </div>
+    </div>`;
+
+  // ---- RelVol section ----
+  const rvNum   = rv.rvCurrent;
+  const rvCls   = rvNum == null   ? "rv-gray"
+                : rvNum < 1       ? "rv-gray"
+                : rvNum < 2       ? "rv-white"
+                : rvNum < 3       ? "rv-yellow"
+                : rvNum < 5       ? "rv-orange"
+                : "rv-red";
+  const accelArrow = rv.acceleration > 20 ? "↑" : rv.acceleration < -20 ? "↓" : "→";
+  const rvBadges = (() => {
+    const sig = rv.signal;
+    if (!sig) return "";
+    const map = {
+      VOLUME_SURGE:      ["badge-amber",           "🔥 3× VOL"],
+      VOLUME_SPIKE:      ["badge-red",             "🔥🔥 5× VOL"],
+      VOLUME_EXPLOSION:  ["badge-red badge-flash", "💥 10× VOL"],
+      VOLUME_CLIMAX:     ["badge-amber",           "⚠ CLIMAX"],
+      VOLUME_DRY_UP:     ["badge-blue",            "📉 DRY UP"],
+    };
+    const [cls, lbl] = map[sig] || ["badge-amber", sig];
+    return `<span class="badge ${cls}">${lbl}</span>`;
+  })();
+  const rvSection = `
+    <div class="relvol-section">
+      <div class="relvol-header">
+        <span class="relvol-num ${rvCls}">${rvNum != null ? rvNum.toFixed(1)+"×" : "—"}</span>
+        <span style="font-size:11px;color:var(--dim)">RelVol</span>
+        ${rvBadges}
+      </div>
+      <div class="relvol-meta">
+        <span>Pace: ${rv.volPace != null ? fmtK(rv.volPace)+" EOD" : "—"}</span>
+        <span>Avg trade: ${rv.avgTradeSize != null ? rv.avgTradeSize+" sh" : "—"}</span>
+        <span>Accel: ${accelArrow} ${rv.acceleration != null ? fmtSign(rv.acceleration, 0)+"%" : "—"}</span>
+      </div>
+      <div class="rv-sparkline">${rv.buildSparkline()}</div>
+    </div>`;
+
+  // ---- Order book summary ----
+  const bidLevels = (bm?.bids || bm?.bid_levels || []).slice(0, 3);
+  const askLevels = (bm?.asks || bm?.ask_levels || []).slice(0, 3);
+  const maxBidCob = bidLevels.length ? Math.max(...bidLevels.map(l => l.cob||l.cumulative_cob||0)) : 0;
+  const maxAskCob = askLevels.length ? Math.max(...askLevels.map(l => l.cob||l.cumulative_cob||0)) : 0;
+  const levelRow = (l, isWall) => {
+    const cob = l.cob ?? l.cumulative_cob;
+    return `<div class="book-level${isWall?" wall":""}">
+      <span class="bl-price">${fmt(l.price,4)}</span>
+      <span class="bl-size">${fmtK(l.size)}</span>
+      <span class="bl-cob">${fmtK(cob)}</span>
+    </div>`;
+  };
+  const bookSection = bm ? `
+    <div class="book-summary">
+      <div class="book-bids">
+        <div class="book-side-label">Bids</div>
+        ${bidLevels.map((l,i) => levelRow(l, i===0 && (l.cob||0)===maxBidCob)).join("")}
+      </div>
+      <div class="book-asks">
+        <div class="book-side-label">Asks</div>
+        ${askLevels.map((l,i) => levelRow(l, i===0 && (l.cob||0)===maxAskCob)).join("")}
+      </div>
+    </div>` : "";
+
+  // ---- Bookmap signals ----
+  let signalsSection = "";
+  if (bm) {
+    const icebergs = (bm.icebergs || []).filter(i => i.confidence >= 0.60);
+    const iceHtml = icebergs.map(ib => `
+      <div class="iceberg-row ${ib.side==="bid"?"ice-bid":"ice-ask"}"
+           title="Traded: ${fmtK(ib.total_traded)} · Replen: ${ib.replenishment_count} · ${ib.first_seen}–${ib.last_seen}">
+        🐋 ${ib.side==="bid"?"BID":"ASK"} $${fmt(ib.price,4)}
+        <span class="ice-conf">${(ib.confidence*100).toFixed(0)}%</span>
+        <span class="ice-impl">${ib.implication}</span>
+      </div>`).join("");
+
+    const divBadges = (() => {
+      const div = bm.vwap_divergence;
+      if (!div) return "";
+      const targets = div.suggested_target
+        ? `<span style="font-size:10px;color:var(--dim);margin-left:6px">→ $${fmt(div.suggested_target)}</span>` : "";
+      return `<div class="badge-row new-signal">${divBadge}${targets}</div>`;
+    })();
+
+    signalsSection = `
+      <div class="signals-section">
+        <div class="signals-title">⬛ Bookmap Signals</div>
+        ${iceHtml || ""}
+        ${divBadges}
+      </div>`;
+  } else {
+    signalsSection = `
+      <div class="signals-section">
+        <div class="signals-title">⬛ Bookmap Signals</div>
+      </div>`;
+  }
+
+  // ---- TRIPLE CONFLUENCE ----
+  let tripleSection = "";
+  if (tc) {
+    tripleSection = `
+      <div class="triple-section new-signal">
+        <div class="triple-title">🎯🎯 TRIPLE CONFLUENCE</div>
+        <div class="triple-grid">
+          <div class="triple-stat">
+            <span class="triple-stat-label">Entry</span>
+            <span class="triple-stat-val" style="color:var(--text)">$${fmt(tc.suggested_entry)}</span>
+          </div>
+          <div class="triple-stat">
+            <span class="triple-stat-label">Target (VWAP)</span>
+            <span class="triple-stat-val" style="color:var(--green)">$${fmt(tc.suggested_target)}</span>
+          </div>
+          <div class="triple-stat">
+            <span class="triple-stat-label">Stop (Day Hi)</span>
+            <span class="triple-stat-val" style="color:var(--red)">$${fmt(tc.suggested_stop)}</span>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--dim);margin-top:5px">
+          RelVol: ${tc.components.relvol||"—"} · Iceberg: ${tc.components.iceberg||"—"} · VWAP: ${tc.components.vwap||"—"}
+          · Conf: ${(tc.confidence*100).toFixed(0)}%
+        </div>
+      </div>`;
+  }
+
+  // ---- Footer ----
+  const footer = `
+    <div class="card-footer">
+      <span class="${bm ? "ts-footer" : "bm-offline"}">
+        ${bm ? ago(bm.timestamp) : "Bookmap offline"}
+      </span>
+      <button class="copy-btn" onclick="copySnapshot('${ticker}')">⎘ Copy</button>
+    </div>`;
+
+  return `
+    <div class="ticker-card ${cardClass}" id="card-${ticker}">
+      ${header}
+      ${pricePanel}
+      ${vwapRow}
+      ${statsGrid}
+      ${rvSection}
+      ${bookSection}
+      ${signalsSection}
+      ${tripleSection}
+      ${footer}
+    </div>`;
+}
+
+// ---------------------------------------------------------------------------
+// Copy snapshot for Claude
+// ---------------------------------------------------------------------------
+function copySnapshot(ticker) {
+  const s  = state[ticker];
+  const a  = s?.alpaca;
+  const bm = s?.bookmap;
+  const rv = rvDetectors[ticker];
+  const tc = detectTripleConfluence(ticker);
+  const t  = new Date().toLocaleTimeString();
+
+  const lines = [
+    `FLOWDESK SNAPSHOT @ ${t}`,
+    "=============================",
+    `TICKER: ${ticker}`,
+    a ? `Price: $${fmt(a.close)} (${fmtSign(a.change_pct)}% / ${fmtSign(a.change_abs,2)})` : "",
+    a ? `Bid: $${fmt(a.bid)} ×${fmtK(a.bid_sz)} · Ask: $${fmt(a.ask)} ×${fmtK(a.ask_sz)} · Spread: ${a.bid&&a.ask?((a.ask-a.bid)/a.ask*100).toFixed(2):"—"}%` : "",
+    bm ? `VWAP: $${fmt(bm.vwap)} · Ext: ${fmtSign(bm.price_vwap_ext)}% · CVD: ${fmtK(bm.cvd)} (${cvdArrow(bm.cvd_slope)} −${fmt(bm.cvd_drawdown_pct,0)}% from peak)` : "",
+    a  ? `Vol: ${fmtK(a.volume)} · RelVol: ${rv.rvCurrent!=null?rv.rvCurrent.toFixed(1)+"×":"—"} (adj) · Pace: ${rv.volPace!=null?fmtK(rv.volPace)+" EOD":"—"}` : "",
+    rv.avgTradeSize ? `Avg Trade: ${rv.avgTradeSize} shares · Acceleration: ${fmtSign(rv.acceleration,0)}%` : "",
+    bm?.largest_ask_wall?.cob ? `Largest Ask Wall: $${fmt(bm.largest_ask_wall.price,4)} / ${fmtK(bm.largest_ask_wall.cob)} COB` : "",
+    bm?.largest_bid_wall?.cob ? `Largest Bid Wall: $${fmt(bm.largest_bid_wall.price,4)} / ${fmtK(bm.largest_bid_wall.cob)} COB` : "",
+    ...(bm?.icebergs||[]).filter(i=>i.confidence>=0.60).map(i =>
+      `🐋 ICEBERG ${i.side.toUpperCase()} @ $${fmt(i.price,4)} · confidence ${(i.confidence*100).toFixed(0)}% · ${i.implication}`),
+    bm?.vwap_divergence ? `${cvdArrow(bm.cvd_slope)} ${bm.vwap_divergence.signal} · confidence ${(bm.vwap_divergence.confidence*100).toFixed(0)}% · Target $${fmt(bm.vwap_divergence.suggested_target)}` : "",
+    rv.signal ? `${rv.signal === "VOLUME_EXPLOSION" ? "💥" : rv.signal.includes("SPIKE") ? "🔥🔥" : "🔥"} ${rv.signal} · ${rv.rvCurrent?.toFixed(1)}× adj RelVol` : "",
+    tc ? [
+      `🎯 TRIPLE CONFLUENCE — ${tc.implication}`,
+      `Entry: $${fmt(tc.suggested_entry)} · Target: $${fmt(tc.suggested_target)} · Stop: $${fmt(tc.suggested_stop)}`,
+    ].join("\n") : (bm?.confluence_alert ? `🎯 ${bm.confluence_alert.message}` : ""),
+    "=============================",
+  ].filter(Boolean).join("\n");
+
+  navigator.clipboard.writeText(lines).catch(() => {
+    const ta = document.createElement("textarea");
+    ta.value = lines;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Ticker management
+// ---------------------------------------------------------------------------
+function applyTickerInput() {
+  const raw = document.getElementById("ticker-input").value.trim().toUpperCase();
+  if (!raw) return;
+  const tickers = raw.split(/[\s,]+/).filter(Boolean);
+  tickers.forEach(t => {
+    if (!WATCHLIST.includes(t)) {
+      WATCHLIST.push(t);
+      _ensureTicker(t);
+      rvDetectors[t].fetchAvgVol();
+    }
+  });
+  renderAll();
+}
+
+function removeTicker(t) {
+  WATCHLIST = WATCHLIST.filter(x => x !== t);
+  renderAll();
+}
+
+function clearWatchlist() {
+  WATCHLIST = [];
+  renderAll();
+}
+
+document.getElementById("ticker-input").addEventListener("keydown", e => {
+  if (e.key === "Enter") applyTickerInput();
+});
+
+// ---------------------------------------------------------------------------
+// Render all
+// ---------------------------------------------------------------------------
+function renderAll() {
+  // Watchlist
+  document.getElementById("watchlist").innerHTML =
+    WATCHLIST.length
+      ? WATCHLIST.map(renderCard).join("")
+      : `<div style="padding:32px;color:var(--dim);font-size:13px">
+           Enter tickers above to begin watching.
+         </div>`;
+
+  // Header status dots
+  const setDot = (id, ok, label) => {
+    document.getElementById(id).innerHTML =
+      `<span class="dot ${ok?"dot-green":"dot-amber"}"></span>${label}: ${ok?"Live":"Offline"}`;
+  };
+  setDot("status-alpaca",  alpacaOk,  "Alpaca");
+  setDot("status-bookmap", bookmapOk, "Bookmap");
+
+  // Market status
+  const ms = _marketStatus();
+  const el = document.getElementById("market-status");
+  const labels = { open:"OPEN", pre:"PRE-MARKET", after:"AFTER HRS", closed:"CLOSED" };
+  const classes = { open:"ms-open", pre:"ms-pre", after:"ms-after", closed:"ms-closed" };
+  el.className = `card-status-badge ${classes[ms]}`;
+  el.textContent = labels[ms];
+
+  // Time
+  document.getElementById("server-time").textContent =
+    new Date().toLocaleTimeString() + " ET";
+
+  // Alerts bar
+  buildAlertChips();
+}
+
+// ---------------------------------------------------------------------------
+// Poll loops
+// ---------------------------------------------------------------------------
+async function alpacaLoop() {
+  await fetchAlpaca();
+  renderAll();
+  setTimeout(alpacaLoop, ALPACA_REFRESH_MS);
+}
+
+async function bookmapLoop() {
+  await fetchBookmap();
+  renderAll();
+  setTimeout(bookmapLoop, BOOKMAP_REFRESH_MS);
+}
+
+// Kick off avg vol fetches for all initial tickers
+WATCHLIST.forEach(t => rvDetectors[t].fetchAvgVol());
+
+// Pre-fill the input
+document.getElementById("ticker-input").value = WATCHLIST.join(" ");
+
+// Start
+renderAll();
+alpacaLoop();
+bookmapLoop();
+</script>
+</body>
+</html>

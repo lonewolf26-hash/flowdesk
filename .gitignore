@@ -1,0 +1,38 @@
+# ============================================================
+# FlowDesk — .gitignore
+# ============================================================
+
+# Log files (daily JSON + bridge logs written at runtime)
+logs/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+bm_venv/
+env/
+.env
+*.egg-info/
+
+# Credentials — never commit keys
+*.secret
+.env.local
+alpaca_keys.txt
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Keep the logs directory itself (but not its contents)
+!logs/.gitkeep

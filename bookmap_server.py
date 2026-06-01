@@ -66,18 +66,54 @@ class Alert(BaseModel):
     message: str
 
 class Snapshot(BaseModel):
+    # --- Required core fields (all versions) ---
     ticker: str
-    timestamp: str      # ISO-8601
-    bid: float
-    ask: float
-    bid_levels: list    # list of BookLevel dicts
-    ask_levels: list
-    cvd: float
-    cvd_direction: str  # "rising" | "falling" | "flattening"
-    book_imbalance_pct: float   # 0-100
-    largest_bid_wall: dict      # {price, cob}
-    largest_ask_wall: dict
-    alerts: list        # list of Alert dicts
+    timestamp: str          # ISO-8601
+
+    # --- Price ---
+    bid: float = 0.0
+    ask: float = 0.0
+    price: Optional[float] = None
+
+    # --- Book levels (accept both old and new field names) ---
+    bid_levels: list = []   # compat alias
+    ask_levels: list = []   # compat alias
+    bids: list = []         # new name
+    asks: list = []         # new name
+
+    # --- CVD (all fields optional so old add-on still works) ---
+    cvd: float = 0.0
+    cvd_direction: str = "flattening"   # legacy
+    cvd_slope: Optional[str] = None     # new: "rising"/"falling"/"flat"
+    cvd_peak: Optional[float] = None
+    cvd_drawdown_pct: Optional[float] = None
+
+    # --- VWAP (new) ---
+    vwap: Optional[float] = None
+    price_vwap_ext: Optional[float] = None
+
+    # --- Book imbalance (both naming conventions) ---
+    book_imbalance_pct: float = 0.0
+    book_imbalance: Optional[float] = None
+
+    # --- Walls ---
+    largest_bid_wall: dict = {}
+    largest_ask_wall: dict = {}
+
+    # --- Signals (new) ---
+    icebergs: list = []
+    vwap_divergence: Optional[dict] = None
+    confluence_alert: Optional[dict] = None
+
+    # --- Day range (new) ---
+    day_high: Optional[float] = None
+    day_low: Optional[float] = None
+
+    # --- Alerts ---
+    alerts: list = []
+
+    class Config:
+        extra = "allow"   # accept any additional fields from future add-on versions
 
 # ---------------------------------------------------------------------------
 # Routes
@@ -110,45 +146,96 @@ def health(request: Request):
     if _snapshots:
         rows = ""
         for ticker, snap in sorted(_snapshots.items()):
-            ts       = snap.get("timestamp", "—")
-            cvd      = snap.get("cvd", 0)
-            cvd_dir  = snap.get("cvd_direction", "—")
-            imb      = snap.get("book_imbalance_pct", 0)
-            bid      = snap.get("bid", "—")
-            ask      = snap.get("ask", "—")
-            n_alerts = len(snap.get("alerts", []))
+            ts        = snap.get("timestamp", "—")
+            cvd       = snap.get("cvd", 0)
+            cvd_slope = snap.get("cvd_slope") or snap.get("cvd_direction", "—")
+            imb       = snap.get("book_imbalance_pct", 0)
+            bid       = snap.get("bid", "—")
+            ask       = snap.get("ask", "—")
+            n_alerts  = len(snap.get("alerts") or [])
+            vwap_ext  = snap.get("price_vwap_ext")
+            n_icebergs = len(snap.get("icebergs") or [])
+            div       = snap.get("vwap_divergence") or {}
+            div_sig   = div.get("signal", "")
+            div_conf  = div.get("confidence", 0)
+            confluence = snap.get("confluence_alert") or {}
+            conf_sig  = confluence.get("signal", "")
 
-            dir_color = {"rising": "#27ae60", "falling": "#e74c3c"}.get(cvd_dir, "#f39c12")
-            dir_arrow = {"rising": "↑", "falling": "↓"}.get(cvd_dir, "→")
-            imb_color = "#27ae60" if imb >= 0 else "#e74c3c"
+            dir_color  = {"rising": "#27ae60", "falling": "#e74c3c"}.get(cvd_slope, "#f39c12")
+            dir_arrow  = {"rising": "↑", "falling": "↓"}.get(cvd_slope, "→")
+            imb_color  = "#27ae60" if imb >= 0 else "#e74c3c"
+
+            # VWAP extension cell
+            if vwap_ext is not None:
+                ext_color = "#e74c3c" if vwap_ext >= 8 else ("#27ae60" if vwap_ext <= -8 else "#8a8fa8")
+                ext_cell  = '<span style="color:{}">{:+.1f}%</span>'.format(ext_color, vwap_ext)
+            else:
+                ext_cell = '<span style="color:#4a6a5a">—</span>'
+
+            # Iceberg cell
+            if n_icebergs:
+                ice_cell = '<span style="color:#00bcd4">🐋 {}</span>'.format(n_icebergs)
+            else:
+                ice_cell = '<span style="color:#3a4050">—</span>'
+
+            # Divergence cell
+            div_colors = {
+                "BEARISH_EXHAUSTION": "#ff3333", "BEARISH_DIVERGENCE": "#e74c3c",
+                "BULLISH_EXHAUSTION": "#00e676", "BULLISH_DIVERGENCE": "#27ae60",
+                "VWAP_RECLAIM_FAILURE": "#f39c12", "VWAP_MAGNET": "#4a90d9",
+                "CONFLUENCE": "#ffd700",
+            }
+            if conf_sig:
+                div_display = conf_sig
+                div_color   = div_colors.get(conf_sig, "#ffd700")
+            elif div_sig:
+                div_display = "{} {:.0f}%".format(div_sig, div_conf * 100)
+                div_color   = div_colors.get(div_sig, "#8a8fa8")
+            else:
+                div_display, div_color = "—", "#3a4050"
+            div_cell = '<span style="color:{};font-size:11px">{}</span>'.format(
+                div_color, div_display)
+
             alert_badge = (
-                f'<span style="background:#e74c3c22;color:#ff6b6b;'
-                f'border:1px solid #e74c3c66;border-radius:4px;'
-                f'padding:1px 6px;font-size:11px">{n_alerts} alert{"s" if n_alerts!=1 else ""}</span>'
+                '<span style="background:#e74c3c22;color:#ff6b6b;'
+                'border:1px solid #e74c3c66;border-radius:4px;'
+                'padding:1px 6px;font-size:11px">{} alert{}</span>'.format(
+                    n_alerts, "s" if n_alerts != 1 else "")
                 if n_alerts else
-                '<span style="color:#4a6a4a;font-size:11px">no alerts</span>'
+                '<span style="color:#4a6a4a;font-size:11px">—</span>'
             )
 
-            rows += f"""
+            rows += """
             <tr>
               <td style="color:#e2e5ed;font-weight:700;font-size:15px">{ticker}</td>
               <td style="color:#4a90d9">{bid} / {ask}</td>
-              <td style="color:{dir_color}">{dir_arrow} {cvd:+.0f}</td>
-              <td style="color:{imb_color}">{imb:+.1f}%</td>
-              <td style="color:#8a8fa8;font-size:11px">{ts}</td>
-              <td>{alert_badge}</td>
-            </tr>"""
+              <td style="color:{dc}">{da} {cvd:+.0f}</td>
+              <td style="color:{ic}">{imb:+.1f}%</td>
+              <td>{ext}</td>
+              <td>{ice}</td>
+              <td>{div}</td>
+              <td style="color:#8a8fa8;font-size:10px">{ts}</td>
+              <td>{alerts}</td>
+            </tr>""".format(
+                ticker=ticker, bid=bid, ask=ask,
+                dc=dir_color, da=dir_arrow, cvd=cvd,
+                ic=imb_color, imb=imb,
+                ext=ext_cell, ice=ice_cell, div=div_cell,
+                ts=ts, alerts=alert_badge,
+            )
 
-        ticker_section = f"""
+        ticker_section = """
         <table>
           <thead>
             <tr>
               <th>Ticker</th><th>Bid / Ask</th><th>CVD</th>
-              <th>Imbalance</th><th>Last Snapshot</th><th>Alerts</th>
+              <th>Imbalance</th><th>VWAP Ext</th>
+              <th>Icebergs</th><th>Signal</th>
+              <th>Last Snapshot</th><th>Alerts</th>
             </tr>
           </thead>
-          <tbody>{rows}</tbody>
-        </table>"""
+          <tbody>{}</tbody>
+        </table>""".format(rows)
     else:
         ticker_section = """
         <div class="no-data">
@@ -232,9 +319,23 @@ def health(request: Request):
 @app.post("/update")
 def update_snapshot(snapshot: Snapshot):
     """Receive a snapshot dict from the Bookmap add-on."""
-    _snapshots[snapshot.ticker] = snapshot.dict()
-    log.info("Updated %-8s  CVD=%+.0f  imbalance=%.1f%%",
-             snapshot.ticker, snapshot.cvd, snapshot.book_imbalance_pct)
+    data = snapshot.dict()
+    _snapshots[snapshot.ticker] = data
+    # Build a concise log line including new signal fields when present
+    n_icebergs = len(data.get("icebergs") or [])
+    div_sig    = (data.get("vwap_divergence") or {}).get("signal", "")
+    conf_sig   = (data.get("confluence_alert") or {}).get("signal", "")
+    extras = " ".join(filter(None, [
+        "{}ice".format(n_icebergs) if n_icebergs else "",
+        div_sig,
+        conf_sig,
+    ]))
+    log.info("Updated %-8s  CVD=%+.0f  ext=%+.1f%%  imb=%.1f%%  %s",
+             snapshot.ticker,
+             snapshot.cvd,
+             snapshot.price_vwap_ext or 0.0,
+             snapshot.book_imbalance_pct,
+             extras)
     return {"status": "ok", "ticker": snapshot.ticker}
 
 

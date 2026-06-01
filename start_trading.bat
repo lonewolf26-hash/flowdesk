@@ -14,13 +14,16 @@ set TWS_PATH=C:\Jts\tws.exe
 set PYTHON_VENV=C:\trading\venv\Scripts\python.exe
 set SERVER_SCRIPT=C:\trading\bookmap_server.py
 set TAILSCALE_EXE=C:\Program Files\Tailscale\tailscale.exe
+set CHROME_PATH=C:\Program Files\Google\Chrome\Application\chrome.exe
+set DASHBOARD_PATH=C:\trading\flowdesk.html
+set TAILSCALE_IP=TAILSCALE_IP_PLACEHOLDER
 set LOG_DIR=C:\trading\logs
 
 :: ===========================================================================
 
 echo.
 echo  =====================================================
-echo   TRADING SESSION LAUNCHER
+echo   FlowDesk v1.0 — Trading Session Launcher
 echo  =====================================================
 echo.
 
@@ -52,24 +55,24 @@ if defined TS_IP (
 :: 2. FastAPI Bridge Server
 :: ---------------------------------------------------------------------------
 echo.
-echo [2/4] Starting FastAPI bridge server on port 8766...
-tasklist /FI "WINDOWTITLE eq BookmapServer" 2>NUL | find /I "cmd.exe" >NUL
+echo [2/5] Starting FlowDesk server on port 8766...
+tasklist /FI "WINDOWTITLE eq FlowDesk Server" 2>NUL | find /I "cmd.exe" >NUL
 if %ERRORLEVEL% EQU 0 (
-    echo      Bridge server already running.
+    echo      Server already running.
 ) else (
-    start "BookmapServer" /MIN cmd /k ^
+    start "FlowDesk Server" /MIN cmd /k ^
         ""%PYTHON_VENV%" -m uvicorn bookmap_server:app ^
         --host 0.0.0.0 ^
         --port 8766 ^
         --app-dir "C:\trading" ^
-        >> "%LOG_DIR%\bookmap_server.log" 2>&1"
+        >> "%LOG_DIR%\flowdesk_server.log" 2>&1"
     timeout /t 3 /nobreak >NUL
-    :: Quick health check
-    curl -s http://localhost:8766/health >NUL 2>&1
+    :: /ping connectivity check (lightweight, no HTML parsing needed)
+    curl -s http://localhost:8766/ping >NUL 2>&1
     if !ERRORLEVEL! EQU 0 (
-        echo      Bridge server  [OK]  http://localhost:8766
+        echo      FlowDesk Server  [LIVE]  http://localhost:8766
     ) else (
-        echo      Bridge server  [WARN] Not responding yet — check %LOG_DIR%\bookmap_server.log
+        echo      FlowDesk Server  [WARN]  Not responding yet — check %LOG_DIR%\flowdesk_server.log
     )
 )
 
@@ -77,7 +80,7 @@ if %ERRORLEVEL% EQU 0 (
 :: 3. Bookmap
 :: ---------------------------------------------------------------------------
 echo.
-echo [3/4] Starting Bookmap...
+echo [3/5] Starting Bookmap...
 tasklist /FI "IMAGENAME eq Bookmap.exe" 2>NUL | find /I "Bookmap.exe" >NUL
 if %ERRORLEVEL% EQU 0 (
     echo      Bookmap already running.
@@ -95,7 +98,7 @@ if %ERRORLEVEL% EQU 0 (
 :: 4. TWS / IBKR
 :: ---------------------------------------------------------------------------
 echo.
-echo [4/4] Starting TWS...
+echo [4/5] Starting TWS...
 tasklist /FI "IMAGENAME eq tws.exe" 2>NUL | find /I "tws.exe" >NUL
 if %ERRORLEVEL% EQU 0 (
     echo      TWS already running.
@@ -110,20 +113,34 @@ if %ERRORLEVEL% EQU 0 (
 )
 
 :: ---------------------------------------------------------------------------
+:: 5. Open FlowDesk dashboard in Chrome
+:: ---------------------------------------------------------------------------
+echo.
+echo [5/5] Opening FlowDesk dashboard...
+if exist "%CHROME_PATH%" (
+    start "" "%CHROME_PATH%" "file:///%DASHBOARD_PATH:\=/%"
+    echo      Dashboard opened in Chrome.
+) else (
+    echo      WARNING: Chrome not found at %CHROME_PATH%
+    echo      Edit CHROME_PATH or open %DASHBOARD_PATH% manually.
+)
+
+:: ---------------------------------------------------------------------------
 :: Summary
 :: ---------------------------------------------------------------------------
 echo.
 echo  =====================================================
-echo   STATUS SUMMARY
+echo   FlowDesk v1.0 — STARTUP SUMMARY
 echo  =====================================================
 echo   Tailscale IP  : !TS_IP!
-echo   Bridge server : http://localhost:8766/health
-echo   Bridge server : http://!TS_IP!:8766/health
-echo   Logs          : %LOG_DIR%\bookmap_server.log
+echo   Server LIVE   : http://localhost:8766/ping
+echo   Health page   : http://!TS_IP!:8766/health
+echo   Dashboard     : %DASHBOARD_PATH%
+echo   Logs          : %LOG_DIR%\
 echo  =====================================================
 echo.
 echo  All services started. Press any key to close this window.
-echo  (Services will continue running in the background.)
+echo  (All background services continue running.)
 echo.
 pause
 endlocal
