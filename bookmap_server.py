@@ -82,6 +82,10 @@ class Snapshot(BaseModel):
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
+@app.get("/ping")
+def ping(): return {"status": "ok"}
+
+
 @app.get("/health", response_class=HTMLResponse)
 def health(request: Request):
     # JSON for API clients (curl, scripts); HTML for browsers
