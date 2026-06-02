@@ -4,38 +4,43 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FlowDesk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     /* ===================================================================
-       TOKENS
+       TOKENS - light theme
     =================================================================== */
     :root {
-      --bg:        #0d0d0d;
-      --surface:   #141418;
-      --surface2:  #1a1a20;
-      --surface3:  #20202a;
-      --border:    #28283a;
-      --border2:   #32324a;
-      --text:      #e8eaf0;
-      --dim:       #7a7d96;
-      --dim2:      #50536a;
-      --green:     #26de6e;
-      --green2:    #1a9448;
-      --red:       #f04a5a;
-      --red2:      #9a2030;
-      --amber:     #f5a623;
-      --blue:      #4a9eff;
-      --cyan:      #00d4e8;
-      --gold:      #ffd700;
-      --purple:    #b06fdf;
+      --bg:        #f5f6f8;
+      --surface:   #ffffff;
+      --surface2:  #f0f1f4;
+      --surface3:  #e8eaed;
+      --border:    #e0e0e0;
+      --border2:   #caccd1;
+      --text:      #333333;
+      --heading:   #1a1a2e;
+      --dim:       #6b7280;
+      --dim2:      #9ca3af;
+      --green:     #16a34a;
+      --green2:    #15803d;
+      --red:       #dc2626;
+      --red2:      #b91c1c;
+      --amber:     #d97706;
+      --blue:      #3b82f6;
+      --cyan:      #0891b2;
+      --gold:      #b45309;
+      --purple:    #7c3aed;
       --radius:    6px;
+      --sans:      "IBM Plex Sans", system-ui, sans-serif;
       --mono:      "SF Mono", Menlo, "JetBrains Mono", "Fira Code", Consolas, monospace;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: var(--mono);
-      font-size: 12px;
+      font-family: var(--sans);
+      font-size: 15px;
       min-height: 100vh;
       padding-bottom: 40px;
     }
@@ -49,32 +54,33 @@
       gap: 16px;
       padding: 10px 16px;
       background: var(--surface);
-      border-bottom: 1px solid var(--border);
+      border-bottom: 2px solid var(--border);
       position: sticky; top: 0; z-index: 200;
       flex-wrap: wrap;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
     }
     #header h1 {
-      font-size: 16px; font-weight: 800;
+      font-size: 18px; font-weight: 800;
       color: var(--blue); letter-spacing: .04em;
     }
     .status-dot {
       display: inline-flex; align-items: center; gap: 5px;
-      font-size: 11px; color: var(--dim);
+      font-size: 13px; color: var(--dim);
     }
     .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .dot-green  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .dot-green  { background: var(--green); box-shadow: 0 0 5px rgba(22,163,74,.5); }
     .dot-red    { background: var(--red); }
     .dot-amber  { background: var(--amber); }
     .dot-blue   { background: var(--blue); }
     #market-status {
-      font-size: 11px; padding: 2px 8px;
+      font-size: 12px; padding: 2px 8px;
       border-radius: 4px; font-weight: 700; letter-spacing: .05em;
     }
-    .ms-open       { background: rgba(38,222,110,.15); color: var(--green); border: 1px solid rgba(38,222,110,.3); }
-    .ms-pre        { background: rgba(74,158,255,.12); color: var(--blue);  border: 1px solid rgba(74,158,255,.25); }
-    .ms-after      { background: rgba(245,166,35,.12); color: var(--amber); border: 1px solid rgba(245,166,35,.25); }
-    .ms-closed     { background: rgba(122,125,150,.10); color: var(--dim);  border: 1px solid rgba(122,125,150,.2); }
-    #server-time { font-size: 10px; color: var(--dim); margin-left: auto; }
+    .ms-open   { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+    .ms-pre    { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+    .ms-after  { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .ms-closed { background: #f3f4f6; color: var(--dim); border: 1px solid var(--border2); }
+    #server-time { font-size: 12px; color: var(--dim); margin-left: auto; }
 
     /* ===================================================================
        TICKER INPUT
@@ -83,22 +89,22 @@
       display: flex; gap: 8px; align-items: center;
       padding: 8px 16px;
       border-bottom: 1px solid var(--border);
-      background: var(--surface2);
+      background: var(--surface);
     }
-    #ticker-bar label { font-size: 11px; color: var(--dim); }
+    #ticker-bar label { font-size: 13px; color: var(--dim); font-weight: 600; }
     #ticker-input {
       background: var(--surface3); border: 1px solid var(--border2);
-      color: var(--text); font-family: var(--mono); font-size: 12px;
-      padding: 4px 10px; border-radius: var(--radius);
+      color: var(--heading); font-family: var(--sans); font-size: 14px;
+      padding: 5px 10px; border-radius: var(--radius);
       width: 340px; outline: none;
     }
-    #ticker-input:focus { border-color: var(--blue); }
+    #ticker-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
     .btn {
       background: var(--surface3); border: 1px solid var(--border2);
-      color: var(--text); font-family: var(--mono); font-size: 11px;
-      padding: 4px 12px; border-radius: var(--radius); cursor: pointer;
+      color: var(--heading); font-family: var(--sans); font-size: 13px; font-weight: 600;
+      padding: 5px 14px; border-radius: var(--radius); cursor: pointer;
     }
-    .btn:hover { border-color: var(--blue); color: var(--blue); }
+    .btn:hover { border-color: var(--blue); color: var(--blue); background: #eff6ff; }
 
     /* ===================================================================
        ALERTS BAR
@@ -106,32 +112,32 @@
     #alerts-bar {
       display: none;
       padding: 6px 16px;
-      background: rgba(240,74,90,.08);
-      border-bottom: 1px solid rgba(240,74,90,.3);
+      background: #fef2f2;
+      border-bottom: 1px solid #fca5a5;
       gap: 10px;
       flex-wrap: wrap;
       align-items: center;
     }
     #alerts-bar.active { display: flex; }
     .alert-chip {
-      font-size: 11px; font-weight: 700; padding: 2px 10px;
-      border-radius: 4px; letter-spacing: .04em;
+      font-size: 13px; font-weight: 700; padding: 2px 10px;
+      border-radius: 4px; letter-spacing: .03em;
     }
-    .chip-triple  { background: rgba(255,215,0,.18);   color: var(--gold);   border: 1px solid rgba(255,215,0,.4); }
-    .chip-conf    { background: rgba(255,215,0,.10);   color: var(--gold);   border: 1px solid rgba(255,215,0,.25); }
-    .chip-exhaust { background: rgba(240,74,90,.25);   color: #ff8090;       border: 1px solid rgba(240,74,90,.5); animation: pulse 1.2s infinite; }
-    .chip-ice     { background: rgba(0,212,232,.10);   color: var(--cyan);   border: 1px solid rgba(0,212,232,.3); }
-    .chip-bear    { background: rgba(240,74,90,.15);   color: var(--red);    border: 1px solid rgba(240,74,90,.35); }
-    .chip-vol     { background: rgba(245,166,35,.12);  color: var(--amber);  border: 1px solid rgba(245,166,35,.3); }
+    .chip-triple  { background: #fef9c3; color: #92400e; border: 1px solid #fcd34d; }
+    .chip-conf    { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+    .chip-exhaust { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; animation: pulse 1.2s infinite; }
+    .chip-ice     { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
+    .chip-bear    { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+    .chip-vol     { background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
 
     /* ===================================================================
-       WATCHLIST GRID
+       WATCHLIST — vertical stacked rows
     =================================================================== */
     #watchlist {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 12px;
-      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 8px 16px;
     }
 
     /* ===================================================================
@@ -142,35 +148,93 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       overflow: hidden;
-      transition: border-color .3s, box-shadow .3s;
+      box-shadow: 0 1px 3px rgba(0,0,0,.04);
+      transition: border-color .2s, box-shadow .2s;
     }
     .ticker-card.has-confluence {
-      border-color: rgba(255,215,0,.5);
-      box-shadow: 0 0 16px rgba(255,215,0,.12);
+      border-color: #fcd34d;
+      box-shadow: 0 0 8px rgba(180,83,9,.10);
     }
     .ticker-card.has-triple {
-      border-color: var(--gold);
-      box-shadow: 0 0 24px rgba(255,215,0,.25);
+      border-color: #f59e0b;
+      box-shadow: 0 0 14px rgba(180,83,9,.18);
       animation: card-pulse 1.5s infinite;
     }
 
-    /* ===== Card Header ===== */
-    .card-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 8px 12px;
-      background: var(--surface2);
-      border-bottom: 1px solid var(--border);
+    /* ===== Compact header bar (always visible, 48px) ===== */
+    .card-header-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 0 12px; height: 48px;
+      cursor: pointer; user-select: none;
+      transition: background .15s;
     }
-    .card-ticker { font-size: 15px; font-weight: 800; }
+    .card-header-bar:hover { background: #f8f9fb; }
+    .ticker-card.is-open > .card-header-bar {
+      background: #eff6ff;
+      border-left: 3px solid var(--blue);
+      padding-left: 9px; /* compensate for border */
+    }
+    .ticker-card.has-triple > .card-header-bar { background: #fffbeb; }
+    .ticker-card.has-confluence > .card-header-bar { background: #fffdf0; }
+
+    /* Chevron rotates when open */
+    .card-chevron {
+      font-size: 9px; color: var(--dim2);
+      flex-shrink: 0; width: 12px; text-align: center;
+      transition: transform .2s;
+    }
+    .ticker-card.is-open .card-chevron { transform: rotate(90deg); }
+
+    /* Ticker symbol */
+    .hbar-ticker { font-size: 15px; font-weight: 800; color: var(--heading); min-width: 50px; }
+
+    /* Price + change */
+    .hbar-price  { font-size: 14px; font-weight: 700; }
+    .hbar-change { font-size: 12px; font-weight: 600; }
+
+    /* Vertical separator */
+    .hbar-sep { width: 1px; height: 18px; background: var(--border); flex-shrink: 0; margin: 0 2px; }
+
+    /* VWAP */
+    .hbar-lbl  { font-size: 11px; color: var(--dim); white-space: nowrap; }
+    .hbar-val  { font-size: 12px; font-weight: 600; color: var(--heading); }
+    .hbar-ext  { font-size: 11px; font-weight: 700; }
+
+    /* Vol */
+    .hbar-vol  { font-size: 12px; color: var(--dim); white-space: nowrap; }
+    .hbar-vol span { font-weight: 600; color: var(--heading); }
+
+    /* Bid / Ask */
+    .hbar-ba   { font-size: 11px; color: var(--dim); white-space: nowrap; }
+
+    /* Right-side badges + controls */
+    .hbar-right { display: flex; align-items: center; gap: 5px; margin-left: auto; }
+
+    /* Bookmap online dot */
+    .hbar-bm-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    /* Remove button */
     .card-remove {
       background: none; border: none; color: var(--dim2);
-      font-size: 14px; cursor: pointer; padding: 0 4px; line-height: 1;
+      font-size: 13px; cursor: pointer; padding: 0 2px; line-height: 1; flex-shrink: 0;
     }
     .card-remove:hover { color: var(--red); }
+
+    /* Status badge (reused for market session) */
     .card-status-badge {
       font-size: 10px; font-weight: 700; padding: 1px 6px;
       border-radius: 3px; letter-spacing: .05em;
     }
+
+    /* ===== Collapsible body ===== */
+    .card-body-wrap {
+      display: none;
+      border-top: 1px solid var(--border);
+    }
+    .ticker-card.is-open > .card-body-wrap { display: block; }
+
+    /* Keep legacy .card-ticker for any remaining references */
+    .card-ticker { font-size: 15px; font-weight: 800; color: var(--heading); }
 
     /* ===== Price Panel ===== */
     .price-panel {
@@ -178,9 +242,9 @@
       border-bottom: 1px solid var(--border);
     }
     .price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 3px; }
-    .price-big { font-size: 20px; font-weight: 800; }
-    .price-change { font-size: 13px; font-weight: 700; }
-    .price-bid-ask { font-size: 11px; color: var(--dim); }
+    .price-big { font-size: 20px; font-weight: 800; color: var(--heading); }
+    .price-change { font-size: 14px; font-weight: 700; }
+    .price-bid-ask { font-size: 13px; color: var(--dim); }
     .up   { color: var(--green); }
     .down { color: var(--red); }
 
@@ -189,16 +253,16 @@
       display: flex; align-items: center; gap: 10px;
       padding: 5px 12px;
       border-bottom: 1px solid var(--border);
-      font-size: 11px;
+      font-size: 13px;
     }
-    .vwap-label { color: var(--dim); }
-    .vwap-val   { color: var(--text); font-weight: 600; }
+    .vwap-label { color: var(--dim); font-weight: 600; }
+    .vwap-val   { color: var(--heading); font-weight: 600; }
     .vwap-ext   { font-weight: 700; }
     .vwap-ext-bear { color: var(--red); }
     .vwap-ext-bull { color: var(--green); }
     .vwap-ext-ok   { color: var(--dim); }
     .div-badge {
-      margin-left: auto; font-size: 10px; font-weight: 700;
+      margin-left: auto; font-size: 12px; font-weight: 700;
       padding: 1px 7px; border-radius: 3px;
     }
 
@@ -208,11 +272,11 @@
       gap: 3px 8px;
       padding: 7px 12px;
       border-bottom: 1px solid var(--border);
-      font-size: 11px;
+      font-size: 13px;
     }
     .stat-row { display: flex; justify-content: space-between; }
     .stat-label { color: var(--dim); }
-    .stat-val   { color: var(--text); }
+    .stat-val   { color: var(--heading); font-weight: 600; }
 
     /* ===== RelVol Section ===== */
     .relvol-section {
@@ -221,12 +285,12 @@
     }
     .relvol-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
     .relvol-num    { font-size: 18px; font-weight: 800; }
-    .rv-gray   { color: var(--dim); }
-    .rv-white  { color: var(--text); }
-    .rv-yellow { color: #ffe066; }
+    .rv-gray   { color: var(--dim2); }
+    .rv-white  { color: var(--heading); }
+    .rv-yellow { color: #ca8a04; }
     .rv-orange { color: var(--amber); }
     .rv-red    { color: var(--red); animation: pulse 1s infinite; }
-    .relvol-meta { font-size: 10px; color: var(--dim); display: flex; gap: 12px; flex-wrap: wrap; }
+    .relvol-meta { font-size: 12px; color: var(--dim); display: flex; gap: 12px; flex-wrap: wrap; }
     .rv-sparkline { margin-top: 5px; }
 
     /* ===== Order Book Summary ===== */
@@ -237,7 +301,7 @@
       border-bottom: 1px solid var(--border);
     }
     .book-side-label {
-      font-size: 10px; font-weight: 700;
+      font-size: 12px; font-weight: 700;
       text-transform: uppercase; letter-spacing: .06em;
       margin-bottom: 3px;
     }
@@ -245,76 +309,76 @@
     .book-asks .book-side-label { color: var(--red); }
     .book-level {
       display: flex; justify-content: space-between;
-      font-size: 10px; padding: 2px 0;
+      font-size: 12px; padding: 2px 0;
       border-bottom: 1px solid var(--surface3);
     }
-    .bl-price { color: var(--text); }
+    .bl-price { color: var(--heading); }
     .bl-size  { color: var(--dim); }
     .bl-cob   { color: var(--dim2); }
-    .book-level.wall { background: rgba(255,255,255,.03); }
+    .book-level.wall { background: rgba(59,130,246,.04); }
     .book-level.wall .bl-price { font-weight: 700; }
 
     /* ===== Bookmap Signals ===== */
     .signals-section { padding: 7px 12px; border-bottom: 1px solid var(--border); }
     .signals-title {
-      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
       letter-spacing: .08em; color: var(--cyan); margin-bottom: 5px;
     }
     .iceberg-row {
       display: flex; align-items: center; gap: 6px;
-      font-size: 11px; padding: 2px 0; cursor: default;
+      font-size: 13px; padding: 2px 0; cursor: default;
     }
     .ice-bid  { color: var(--green); }
     .ice-ask  { color: var(--red); }
-    .ice-conf { font-size: 10px; color: var(--dim); }
-    .ice-impl { font-size: 10px; font-weight: 700; }
+    .ice-conf { font-size: 12px; color: var(--dim); }
+    .ice-impl { font-size: 12px; font-weight: 700; }
 
     /* ===== Signal Badges ===== */
     .badge-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
     .badge {
-      font-size: 10px; font-weight: 700; padding: 2px 7px;
-      border-radius: 3px; letter-spacing: .03em;
+      font-size: 13px; font-weight: 700; padding: 2px 8px;
+      border-radius: 3px; letter-spacing: .02em;
     }
-    .badge-red    { background: rgba(240,74,90,.18);  color: #ff8090; border: 1px solid rgba(240,74,90,.4); }
-    .badge-green  { background: rgba(38,222,110,.12); color: var(--green); border: 1px solid rgba(38,222,110,.3); }
-    .badge-amber  { background: rgba(245,166,35,.12); color: var(--amber); border: 1px solid rgba(245,166,35,.3); }
-    .badge-blue   { background: rgba(74,158,255,.12); color: var(--blue);  border: 1px solid rgba(74,158,255,.3); }
-    .badge-cyan   { background: rgba(0,212,232,.10);  color: var(--cyan);  border: 1px solid rgba(0,212,232,.3); }
-    .badge-gold   { background: rgba(255,215,0,.14);  color: var(--gold);  border: 1px solid rgba(255,215,0,.35); }
+    .badge-red    { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+    .badge-green  { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+    .badge-amber  { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .badge-blue   { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+    .badge-cyan   { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
+    .badge-gold   { background: #fef9c3; color: #92400e; border: 1px solid #fde68a; }
     .badge-flash  { animation: flash .7s infinite; }
 
     /* ===== TRIPLE CONFLUENCE ===== */
     .triple-section {
       padding: 8px 12px;
-      background: rgba(255,215,0,.04);
-      border-bottom: 1px solid rgba(255,215,0,.2);
+      background: #fffbeb;
+      border-bottom: 1px solid #fcd34d;
     }
     .triple-title {
-      font-size: 12px; font-weight: 800; color: var(--gold);
-      letter-spacing: .06em; margin-bottom: 5px;
+      font-size: 13px; font-weight: 800; color: #92400e;
+      letter-spacing: .05em; margin-bottom: 5px;
     }
     .triple-grid {
       display: grid; grid-template-columns: 1fr 1fr 1fr;
-      gap: 6px; font-size: 10px;
+      gap: 6px; font-size: 13px;
     }
     .triple-stat { display: flex; flex-direction: column; gap: 1px; }
-    .triple-stat-label { color: var(--dim); }
+    .triple-stat-label { color: var(--dim); font-size: 12px; }
     .triple-stat-val   { font-weight: 700; }
 
-    /* ===== Copy Button ===== */
+    /* ===== Card Footer ===== */
     .card-footer {
       display: flex; align-items: center; justify-content: space-between;
       padding: 6px 12px;
       background: var(--surface2);
     }
-    .ts-footer { font-size: 10px; color: var(--dim2); }
-    .bm-offline { font-size: 10px; color: var(--dim2); font-style: italic; }
+    .ts-footer { font-size: 12px; color: var(--dim2); }
+    .bm-offline { font-size: 12px; color: var(--dim2); font-style: italic; }
     .copy-btn {
-      background: none; border: 1px solid var(--border2);
-      color: var(--dim); font-family: var(--mono); font-size: 10px;
-      padding: 2px 8px; border-radius: 3px; cursor: pointer;
+      background: var(--surface3); border: 1px solid var(--border2);
+      color: var(--dim); font-family: var(--sans); font-size: 12px; font-weight: 600;
+      padding: 2px 10px; border-radius: 3px; cursor: pointer;
     }
-    .copy-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .copy-btn:hover { border-color: var(--blue); color: var(--blue); background: #eff6ff; }
 
     /* ===================================================================
        ANIMATIONS
@@ -322,11 +386,116 @@
     @keyframes pulse   { 0%,100%{opacity:1} 50%{opacity:.4} }
     @keyframes flash   { 0%,100%{opacity:1} 50%{opacity:.3} }
     @keyframes card-pulse {
-      0%,100%{box-shadow:0 0 20px rgba(255,215,0,.2)}
-      50%    {box-shadow:0 0 40px rgba(255,215,0,.45)}
+      0%,100%{box-shadow:0 0 12px rgba(180,83,9,.15)}
+      50%    {box-shadow:0 0 28px rgba(180,83,9,.35)}
     }
     @keyframes fadeIn  { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
     .new-signal { animation: fadeIn .4s ease; }
+    @keyframes ca-spin  { to { transform: rotate(360deg); } }
+
+    /* ===================================================================
+       CATALYST PANEL
+    =================================================================== */
+    .catalyst-panel { border-top: 1px solid var(--border); }
+
+    /* Button — sits beside Copy in the footer */
+    .catalyst-btn {
+      background: var(--surface3); border: 1px solid var(--border2);
+      color: var(--dim); font-family: var(--sans); font-size: 12px; font-weight: 600;
+      padding: 2px 10px; border-radius: 3px; cursor: pointer;
+      transition: border-color .15s, color .15s, background .15s;
+    }
+    .catalyst-btn:hover,
+    .catalyst-btn.active { border-color: var(--blue); color: var(--blue); background: #eff6ff; }
+
+    /* Loading */
+    .ca-loading {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px; font-size: 13px; color: var(--dim);
+    }
+    .ca-spinner {
+      width: 15px; height: 15px; flex-shrink: 0;
+      border: 2px solid var(--border2); border-top-color: var(--blue);
+      border-radius: 50%; animation: ca-spin .7s linear infinite;
+    }
+
+    /* Error */
+    .ca-error {
+      padding: 10px 14px; font-size: 12px; color: var(--red);
+      background: #fef2f2; display: flex; align-items: center; gap: 8px;
+    }
+    .ca-retry-btn {
+      background: none; border: 1px solid #fca5a5; color: var(--red);
+      font-size: 11px; padding: 1px 8px; border-radius: 3px; cursor: pointer;
+    }
+
+    /* API key prompt */
+    .ca-key-prompt {
+      padding: 10px 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+      background: #fafafa;
+    }
+    .ca-key-label { font-size: 12px; color: var(--dim); font-weight: 600; white-space: nowrap; }
+    .ca-key-input {
+      flex: 1; min-width: 180px; height: 28px;
+      background: var(--surface3); border: 1px solid var(--border2);
+      color: var(--heading); font-family: var(--sans); font-size: 12px;
+      padding: 2px 8px; border-radius: var(--radius); outline: none;
+    }
+    .ca-key-input:focus { border-color: var(--blue); }
+    .ca-key-save {
+      height: 28px; padding: 0 12px; border: none; border-radius: var(--radius);
+      background: var(--blue); color: #fff;
+      font-family: var(--sans); font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+
+    /* Result body */
+    .ca-body { padding: 10px 12px; }
+    .ca-header-row {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;
+    }
+
+    /* Verdict + strength badges */
+    .ca-verdict, .ca-strength {
+      font-size: 11px; font-weight: 700; padding: 2px 8px;
+      border-radius: 999px; letter-spacing: .04em;
+    }
+    .ca-v-short  { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+    .ca-v-avoid  { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+    .ca-v-watch  { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .ca-s-strong { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+    .ca-s-weak   { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+    .ca-s-mixed  { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .ca-s-unknown{ background: #f3f4f6; color: var(--dim); border: 1px solid var(--border2); }
+
+    /* Catalyst description */
+    .ca-line { font-size: 13px; color: var(--heading); line-height: 1.5; margin-bottom: 8px; }
+
+    /* Score / squeeze bars */
+    .ca-bar-row {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px;
+    }
+    .ca-bar-label { font-size: 12px; color: var(--dim); font-weight: 600; }
+    .ca-bar-val   { font-size: 13px; font-weight: 800; }
+    .ca-bar-track {
+      height: 5px; background: var(--surface3); border-radius: 999px;
+      overflow: hidden; margin-bottom: 8px;
+    }
+    .ca-bar-fill  { height: 100%; border-radius: 999px; }
+
+    /* Stat pills */
+    .ca-pills { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+    .ca-pill {
+      font-size: 11px; padding: 2px 8px; border-radius: 4px;
+      background: var(--surface3); color: var(--dim); border: 1px solid var(--border);
+    }
+    .ca-pill span { color: var(--heading); font-weight: 600; }
+
+    /* Reasoning box */
+    .ca-reasoning {
+      font-size: 12px; color: var(--dim); line-height: 1.5;
+      padding: 8px 10px; background: var(--surface2);
+      border-radius: 4px; border-left: 2px solid var(--border2);
+    }
   </style>
 </head>
 <body>
@@ -339,7 +508,7 @@
   <span id="status-alpaca"  class="status-dot"><span class="dot dot-amber"></span>Alpaca</span>
   <span id="status-bookmap" class="status-dot"><span class="dot dot-amber"></span>Bookmap</span>
   <span id="market-status"  class="ms-closed">CLOSED</span>
-  <span id="server-time">—</span>
+  <span id="server-time">-</span>
 </div>
 
 <!-- =====================================================================
@@ -367,18 +536,18 @@
 // ============================================================================
 // CONFIGURATION
 // ============================================================================
-const TAILSCALE_IP      = "TAILSCALE_IP_PLACEHOLDER";
+const TAILSCALE_IP      = "127.0.0.1";
 const BOOKMAP_PORT      = 8766;
 const BOOKMAP_URL       = `http://${TAILSCALE_IP}:${BOOKMAP_PORT}`;
 
-const ALPACA_BASE       = "https://paper-api.alpaca.markets";
-const ALPACA_KEY_ID     = "YOUR_ALPACA_KEY_ID";
-const ALPACA_SECRET_KEY = "YOUR_ALPACA_SECRET_KEY";
+const ALPACA_BASE       = "https://data.alpaca.markets";
+const ALPACA_KEY_ID     = "PKMI7JDDSN2SITPW2AXY7ZZZBT";
+const ALPACA_SECRET_KEY = "F3aHYKWdHsjDBxbqFvKYBhFjuuMWmeaKVkWd4SjRH3xt";
 
 const ALPACA_REFRESH_MS  = 10_000;
 const BOOKMAP_REFRESH_MS = 3_000;
 
-// Default watchlist — edit to match your Bookmap instruments
+// Default watchlist " edit to match your Bookmap instruments
 let WATCHLIST = ["AAPL", "TSLA", "NVDA", "SPY", "QQQ"];
 
 // Intraday RelVol time-of-day weights
@@ -390,20 +559,6 @@ const TOD_WEIGHTS = [
   { start: [15,30], end: [16,0],  w: 0.7 },
 ];
 // ============================================================================
-
-// ---------------------------------------------------------------------------
-// Global state
-// ---------------------------------------------------------------------------
-const state = {};          // ticker -> { alpaca, bookmap, relvol }
-const rvDetectors = {};    // ticker -> RelVolDetector instance
-let bookmapOk  = false;
-let alpacaOk   = false;
-
-function _ensureTicker(t) {
-  if (!state[t]) state[t] = { alpaca: null, bookmap: null };
-  if (!rvDetectors[t]) rvDetectors[t] = new RelVolDetector(t);
-}
-WATCHLIST.forEach(_ensureTicker);
 
 // ---------------------------------------------------------------------------
 // RelVolDetector
@@ -446,7 +601,7 @@ class RelVolDetector {
       if (bars.length > 0) {
         this.avgDailyVol = bars.reduce((s, b) => s + b.v, 0) / bars.length;
       }
-    } catch (_) { /* graceful — leave avgDailyVol null */ }
+    } catch (_) { /* graceful " leave avgDailyVol null */ }
   }
 
   // Update with fresh Alpaca bar data
@@ -546,10 +701,24 @@ class RelVolDetector {
 }
 
 // ---------------------------------------------------------------------------
+// Global state
+// ---------------------------------------------------------------------------
+const state = {};          // ticker -> { alpaca, bookmap, relvol }
+const rvDetectors = {};    // ticker -> RelVolDetector instance
+let bookmapOk  = false;
+let alpacaOk   = false;
+
+function _ensureTicker(t) {
+  if (!state[t]) state[t] = { alpaca: null, bookmap: null };
+  if (!rvDetectors[t]) rvDetectors[t] = new RelVolDetector(t);
+}
+WATCHLIST.forEach(_ensureTicker);
+
+// ---------------------------------------------------------------------------
 // ET time helpers
 // ---------------------------------------------------------------------------
 function _etTime() {
-  // ET is UTC-4 (EDT) or UTC-5 (EST) — use UTC-4 as trading season default
+  // ET is UTC-4 (EDT) or UTC-5 (EST) " use UTC-4 as trading season default
   const now = new Date();
   const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
   return new Date(utcMs - 4 * 3600_000);
@@ -691,20 +860,20 @@ async function fetchBookmap() {
 // ---------------------------------------------------------------------------
 // Format helpers
 // ---------------------------------------------------------------------------
-const fmt  = (n, d=2)  => n == null ? "—" : (+n).toFixed(d);
+const fmt  = (n, d=2)  => n == null ? "-" : (+n).toFixed(d);
 const fmtK = (n) => {
-  if (n == null) return "—";
+  if (n == null) return "-";
   if (Math.abs(n) >= 1e6) return (n/1e6).toFixed(1)+"M";
   if (Math.abs(n) >= 1e3) return (n/1e3).toFixed(0)+"K";
   return String(n);
 };
-const fmtSign = (n, d=2) => n == null ? "—" : (n>=0?"+":"")+fmt(n,d);
+const fmtSign = (n, d=2) => n == null ? "-" : (n>=0?"+":"")+fmt(n,d);
 const ago = (iso) => {
   if (!iso) return "";
   const s = Math.round((Date.now() - new Date(iso).getTime()) / 1000);
   return s < 5 ? "now" : s < 60 ? s+"s ago" : Math.floor(s/60)+"m ago";
 };
-const cvdArrow = (s) => s==="rising" ? "↑" : s==="falling" ? "↓" : "→";
+const cvdArrow = (s) => s==="rising" ? "^" : s==="falling" ? "v" : "->";
 
 // ---------------------------------------------------------------------------
 // Build alert chip HTML
@@ -718,18 +887,18 @@ function buildAlertChips() {
     if (!s) return;
 
     const tc = detectTripleConfluence(t);
-    if (tc) { chips.push(`<span class="alert-chip chip-triple">🎯🎯 ${t}: TRIPLE CONFLUENCE</span>`); return; }
+    if (tc) { chips.push(`<span class="alert-chip chip-triple"> ${t}: TRIPLE CONFLUENCE</span>`); return; }
 
     if (bm?.confluence_alert)
-      chips.push(`<span class="alert-chip chip-conf">🎯 ${t}: ${bm.confluence_alert.signal}</span>`);
+      chips.push(`<span class="alert-chip chip-conf"> ${t}: ${bm.confluence_alert.signal}</span>`);
     if (bm?.vwap_divergence?.signal?.includes("EXHAUSTION"))
-      chips.push(`<span class="alert-chip chip-exhaust">⚡ ${t}: ${bm.vwap_divergence.signal}</span>`);
+      chips.push(`<span class="alert-chip chip-exhaust"> ${t}: ${bm.vwap_divergence.signal}</span>`);
     if ((bm?.icebergs||[]).some(i => i.signal === "ICEBERG_CONFIRMED"))
-      chips.push(`<span class="alert-chip chip-ice">🐋 ${t}: ICEBERG CONFIRMED</span>`);
+      chips.push(`<span class="alert-chip chip-ice"> ${t}: ICEBERG CONFIRMED</span>`);
     if (bm?.vwap_divergence && !bm.vwap_divergence.signal?.includes("EXHAUSTION"))
-      chips.push(`<span class="alert-chip chip-bear">↓ ${t}: ${bm.vwap_divergence.signal}</span>`);
+      chips.push(`<span class="alert-chip chip-bear">" ${t}: ${bm.vwap_divergence.signal}</span>`);
     if (rv.signal === "VOLUME_EXPLOSION" || rv.signal === "VOLUME_SPIKE")
-      chips.push(`<span class="alert-chip chip-vol">🔥 ${t}: ${rv.signal}</span>`);
+      chips.push(`<span class="alert-chip chip-vol">" ${t}: ${rv.signal}</span>`);
   });
   const bar = document.getElementById("alerts-bar");
   if (chips.length) {
@@ -742,6 +911,21 @@ function buildAlertChips() {
 }
 
 // ---------------------------------------------------------------------------
+// Card open/closed state  (default: collapsed)
+// ---------------------------------------------------------------------------
+const cardOpen = {}; // ticker -> bool
+
+function toggleCardBody(ticker) {
+  cardOpen[ticker] = !cardOpen[ticker];
+  // Re-render just this card in-place
+  const old = document.getElementById('card-' + ticker);
+  if (!old) return;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = renderCard(ticker);
+  old.parentNode.replaceChild(tmp.firstElementChild, old);
+}
+
+// ---------------------------------------------------------------------------
 // Render a single ticker card
 // ---------------------------------------------------------------------------
 function renderCard(ticker) {
@@ -750,64 +934,109 @@ function renderCard(ticker) {
   const bm  = s?.bookmap;
   const rv  = rvDetectors[ticker];
   const tc  = detectTripleConfluence(ticker);
+  const isOpen = !!cardOpen[ticker];
 
-  const cardClass = tc ? "has-triple" : (bm?.confluence_alert ? "has-confluence" : "");
+  const cardClass = [
+    tc ? "has-triple" : (bm?.confluence_alert ? "has-confluence" : ""),
+    isOpen ? "is-open" : ""
+  ].filter(Boolean).join(" ");
 
-  // ---- Header ----
+  // ---- Shared computed values ----
   const ms = _marketStatus();
   const msBadgeMap = {
-    open:   ["ms-open","OPEN"], pre:    ["ms-pre","PRE"],
-    after:  ["ms-after","AH"], closed: ["ms-closed","CLOSED"],
+    open: ["ms-open","OPEN"], pre: ["ms-pre","PRE"],
+    after: ["ms-after","AH"], closed: ["ms-closed","CLOSED"],
   };
   const [msCls, msLabel] = msBadgeMap[ms] || msBadgeMap.closed;
-  const header = `
-    <div class="card-header">
-      <span class="card-ticker">${ticker}</span>
-      <span class="card-status-badge ${msCls}">${msLabel}</span>
-      <button class="card-remove" onclick="removeTicker('${ticker}')" title="Remove">✕</button>
-    </div>`;
 
-  // ---- Price panel ----
-  const price     = a?.close ?? null;
-  const chgPct    = a?.change_pct ?? null;
-  const chgAbs    = a?.change_abs ?? null;
-  const pCls      = chgPct == null ? "" : chgPct >= 0 ? "up" : "down";
-  const spread    = (a?.bid && a?.ask) ? ((a.ask-a.bid)/a.ask*100).toFixed(2) : null;
-  const pricePanel = `
-    <div class="price-panel">
-      <div class="price-row">
-        <span class="price-big ${pCls}">${price != null ? "$"+fmt(price) : "—"}</span>
-        ${chgAbs != null ? `<span class="price-change ${pCls}">${fmtSign(chgAbs)} (${fmtSign(chgPct)}%)</span>` : ""}
-      </div>
-      <div class="price-bid-ask">
-        Bid <span style="color:var(--green)">${fmt(a?.bid)} × ${fmtK(a?.bid_sz)}</span>
-        &nbsp;·&nbsp;
-        Ask <span style="color:var(--red)">${fmt(a?.ask)} × ${fmtK(a?.ask_sz)}</span>
-        ${spread != null ? `&nbsp;·&nbsp; Spread <span style="color:var(--dim)">${spread}%</span>` : ""}
-      </div>
-    </div>`;
-
-  // ---- VWAP row ----
-  const vwap    = bm?.vwap || a?.vwap;
+  const price  = a?.close ?? null;
+  const chgPct = a?.change_pct ?? null;
+  const chgAbs = a?.change_abs ?? null;
+  const pCls   = chgPct == null ? "" : chgPct >= 0 ? "up" : "down";
+  const vwap   = bm?.vwap || a?.vwap;
   const vwapExt = bm?.price_vwap_ext ?? null;
   const extCls  = vwapExt == null ? "vwap-ext-ok"
-                : vwapExt >= 8    ? "vwap-ext-bear"
-                : vwapExt <= -8   ? "vwap-ext-bull"
+                : vwapExt >= 8   ? "vwap-ext-bear"
+                : vwapExt <= -8  ? "vwap-ext-bull"
                 : "vwap-ext-ok";
+
   const divBadge = (() => {
     if (!bm?.vwap_divergence) return "";
     const sig = bm.vwap_divergence.signal;
     const m = {
-      BEARISH_DIVERGENCE:   ["badge-red",   "↓ BEARISH DIV"],
-      BEARISH_EXHAUSTION:   ["badge-red badge-flash", "⚡ EXHAUSTION"],
-      BULLISH_DIVERGENCE:   ["badge-green", "↑ BULLISH DIV"],
-      BULLISH_EXHAUSTION:   ["badge-green badge-flash", "⚡ EXHAUSTION"],
-      VWAP_RECLAIM_FAILURE: ["badge-amber", "✗ VWAP FAIL"],
-      VWAP_MAGNET:          ["badge-blue",  "🧲 VWAP MAGNET"],
+      BEARISH_DIVERGENCE:   ["badge-red",              "v BEARISH DIV"],
+      BEARISH_EXHAUSTION:   ["badge-red badge-flash",  "!! EXHAUSTION"],
+      BULLISH_DIVERGENCE:   ["badge-green",            "^ BULLISH DIV"],
+      BULLISH_EXHAUSTION:   ["badge-green badge-flash","!! EXHAUSTION"],
+      VWAP_RECLAIM_FAILURE: ["badge-amber",            "x VWAP FAIL"],
+      VWAP_MAGNET:          ["badge-blue",             "[MAG] VWAP MAGNET"],
     };
     const [cls, label] = m[sig] || ["badge-amber", sig];
     return `<span class="div-badge badge ${cls}">${label}</span>`;
   })();
+
+  const rvNum = rv.rvCurrent;
+  const rvBadgeHdr = (() => {
+    const sig = rv.signal;
+    if (!sig) return "";
+    const map = {
+      VOLUME_SURGE:     ["badge-amber",           "3x VOL"],
+      VOLUME_SPIKE:     ["badge-red",             "5x VOL"],
+      VOLUME_EXPLOSION: ["badge-red badge-flash", "10x VOL"],
+      VOLUME_CLIMAX:    ["badge-amber",           "CLIMAX"],
+      VOLUME_DRY_UP:    ["badge-blue",            "DRY UP"],
+    };
+    const [cls, lbl] = map[sig] || ["badge-amber", sig];
+    return `<span class="badge ${cls}" style="font-size:10px;padding:1px 5px">${lbl}</span>`;
+  })();
+
+  // ---- Compact header bar ----
+  const headerBar = `
+    <div class="card-header-bar" onclick="toggleCardBody('${ticker}')">
+      <span class="card-chevron">&#9654;</span>
+      <span class="hbar-ticker">${ticker}</span>
+      <span class="hbar-price ${pCls}">${price != null ? "$"+fmt(price) : "-"}</span>
+      ${chgPct != null ? `<span class="hbar-change ${pCls}">${fmtSign(chgPct)}%</span>` : ""}
+      <span class="hbar-sep"></span>
+      <span class="hbar-lbl">VWAP</span>
+      <span class="hbar-val">${fmt(vwap)}</span>
+      ${vwapExt != null ? `<span class="hbar-ext ${extCls}">${fmtSign(vwapExt)}%</span>` : ""}
+      <span class="hbar-sep"></span>
+      <span class="hbar-ba">
+        B <span style="color:var(--green)">${fmt(a?.bid)}</span>
+        / A <span style="color:var(--red)">${fmt(a?.ask)}</span>
+      </span>
+      <span class="hbar-sep"></span>
+      <span class="hbar-vol">Vol <span>${fmtK(a?.volume)}</span>${rvNum != null ? ` &nbsp;<span class="hbar-ext ${rvNum>=3?"rv-orange":"rv-white"}">${rvNum.toFixed(1)}x</span>` : ""}</span>
+      <span class="hbar-right">
+        ${rvBadgeHdr}
+        ${divBadge ? divBadge.replace('div-badge badge','badge').replace('font-size:10px','font-size:10px') : ""}
+        ${tc ? `<span class="badge badge-gold" style="font-size:10px;padding:1px 5px">TRIPLE</span>` : ""}
+        <span class="card-status-badge ${msCls}">${msLabel}</span>
+        <span class="hbar-bm-dot" style="background:${bm ? "var(--green)" : "var(--dim2)"}" title="${bm ? "Bookmap live" : "Bookmap offline"}"></span>
+        <button class="card-remove" onclick="event.stopPropagation();removeTicker('${ticker}')" title="Remove">&#10005;</button>
+      </span>
+    </div>`;
+
+  // ---- Body sections (shown when expanded) ----
+
+  // Price panel
+  const spread = (a?.bid && a?.ask) ? ((a.ask-a.bid)/a.ask*100).toFixed(2) : null;
+  const pricePanel = `
+    <div class="price-panel">
+      <div class="price-row">
+        <span class="price-big ${pCls}">${price != null ? "$"+fmt(price) : "-"}</span>
+        ${chgAbs != null ? `<span class="price-change ${pCls}">${fmtSign(chgAbs)} (${fmtSign(chgPct)}%)</span>` : ""}
+      </div>
+      <div class="price-bid-ask">
+        Bid <span style="color:var(--green)">${fmt(a?.bid)} x ${fmtK(a?.bid_sz)}</span>
+        &nbsp;.&nbsp;
+        Ask <span style="color:var(--red)">${fmt(a?.ask)} x ${fmtK(a?.ask_sz)}</span>
+        ${spread != null ? `&nbsp;.&nbsp; Spread <span style="color:var(--dim)">${spread}%</span>` : ""}
+      </div>
+    </div>`;
+
+  // VWAP row
   const vwapRow = `
     <div class="vwap-row">
       <span class="vwap-label">VWAP</span>
@@ -818,7 +1047,7 @@ function renderCard(ticker) {
       ${divBadge}
     </div>`;
 
-  // ---- Stats grid ----
+  // Stats grid
   const cvdSlope = bm?.cvd_slope || bm?.cvd_direction;
   const statsGrid = `
     <div class="stats-grid">
@@ -830,7 +1059,7 @@ function renderCard(ticker) {
         <span class="stat-label">CVD</span>
         <span class="stat-val ${cvdSlope==="rising"?"up":cvdSlope==="falling"?"down":""}">
           ${cvdArrow(cvdSlope)} ${fmtK(bm?.cvd)}
-          ${bm?.cvd_drawdown_pct > 0 ? `<span style="font-size:10px;color:var(--dim)"> −${fmt(bm.cvd_drawdown_pct,0)}%</span>` : ""}
+          ${bm?.cvd_drawdown_pct > 0 ? `<span style="font-size:10px;color:var(--dim)"> -${fmt(bm.cvd_drawdown_pct,0)}%</span>` : ""}
         </span>
       </div>
       <div class="stat-row">
@@ -841,24 +1070,23 @@ function renderCard(ticker) {
       </div>
     </div>`;
 
-  // ---- RelVol section ----
-  const rvNum   = rv.rvCurrent;
-  const rvCls   = rvNum == null   ? "rv-gray"
-                : rvNum < 1       ? "rv-gray"
-                : rvNum < 2       ? "rv-white"
-                : rvNum < 3       ? "rv-yellow"
-                : rvNum < 5       ? "rv-orange"
+  // RelVol section
+  const rvCls   = rvNum == null ? "rv-gray"
+                : rvNum < 1    ? "rv-gray"
+                : rvNum < 2    ? "rv-white"
+                : rvNum < 3    ? "rv-yellow"
+                : rvNum < 5    ? "rv-orange"
                 : "rv-red";
-  const accelArrow = rv.acceleration > 20 ? "↑" : rv.acceleration < -20 ? "↓" : "→";
+  const accelArrow = rv.acceleration > 20 ? "^" : rv.acceleration < -20 ? "v" : "->";
   const rvBadges = (() => {
     const sig = rv.signal;
     if (!sig) return "";
     const map = {
-      VOLUME_SURGE:      ["badge-amber",           "🔥 3× VOL"],
-      VOLUME_SPIKE:      ["badge-red",             "🔥🔥 5× VOL"],
-      VOLUME_EXPLOSION:  ["badge-red badge-flash", "💥 10× VOL"],
-      VOLUME_CLIMAX:     ["badge-amber",           "⚠ CLIMAX"],
-      VOLUME_DRY_UP:     ["badge-blue",            "📉 DRY UP"],
+      VOLUME_SURGE:      ["badge-amber",           "[FIRE] 3x VOL"],
+      VOLUME_SPIKE:      ["badge-red",             "[FIRE][FIRE] 5x VOL"],
+      VOLUME_EXPLOSION:  ["badge-red badge-flash", "[BOOM] 10x VOL"],
+      VOLUME_CLIMAX:     ["badge-amber",           "[!] CLIMAX"],
+      VOLUME_DRY_UP:     ["badge-blue",            "[DOWN] DRY UP"],
     };
     const [cls, lbl] = map[sig] || ["badge-amber", sig];
     return `<span class="badge ${cls}">${lbl}</span>`;
@@ -866,19 +1094,19 @@ function renderCard(ticker) {
   const rvSection = `
     <div class="relvol-section">
       <div class="relvol-header">
-        <span class="relvol-num ${rvCls}">${rvNum != null ? rvNum.toFixed(1)+"×" : "—"}</span>
+        <span class="relvol-num ${rvCls}">${rvNum != null ? rvNum.toFixed(1)+"x" : "-"}</span>
         <span style="font-size:11px;color:var(--dim)">RelVol</span>
         ${rvBadges}
       </div>
       <div class="relvol-meta">
-        <span>Pace: ${rv.volPace != null ? fmtK(rv.volPace)+" EOD" : "—"}</span>
-        <span>Avg trade: ${rv.avgTradeSize != null ? rv.avgTradeSize+" sh" : "—"}</span>
-        <span>Accel: ${accelArrow} ${rv.acceleration != null ? fmtSign(rv.acceleration, 0)+"%" : "—"}</span>
+        <span>Pace: ${rv.volPace != null ? fmtK(rv.volPace)+" EOD" : "-"}</span>
+        <span>Avg trade: ${rv.avgTradeSize != null ? rv.avgTradeSize+" sh" : "-"}</span>
+        <span>Accel: ${accelArrow} ${rv.acceleration != null ? fmtSign(rv.acceleration, 0)+"%" : "-"}</span>
       </div>
       <div class="rv-sparkline">${rv.buildSparkline()}</div>
     </div>`;
 
-  // ---- Order book summary ----
+  // Order book
   const bidLevels = (bm?.bids || bm?.bid_levels || []).slice(0, 3);
   const askLevels = (bm?.asks || bm?.ask_levels || []).slice(0, 3);
   const maxBidCob = bidLevels.length ? Math.max(...bidLevels.map(l => l.cob||l.cumulative_cob||0)) : 0;
@@ -903,45 +1131,43 @@ function renderCard(ticker) {
       </div>
     </div>` : "";
 
-  // ---- Bookmap signals ----
+  // Bookmap signals
   let signalsSection = "";
   if (bm) {
     const icebergs = (bm.icebergs || []).filter(i => i.confidence >= 0.60);
     const iceHtml = icebergs.map(ib => `
       <div class="iceberg-row ${ib.side==="bid"?"ice-bid":"ice-ask"}"
-           title="Traded: ${fmtK(ib.total_traded)} · Replen: ${ib.replenishment_count} · ${ib.first_seen}–${ib.last_seen}">
-        🐋 ${ib.side==="bid"?"BID":"ASK"} $${fmt(ib.price,4)}
+           title="Traded: ${fmtK(ib.total_traded)} . Replen: ${ib.replenishment_count} . ${ib.first_seen}-${ib.last_seen}">
+        ${ib.side==="bid"?"BID":"ASK"} $${fmt(ib.price,4)}
         <span class="ice-conf">${(ib.confidence*100).toFixed(0)}%</span>
         <span class="ice-impl">${ib.implication}</span>
       </div>`).join("");
-
     const divBadges = (() => {
       const div = bm.vwap_divergence;
       if (!div) return "";
       const targets = div.suggested_target
-        ? `<span style="font-size:10px;color:var(--dim);margin-left:6px">→ $${fmt(div.suggested_target)}</span>` : "";
+        ? `<span style="font-size:10px;color:var(--dim);margin-left:6px">-> $${fmt(div.suggested_target)}</span>` : "";
       return `<div class="badge-row new-signal">${divBadge}${targets}</div>`;
     })();
-
     signalsSection = `
       <div class="signals-section">
-        <div class="signals-title">⬛ Bookmap Signals</div>
+        <div class="signals-title">Bookmap Signals</div>
         ${iceHtml || ""}
         ${divBadges}
       </div>`;
   } else {
     signalsSection = `
       <div class="signals-section">
-        <div class="signals-title">⬛ Bookmap Signals</div>
+        <div class="signals-title">Bookmap Signals</div>
       </div>`;
   }
 
-  // ---- TRIPLE CONFLUENCE ----
+  // Triple confluence
   let tripleSection = "";
   if (tc) {
     tripleSection = `
       <div class="triple-section new-signal">
-        <div class="triple-title">🎯🎯 TRIPLE CONFLUENCE</div>
+        <div class="triple-title">TRIPLE CONFLUENCE</div>
         <div class="triple-grid">
           <div class="triple-stat">
             <span class="triple-stat-label">Entry</span>
@@ -957,32 +1183,37 @@ function renderCard(ticker) {
           </div>
         </div>
         <div style="font-size:10px;color:var(--dim);margin-top:5px">
-          RelVol: ${tc.components.relvol||"—"} · Iceberg: ${tc.components.iceberg||"—"} · VWAP: ${tc.components.vwap||"—"}
-          · Conf: ${(tc.confidence*100).toFixed(0)}%
+          RelVol: ${tc.components.relvol||"-"} . Iceberg: ${tc.components.iceberg||"-"} . VWAP: ${tc.components.vwap||"-"}
+          . Conf: ${(tc.confidence*100).toFixed(0)}%
         </div>
       </div>`;
   }
 
-  // ---- Footer ----
+  // Footer
+  const csOpen = getCatalystState(ticker).open;
   const footer = `
     <div class="card-footer">
       <span class="${bm ? "ts-footer" : "bm-offline"}">
         ${bm ? ago(bm.timestamp) : "Bookmap offline"}
       </span>
-      <button class="copy-btn" onclick="copySnapshot('${ticker}')">⎘ Copy</button>
+      <button id="cat-btn-${ticker}" class="catalyst-btn${csOpen ? ' active' : ''}" onclick="toggleCatalyst('${ticker}')">⚡ Catalyst</button>
+      <button class="copy-btn" onclick="copySnapshot('${ticker}')"> Copy</button>
     </div>`;
 
   return `
     <div class="ticker-card ${cardClass}" id="card-${ticker}">
-      ${header}
-      ${pricePanel}
-      ${vwapRow}
-      ${statsGrid}
-      ${rvSection}
-      ${bookSection}
-      ${signalsSection}
-      ${tripleSection}
-      ${footer}
+      ${headerBar}
+      <div class="card-body-wrap">
+        ${pricePanel}
+        ${vwapRow}
+        ${statsGrid}
+        ${rvSection}
+        ${bookSection}
+        ${signalsSection}
+        ${tripleSection}
+        ${footer}
+        <div id="cat-${ticker}" class="catalyst-panel">${_buildCatalystPanelHTML(ticker)}</div>
+      </div>
     </div>`;
 }
 
@@ -1002,20 +1233,20 @@ function copySnapshot(ticker) {
     "=============================",
     `TICKER: ${ticker}`,
     a ? `Price: $${fmt(a.close)} (${fmtSign(a.change_pct)}% / ${fmtSign(a.change_abs,2)})` : "",
-    a ? `Bid: $${fmt(a.bid)} ×${fmtK(a.bid_sz)} · Ask: $${fmt(a.ask)} ×${fmtK(a.ask_sz)} · Spread: ${a.bid&&a.ask?((a.ask-a.bid)/a.ask*100).toFixed(2):"—"}%` : "",
-    bm ? `VWAP: $${fmt(bm.vwap)} · Ext: ${fmtSign(bm.price_vwap_ext)}% · CVD: ${fmtK(bm.cvd)} (${cvdArrow(bm.cvd_slope)} −${fmt(bm.cvd_drawdown_pct,0)}% from peak)` : "",
-    a  ? `Vol: ${fmtK(a.volume)} · RelVol: ${rv.rvCurrent!=null?rv.rvCurrent.toFixed(1)+"×":"—"} (adj) · Pace: ${rv.volPace!=null?fmtK(rv.volPace)+" EOD":"—"}` : "",
-    rv.avgTradeSize ? `Avg Trade: ${rv.avgTradeSize} shares · Acceleration: ${fmtSign(rv.acceleration,0)}%` : "",
+    a ? `Bid: $${fmt(a.bid)} x${fmtK(a.bid_sz)} . Ask: $${fmt(a.ask)} x${fmtK(a.ask_sz)} . Spread: ${a.bid&&a.ask?((a.ask-a.bid)/a.ask*100).toFixed(2):"-"}%` : "",
+    bm ? `VWAP: $${fmt(bm.vwap)} . Ext: ${fmtSign(bm.price_vwap_ext)}% . CVD: ${fmtK(bm.cvd)} (${cvdArrow(bm.cvd_slope)} -${fmt(bm.cvd_drawdown_pct,0)}% from peak)` : "",
+    a  ? `Vol: ${fmtK(a.volume)} . RelVol: ${rv.rvCurrent!=null?rv.rvCurrent.toFixed(1)+"-":"-"} (adj) . Pace: ${rv.volPace!=null?fmtK(rv.volPace)+" EOD":"-"}` : "",
+    rv.avgTradeSize ? `Avg Trade: ${rv.avgTradeSize} shares . Acceleration: ${fmtSign(rv.acceleration,0)}%` : "",
     bm?.largest_ask_wall?.cob ? `Largest Ask Wall: $${fmt(bm.largest_ask_wall.price,4)} / ${fmtK(bm.largest_ask_wall.cob)} COB` : "",
     bm?.largest_bid_wall?.cob ? `Largest Bid Wall: $${fmt(bm.largest_bid_wall.price,4)} / ${fmtK(bm.largest_bid_wall.cob)} COB` : "",
     ...(bm?.icebergs||[]).filter(i=>i.confidence>=0.60).map(i =>
-      `🐋 ICEBERG ${i.side.toUpperCase()} @ $${fmt(i.price,4)} · confidence ${(i.confidence*100).toFixed(0)}% · ${i.implication}`),
-    bm?.vwap_divergence ? `${cvdArrow(bm.cvd_slope)} ${bm.vwap_divergence.signal} · confidence ${(bm.vwap_divergence.confidence*100).toFixed(0)}% · Target $${fmt(bm.vwap_divergence.suggested_target)}` : "",
-    rv.signal ? `${rv.signal === "VOLUME_EXPLOSION" ? "💥" : rv.signal.includes("SPIKE") ? "🔥🔥" : "🔥"} ${rv.signal} · ${rv.rvCurrent?.toFixed(1)}× adj RelVol` : "",
+      ` ICEBERG ${i.side.toUpperCase()} @ $${fmt(i.price,4)} . confidence ${(i.confidence*100).toFixed(0)}% . ${i.implication}`),
+    bm?.vwap_divergence ? `${cvdArrow(bm.cvd_slope)} ${bm.vwap_divergence.signal} . confidence ${(bm.vwap_divergence.confidence*100).toFixed(0)}% . Target $${fmt(bm.vwap_divergence.suggested_target)}` : "",
+    rv.signal ? `${rv.signal === "VOLUME_EXPLOSION" ? "[BOOM]" : rv.signal.includes("SPIKE") ? "[FIRE][FIRE]" : "[FIRE]"} ${rv.signal} . ${rv.rvCurrent?.toFixed(1)}- adj RelVol` : "",
     tc ? [
-      `🎯 TRIPLE CONFLUENCE — ${tc.implication}`,
-      `Entry: $${fmt(tc.suggested_entry)} · Target: $${fmt(tc.suggested_target)} · Stop: $${fmt(tc.suggested_stop)}`,
-    ].join("\n") : (bm?.confluence_alert ? `🎯 ${bm.confluence_alert.message}` : ""),
+      `[TARGET][TARGET] TRIPLE CONFLUENCE - ${tc.implication}`,
+      `Entry: $${fmt(tc.suggested_entry)} . Target: $${fmt(tc.suggested_target)} . Stop: $${fmt(tc.suggested_stop)}`,
+    ].join("\n") : (bm?.confluence_alert ? ` ${bm.confluence_alert.message}` : ""),
     "=============================",
   ].filter(Boolean).join("\n");
 
@@ -1053,12 +1284,244 @@ function removeTicker(t) {
 
 function clearWatchlist() {
   WATCHLIST = [];
+  document.getElementById("ticker-input").value = "";
   renderAll();
 }
 
 document.getElementById("ticker-input").addEventListener("keydown", e => {
   if (e.key === "Enter") applyTickerInput();
 });
+
+// ---------------------------------------------------------------------------
+// CATALYST ANALYZER
+// ---------------------------------------------------------------------------
+const CATALYST_SYSTEM_PROMPT = `You are an expert short-side momentum trader analyst specializing in low-float, high-relative-volume stocks under $5. Evaluate stocks as short candidates for intraday fade trading.
+
+Search for the latest news, float data, and short interest for the ticker, then return ONLY valid JSON with no markdown, no backticks, no explanation outside the JSON.
+
+Return exactly this structure:
+{
+  "ticker": "RMSG",
+  "company_name": "Full Company Name",
+  "catalyst": "One clear sentence describing what is driving the stock today",
+  "catalyst_type": "earnings|fda_approval|fda_rejection|contract|partnership|ai_pivot|name_change|sec_filing|shelf_offering|reverse_split|no_news|rumor|macro|dilution",
+  "catalyst_strength": "strong|weak|mixed|unknown",
+  "short_score": 78,
+  "score_breakdown": { "catalyst_weakness": 25, "float_score": 20, "volume_score": 18, "si_risk": 15 },
+  "float_shares": "8.7M",
+  "short_interest_pct": "27%",
+  "short_interest_shares": "2.3M",
+  "days_to_cover": "1.2",
+  "squeeze_risk": "high|medium|low",
+  "squeeze_risk_score": 65,
+  "price_move_today": "+178%",
+  "volume_today": "166M",
+  "avg_volume": "851K",
+  "relative_volume": "195x",
+  "strength_reasoning": "2-3 sentences explaining catalyst strength and short thesis",
+  "short_verdict": "short|avoid|watch",
+  "verdict_reason": "One sentence verdict with key risk factor"
+}
+
+SCORING (short_score 0-100, higher = better short candidate):
+catalyst_weakness (0-30): 30=no real catalyst, 20=weak rumor, 10=small real catalyst, 0=strong verified catalyst
+float_score (0-25): 25=under 5M, 20=5-15M, 12=15-50M, 5=50-200M, 0=over 200M
+volume_score (0-25): 25=100x+ rel vol, 20=50-100x, 15=20-50x, 8=10-20x, 0=under 10x
+si_risk (0-20, inverted): 20=under 5% SI, 12=5-15%, 5=15-25%, 0=over 25% (squeeze danger)
+squeeze_risk_score (0-100): combine SI% with float tightness.
+Always search web for current data. Return only valid JSON.`;
+
+const catalystState  = {}; // ticker -> { open, status, data, priceData, error }
+const _pendingCatKey = {}; // ticker -> key string typed but not yet saved
+
+function getCatalystState(ticker) {
+  if (!catalystState[ticker]) {
+    catalystState[ticker] = { open: false, status: 'idle', data: null, priceData: null, error: null };
+  }
+  return catalystState[ticker];
+}
+
+function getCatalystApiKey() {
+  return localStorage.getItem('anthropic_api_key') || '';
+}
+
+async function toggleCatalyst(ticker) {
+  const cs = getCatalystState(ticker);
+  if (cs.open) {
+    cs.open = false;
+    _refreshCatalystUI(ticker);
+    return;
+  }
+  cs.open = true;
+  if (!getCatalystApiKey()) {
+    _refreshCatalystUI(ticker);
+    return;
+  }
+  if (cs.status === 'idle') {
+    cs.status = 'loading';
+    _refreshCatalystUI(ticker);
+    try {
+      const [data, priceData] = await Promise.all([
+        _runCatalystAPI(ticker),
+        _fetchCatalystSnapshot(ticker)
+      ]);
+      cs.data = data; cs.priceData = priceData; cs.status = 'done';
+    } catch(e) {
+      cs.error = e.message; cs.status = 'error';
+    }
+  }
+  _refreshCatalystUI(ticker);
+}
+
+function retryCatalyst(ticker) {
+  const cs = getCatalystState(ticker);
+  cs.status = 'idle'; cs.error = null;
+  toggleCatalyst(ticker);
+}
+
+function saveCatalystKey(ticker) {
+  const input = document.getElementById('ca-key-' + ticker);
+  if (!input) return;
+  const key = (input.value || _pendingCatKey[ticker] || '').trim();
+  if (!key.startsWith('sk-')) { alert('Invalid key — should start with sk-'); return; }
+  localStorage.setItem('anthropic_api_key', key);
+  delete _pendingCatKey[ticker];
+  retryCatalyst(ticker);
+}
+
+function _refreshCatalystUI(ticker) {
+  const panel = document.getElementById('cat-' + ticker);
+  if (panel) panel.innerHTML = _buildCatalystPanelHTML(ticker);
+  const btn = document.getElementById('cat-btn-' + ticker);
+  if (btn) btn.classList.toggle('active', getCatalystState(ticker).open);
+}
+
+function _buildCatalystPanelHTML(ticker) {
+  const cs = getCatalystState(ticker);
+  if (!cs.open) return '';
+
+  if (!getCatalystApiKey()) {
+    const pending = (_pendingCatKey[ticker] || '').replace(/"/g, '&quot;');
+    return `<div class="ca-key-prompt">
+      <span class="ca-key-label">Anthropic API key needed:</span>
+      <input id="ca-key-${ticker}" class="ca-key-input" type="password"
+        placeholder="sk-ant-api03-..." value="${pending}"
+        oninput="_pendingCatKey['${ticker}']=this.value"
+        onkeydown="if(event.key==='Enter')saveCatalystKey('${ticker}')" />
+      <button class="ca-key-save" onclick="saveCatalystKey('${ticker}')">Save &amp; Run</button>
+    </div>`;
+  }
+  if (cs.status === 'loading') {
+    return `<div class="ca-loading">
+      <div class="ca-spinner"></div>
+      <span>Analyzing <strong>${ticker}</strong> — searching catalyst, float, short interest...</span>
+    </div>`;
+  }
+  if (cs.status === 'error') {
+    return `<div class="ca-error">
+      Analysis failed: ${cs.error}
+      <button class="ca-retry-btn" onclick="retryCatalyst('${ticker}')">Retry</button>
+    </div>`;
+  }
+  if (cs.status === 'done' && cs.data) {
+    return _buildCatalystResultHTML(cs.data);
+  }
+  return '';
+}
+
+function _catScoreColor(s)  { return s >= 70 ? '#dc2626' : s >= 40 ? '#d97706' : '#3b82f6'; }
+function _catSqColor(risk)  { return risk === 'high' ? '#dc2626' : risk === 'medium' ? '#d97706' : '#16a34a'; }
+
+function _buildCatalystResultHTML(d) {
+  const score  = Math.min(100, Math.max(0, d.short_score || 0));
+  const sc     = _catScoreColor(score);
+  const sqScore = Math.min(100, Math.max(0, d.squeeze_risk_score || 0));
+  const sqColor = _catSqColor(d.squeeze_risk || 'low');
+
+  const vMap = { short: ['ca-v-short','SHORT CANDIDATE'], avoid: ['ca-v-avoid','AVOID SHORT'], watch: ['ca-v-watch','WATCH & WAIT'] };
+  const sMap = { strong: ['ca-s-strong','Strong catalyst'], weak: ['ca-s-weak','Weak catalyst'], mixed: ['ca-s-mixed','Mixed catalyst'], unknown: ['ca-s-unknown','No catalyst'] };
+  const [vCls, vLbl] = vMap[d.short_verdict]   || ['ca-v-watch','WATCH'];
+  const [sCls, sLbl] = sMap[d.catalyst_strength] || ['ca-s-unknown','Unknown'];
+
+  const pills = [
+    d.float_shares       && `Float <span>${d.float_shares}</span>`,
+    d.short_interest_pct && `SI% <span>${d.short_interest_pct}</span>`,
+    d.days_to_cover      && `DTC <span>${d.days_to_cover}</span>`,
+    d.relative_volume    && `RelVol <span>${d.relative_volume}</span>`,
+    d.price_move_today   && `Move <span>${d.price_move_today}</span>`,
+    d.avg_volume         && `Avg vol <span>${d.avg_volume}</span>`,
+  ].filter(Boolean).map(p => `<div class="ca-pill">${p}</div>`).join('');
+
+  return `<div class="ca-body">
+    <div class="ca-header-row">
+      <span class="ca-verdict ${vCls}">${vLbl}</span>
+      <span class="ca-strength ${sCls}">${sLbl}</span>
+    </div>
+    <div class="ca-line">${d.catalyst || 'No catalyst found'}</div>
+    <div class="ca-bar-row">
+      <span class="ca-bar-label">Short score</span>
+      <span class="ca-bar-val" style="color:${sc}">${score} / 100</span>
+    </div>
+    <div class="ca-bar-track"><div class="ca-bar-fill" style="width:${score}%;background:${sc}"></div></div>
+    <div class="ca-bar-row">
+      <span class="ca-bar-label">Squeeze risk</span>
+      <span class="ca-bar-val" style="color:${sqColor}">${(d.squeeze_risk||'?').toUpperCase()} — ${sqScore}/100</span>
+    </div>
+    <div class="ca-bar-track"><div class="ca-bar-fill" style="width:${sqScore}%;background:${sqColor}"></div></div>
+    ${pills ? `<div class="ca-pills">${pills}</div>` : ''}
+    <div class="ca-reasoning">${d.strength_reasoning || ''}${d.verdict_reason ? ' — ' + d.verdict_reason : ''}</div>
+  </div>`;
+}
+
+async function _fetchCatalystSnapshot(ticker) {
+  try {
+    const r = await fetch(`https://data.alpaca.markets/v2/stocks/${ticker}/snapshot`, {
+      headers: { 'APCA-API-KEY-ID': ALPACA_KEY_ID, 'APCA-API-SECRET-KEY': ALPACA_SECRET_KEY },
+      signal: AbortSignal.timeout(5000)
+    });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch(_) { return null; }
+}
+
+async function _runCatalystAPI(ticker) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 45000);
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': getCatalystApiKey(),
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        system: CATALYST_SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: `Analyze ticker: ${ticker}.\n1) Search web for latest news and catalyst driving it today\n2) Search web for float size and short interest percentage\nReturn ONLY the JSON object, nothing else.` }]
+      }),
+      signal: controller.signal
+    });
+    if (!res.ok) throw new Error(`API ${res.status}`);
+    const data = await res.json();
+    const textBlocks = (data.content || []).filter(b => b.type === 'text');
+    if (!textBlocks.length) throw new Error('No text in response');
+    const combined = textBlocks.map(b => b.text).join('');
+    const clean = combined.replace(/```json|```/g, '').trim();
+    const match = clean.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('No JSON in response');
+    let jsonStr = match[0];
+    try { return JSON.parse(jsonStr); } catch(_) {
+      const opens = (jsonStr.match(/\{/g)||[]).length;
+      const closes = (jsonStr.match(/\}/g)||[]).length;
+      jsonStr += '}'.repeat(Math.max(0, opens - closes));
+      return JSON.parse(jsonStr);
+    }
+  } finally { clearTimeout(timer); }
+}
 
 // ---------------------------------------------------------------------------
 // Render all
@@ -1124,3 +1587,4 @@ bookmapLoop();
 </script>
 </body>
 </html>
+

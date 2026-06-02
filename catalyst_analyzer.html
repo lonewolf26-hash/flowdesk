@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalyst Analyzer</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0c0f; --surface: #111418; --surface2: #181c22;
+    --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.12);
+    --text: #e8eaf0; --muted: #6b7280; --accent: #00d4aa;
+    --red: #ff4757; --red-dim: rgba(255,71,87,0.12);
+    --amber: #ffa502; --amber-dim: rgba(255,165,2,0.12);
+    --green: #00d4aa; --green-dim: rgba(0,212,170,0.12);
+    --blue: #3b82f6; --blue-dim: rgba(59,130,246,0.12);
+    --mono: 'JetBrains Mono', monospace; --sans: 'DM Sans', sans-serif;
+  }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; padding: 2rem 1rem; font-size: 16px; }
+  .container { max-width: 900px; margin: 0 auto; }
+  header { display: flex; align-items: flex-end; gap: 1rem; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 0.5px solid var(--border); }
+  .logo-mark { width: 42px; height: 42px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 16px; font-weight: 700; color: #0a0c0f; flex-shrink: 0; }
+  h1 { font-size: 22px; font-weight: 500; color: var(--text); letter-spacing: -0.01em; }
+  .subtitle { font-size: 14px; color: var(--muted); font-family: var(--mono); margin-top: 2px; }
+  .input-area { background: var(--surface); border: 0.5px solid var(--border2); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+  .input-label { font-size: 13px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; display: block; }
+  .ticker-input-row { display: flex; gap: 10px; align-items: center; }
+  textarea { flex: 1; background: var(--surface2); border: 0.5px solid var(--border); border-radius: 8px; color: var(--text); font-family: var(--mono); font-size: 15px; padding: 10px 12px; resize: none; height: 52px; line-height: 1.5; outline: none; transition: border-color 0.15s; }
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: var(--muted); }
+  .analyze-btn { background: var(--accent); color: #0a0c0f; border: none; border-radius: 8px; padding: 0 22px; height: 52px; font-family: var(--mono); font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: opacity 0.15s, transform 0.1s; letter-spacing: 0.03em; }
+  .analyze-btn:hover { opacity: 0.88; }
+  .analyze-btn:active { transform: scale(0.97); }
+  .analyze-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .cancel-btn { background: transparent; color: var(--red); border: 0.5px solid rgba(255,71,87,0.4); border-radius: 8px; padding: 0 18px; height: 52px; font-family: var(--mono); font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: background 0.15s; letter-spacing: 0.03em; }
+  .cancel-btn:hover { background: var(--red-dim); }
+  .cancel-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+  .cancelled-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; font-family: var(--mono); font-size: 14px; color: var(--muted); text-align: center; }
+  .hint { font-size: 13px; color: var(--muted); font-family: var(--mono); margin-top: 8px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 1.5rem; padding: 10px 14px; background: var(--surface); border: 0.5px solid var(--border); border-radius: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; font-family: var(--mono); color: var(--muted); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .results { display: flex; flex-direction: column; gap: 14px; }
+  .ticker-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; overflow: hidden; animation: slideIn 0.3s ease forwards; opacity: 0; transform: translateY(8px); }
+  @keyframes slideIn { to { opacity: 1; transform: translateY(0); } }
+  .card-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 1rem 1.25rem; border-bottom: 0.5px solid var(--border); cursor: pointer; user-select: none; }
+  .card-header:hover { background: rgba(255,255,255,0.02); }
+  .collapse-icon { margin-left: 6px; font-size: 12px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+  .ticker-card.collapsed .collapse-icon { transform: rotate(-90deg); }
+  .ticker-card.collapsed .card-body { display: none; }
+  .ticker-card.collapsed { border-color: var(--border); }
+  .ticker-symbol { font-family: var(--mono); font-size: 20px; font-weight: 700; color: var(--text); min-width: 70px; }
+  .badge { font-size: 12px; font-family: var(--mono); font-weight: 700; padding: 4px 12px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .strength-strong { background: var(--green-dim); color: var(--green); border: 0.5px solid rgba(0,212,170,0.3); }
+  .strength-weak { background: var(--red-dim); color: var(--red); border: 0.5px solid rgba(255,71,87,0.3); }
+  .strength-mixed { background: var(--amber-dim); color: var(--amber); border: 0.5px solid rgba(255,165,2,0.3); }
+  .strength-unknown { background: rgba(107,114,128,0.15); color: var(--muted); border: 0.5px solid rgba(107,114,128,0.3); }
+  .verdict-badge { margin-left: auto; font-size: 12px; font-family: var(--mono); font-weight: 700; padding: 4px 14px; border-radius: 999px; letter-spacing: 0.06em; }
+  .verdict-short { background: var(--red-dim); color: var(--red); border: 0.5px solid rgba(255,71,87,0.3); }
+  .verdict-avoid { background: var(--blue-dim); color: var(--blue); border: 0.5px solid rgba(59,130,246,0.3); }
+  .verdict-watch { background: var(--amber-dim); color: var(--amber); border: 0.5px solid rgba(255,165,2,0.3); }
+  .card-body { padding: 1.1rem 1.25rem; }
+  .catalyst-line { font-size: 15px; color: var(--text); line-height: 1.6; margin-bottom: 14px; }
+  .score-section { margin-bottom: 14px; }
+  .score-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .score-label { font-size: 13px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .score-value { font-size: 16px; font-family: var(--mono); font-weight: 700; }
+  .score-bar-track { height: 7px; background: var(--surface2); border-radius: 999px; overflow: hidden; margin-bottom: 10px; }
+  .score-bar-fill { height: 100%; border-radius: 999px; }
+  .score-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+  .score-item { background: var(--surface2); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .score-item-label { font-size: 11px; font-family: var(--mono); color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .score-item-value { font-size: 15px; font-family: var(--mono); font-weight: 700; }
+  .score-item-max { font-size: 12px; color: var(--muted); }
+  .stats-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .stat-pill { font-size: 13px; font-family: var(--mono); padding: 5px 12px; border-radius: 6px; background: var(--surface2); color: var(--muted); border: 0.5px solid var(--border); }
+  .stat-pill span { color: var(--text); font-weight: 500; }
+  .squeeze-section { margin-bottom: 14px; }
+  .squeeze-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .squeeze-label { font-size: 13px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .squeeze-value { font-size: 14px; font-family: var(--mono); font-weight: 700; }
+  .squeeze-bar-track { height: 5px; background: var(--surface2); border-radius: 999px; overflow: hidden; }
+  .squeeze-bar-fill { height: 100%; border-radius: 999px; }
+  .reasoning { font-size: 14px; color: var(--muted); line-height: 1.6; padding: 12px 14px; background: var(--surface2); border-radius: 8px; border-left: 2px solid var(--border2); }
+  .loading-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 12px; }
+  .spinner { width: 18px; height: 18px; border: 2px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-family: var(--mono); font-size: 14px; color: var(--muted); }
+  .loading-ticker { font-weight: 700; color: var(--accent); }
+  .error-card { background: var(--surface); border: 0.5px solid rgba(255,71,87,0.3); border-radius: 12px; padding: 1rem 1.25rem; font-family: var(--mono); font-size: 14px; color: var(--red); }
+  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--muted); font-family: var(--mono); font-size: 14px; line-height: 2; }
+  .empty-icon { font-size: 36px; margin-bottom: 1rem; opacity: 0.4; }
+  .price-bar { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 1.25rem; background: rgba(0,212,170,0.05); border-bottom: 0.5px solid var(--border); align-items: center; }
+  .price-main { font-family: var(--mono); font-size: 20px; font-weight: 700; color: var(--accent); }
+  .price-change-pos { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--green); }
+  .price-change-neg { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--red); }
+  .price-pill { font-size: 11px; font-family: var(--mono); padding: 3px 8px; border-radius: 4px; background: var(--surface2); color: var(--muted); border: 0.5px solid var(--border); }
+  .price-halted { font-size: 11px; font-family: var(--mono); padding: 3px 10px; border-radius: 999px; background: var(--red-dim); color: var(--red); border: 0.5px solid rgba(255,71,87,0.3); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo-mark">CA</div>
+    <div>
+      <h1>Catalyst Analyzer</h1>
+      <div class="subtitle">short score · squeeze risk · float · short interest</div>
+    </div>
+    <button onclick="toggleSettings()" style="margin-left:auto;background:transparent;border:0.5px solid var(--border2);color:var(--muted);border-radius:8px;padding:0 14px;height:36px;font-family:var(--mono);font-size:12px;cursor:pointer;">⚙ SETTINGS</button>
+  </header>
+
+  <div id="settingsPanel" style="display:none;margin-bottom:1rem;">
+    <div class="input-area" style="margin-bottom:0.75rem">
+      <label class="input-label">Anthropic API Key</label>
+      <div class="ticker-input-row">
+        <input type="password" id="apiKeyInput2" placeholder="sk-ant-..." style="flex:1;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:14px;padding:10px 12px;height:52px;outline:none;" />
+        <button class="analyze-btn" onclick="updateApiKey()">UPDATE</button>
+      </div>
+    </div>
+    <div class="input-area">
+      <label class="input-label">Alpaca API Keys <span style="color:var(--accent);font-size:10px;margin-left:8px">LIVE PRICES</span></label>
+      <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+        <input type="password" id="alpacaKeyId2" placeholder="Alpaca Key ID (PKXXX...)" style="flex:1;min-width:200px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:13px;padding:10px 12px;height:48px;outline:none;" />
+        <input type="password" id="alpacaSecret2" placeholder="Alpaca Secret Key" style="flex:1;min-width:200px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:13px;padding:10px 12px;height:48px;outline:none;" />
+        <button class="analyze-btn" onclick="saveAlpacaKeys2()" style="white-space:nowrap">SAVE</button>
+      </div>
+      <div class="hint">Enables real-time price, bid/ask, HOD/LOD, volume · Keys stored locally only · Get yours at alpaca.markets</div>
+    </div>
+  </div>
+
+  <div class="input-area" id="apiKeyArea">
+    <label class="input-label">Anthropic API Key</label>
+    <div class="ticker-input-row">
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-..." style="flex:1;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:14px;padding:10px 12px;height:52px;outline:none;transition:border-color 0.15s;" />
+      <button class="analyze-btn" onclick="saveApiKey()">SAVE</button>
+    </div>
+    <div class="hint">Your key is stored locally in this browser only · Never shared · Get yours at console.anthropic.com</div>
+  </div>
+
+  <div class="input-area" id="alpacaKeyArea" style="display:none">
+    <label class="input-label">Alpaca API Keys <span style="color:var(--accent);font-size:10px;margin-left:8px">LIVE PRICES</span></label>
+    <div style="display:flex;gap:10px;margin-bottom:10px">
+      <input type="password" id="alpacaKeyId" placeholder="Alpaca Key ID (PKXXX...)" style="flex:1;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:13px;padding:10px 12px;height:48px;outline:none;" />
+      <input type="password" id="alpacaSecret" placeholder="Alpaca Secret Key" style="flex:1;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:13px;padding:10px 12px;height:48px;outline:none;" />
+      <button class="analyze-btn" onclick="saveAlpacaKeys()" style="white-space:nowrap">SAVE</button>
+    </div>
+    <div class="hint">Enables real-time price, bid/ask, pre-market data for each ticker · Keys stored locally only · Get yours at alpaca.markets</div>
+  </div>
+
+  <div class="input-area" id="tickerArea" style="display:none">
+    <label class="input-label">Enter tickers from your TOS scanner</label>
+    <div class="ticker-input-row">
+      <textarea id="tickerInput" placeholder="RMSG SNAL BIRD ARAI (space or comma separated)"></textarea>
+      <button class="analyze-btn" id="analyzeBtn" onclick="analyzeTickers()">ANALYZE</button>
+      <button class="cancel-btn" id="cancelBtn" onclick="cancelAnalysis()" disabled>CANCEL</button>
+      <button class="cancel-btn" onclick="clearAll()" style="color:var(--muted);border-color:var(--border2)">CLEAR ALL</button>
+    </div>
+    <div class="hint">Up to 6 tickers · Press Enter to run · Results appear one by one</div>
+  </div>
+  </div>
+
+  <div class="legend" id="legendArea" style="display:none">
+    <div class="legend-item"><div class="legend-dot" style="background:#ff4757"></div>Score 70–100 = strong short candidate</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ffa502"></div>Score 40–69 = watch, wait for setup</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Score 0–39 = avoid, real catalyst</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ff4757"></div>High squeeze risk = dangerous to short</div>
+  </div>
+
+  <div id="clockBar" style="display:none;background:var(--surface);border:0.5px solid var(--border2);border-radius:10px;padding:10px 16px;margin-bottom:1rem;display:none;align-items:center;gap:16px;flex-wrap:wrap;">
+    <div style="font-family:var(--mono);font-size:13px;color:var(--text)">
+      <span id="clockTime" style="font-size:18px;font-weight:700;"></span>
+      <span id="clockDate" style="font-size:12px;color:var(--muted);margin-left:8px;"></span>
+    </div>
+    <div id="marketStatus" style="font-family:var(--mono);font-size:11px;padding:3px 10px;border-radius:999px;font-weight:700;"></div>
+    <div id="stopWarning" style="font-family:var(--mono);font-size:11px;color:var(--amber);"></div>
+  </div>
+
+  <div id="results" class="results">
+    <div class="empty-state">
+      <div class="empty-icon">⟳</div>
+      Paste tickers from your TOS scanner above<br>
+      Each gets a short score, squeeze risk, float + short interest
+    </div>
+  </div>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `You are an expert short-side momentum trader analyst specializing in low-float, high-relative-volume stocks under $5. Evaluate stocks as short candidates for intraday fade trading.
+
+Search for the latest news, float data, and short interest for the ticker, then return ONLY valid JSON with no markdown, no backticks, no explanation outside the JSON.
+
+Return exactly this structure:
+{
+  "ticker": "RMSG",
+  "company_name": "Full Company Name",
+  "catalyst": "One clear sentence describing what is driving the stock today",
+  "catalyst_type": "earnings|fda_approval|fda_rejection|contract|partnership|ai_pivot|name_change|sec_filing|shelf_offering|reverse_split|no_news|rumor|macro|dilution",
+  "catalyst_strength": "strong|weak|mixed|unknown",
+  "short_score": 78,
+  "score_breakdown": {
+    "catalyst_weakness": 25,
+    "float_score": 20,
+    "volume_score": 18,
+    "si_risk": 15
+  },
+  "float_shares": "8.7M",
+  "short_interest_pct": "27%",
+  "short_interest_shares": "2.3M",
+  "days_to_cover": "1.2",
+  "squeeze_risk": "high|medium|low",
+  "squeeze_risk_score": 65,
+  "price_move_today": "+178%",
+  "volume_today": "166M",
+  "avg_volume": "851K",
+  "relative_volume": "195x",
+  "strength_reasoning": "2-3 sentences explaining catalyst strength and short thesis",
+  "short_verdict": "short|avoid|watch",
+  "verdict_reason": "One sentence verdict with key risk factor"
+}
+
+SCORING (short_score 0-100, higher = better short candidate):
+
+catalyst_weakness (0-30):
+30 = no catalyst, name change, S-8 filing, vague PR, AI pivot with no track record
+20 = weak — small unverified contract, rumor
+10 = mixed — real but small catalyst
+0 = strong — real earnings beat, FDA approval, major verified contract, real revenue
+
+float_score (0-25):
+25 = under 5M shares
+20 = 5M-15M shares
+12 = 15M-50M shares
+5 = 50M-200M shares
+0 = over 200M shares
+
+volume_score (0-25):
+25 = 100x+ relative volume
+20 = 50-100x
+15 = 20-50x
+8 = 10-20x
+0 = under 10x
+
+si_risk (0-20, INVERTED — high short interest = LOWER score, more squeeze danger):
+20 = under 5% short interest (safe to short)
+12 = 5-15%
+5 = 15-25%
+0 = over 25% (dangerous, high squeeze risk)
+
+squeeze_risk_score (0-100, higher = more dangerous):
+Combine short interest % with float tightness. High SI on low float = extreme squeeze risk.
+
+Always search web for current data. If unavailable, estimate and note it. Return only valid JSON. Keep all string values concise — under 100 characters each. Do not add any text outside the JSON object.`;
+
+function updateClock() {
+  const now = new Date();
+  const estOffset = -5 * 60; // EST = UTC-5
+  const edtOffset = -4 * 60; // EDT = UTC-4
+  // Determine if EDT or EST (simplified: March-November = EDT)
+  const month = now.getMonth();
+  const isDST = month >= 2 && month <= 10;
+  const offset = isDST ? edtOffset : estOffset;
+  const est = new Date(now.getTime() + (now.getTimezoneOffset() + (-offset)) * 60000 * -1);
+  // Fix: use UTC + offset
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const nyTime = new Date(utc + (offset * 60000));
+
+  const hours = nyTime.getHours();
+  const mins = nyTime.getMinutes().toString().padStart(2, '0');
+  const secs = nyTime.getSeconds().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const h12 = hours % 12 || 12;
+  const timeStr = `${h12}:${mins}:${secs} ${ampm} ET`;
+
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dateStr = `${days[nyTime.getDay()]} ${months[nyTime.getMonth()]} ${nyTime.getDate()}, ${nyTime.getFullYear()}`;
+
+  document.getElementById('clockTime').textContent = timeStr;
+  document.getElementById('clockDate').textContent = dateStr;
+
+  // Market status
+  const day = nyTime.getDay();
+  const totalMins = hours * 60 + nyTime.getMinutes();
+  const marketStatus = document.getElementById('marketStatus');
+  const stopWarning = document.getElementById('stopWarning');
+
+  if (day === 0 || day === 6) {
+    marketStatus.textContent = 'MARKET CLOSED';
+    marketStatus.style.background = 'rgba(107,114,128,0.15)';
+    marketStatus.style.color = '#6b7280';
+    stopWarning.textContent = '';
+  } else if (totalMins >= 480 && totalMins < 570) {
+    marketStatus.textContent = 'PREMARKET';
+    marketStatus.style.background = 'rgba(59,130,246,0.12)';
+    marketStatus.style.color = '#3b82f6';
+    stopWarning.textContent = 'Build watchlist · Check IBKR borrow';
+  } else if (totalMins >= 570 && totalMins < 585) {
+    marketStatus.textContent = 'MARKET OPEN';
+    marketStatus.style.background = 'rgba(0,212,170,0.12)';
+    marketStatus.style.color = '#00d4aa';
+    stopWarning.textContent = 'Watch first 15 min before trading';
+  } else if (totalMins >= 585 && totalMins < 690) {
+    marketStatus.textContent = 'PRIME WINDOW';
+    marketStatus.style.background = 'rgba(0,212,170,0.12)';
+    marketStatus.style.color = '#00d4aa';
+    stopWarning.textContent = '✅ Best trading window — 9:45 AM to 11:30 AM';
+  } else if (totalMins >= 690 && totalMins < 840) {
+    marketStatus.textContent = 'LUNCH LULL';
+    marketStatus.style.background = 'rgba(255,165,2,0.12)';
+    marketStatus.style.color = '#ffa502';
+    stopWarning.textContent = '⚠️ Only A+ setups · 2PM stop approaching';
+  } else if (totalMins >= 840 && totalMins < 960) {
+    marketStatus.textContent = '🛑 PAST 2PM STOP';
+    marketStatus.style.background = 'rgba(255,71,87,0.15)';
+    marketStatus.style.color = '#ff4757';
+    stopWarning.textContent = '🛑 NO NEW TRADES — cover by 3:30 PM';
+  } else if (totalMins >= 960) {
+    marketStatus.textContent = 'MARKET CLOSED';
+    marketStatus.style.background = 'rgba(107,114,128,0.15)';
+    marketStatus.style.color = '#6b7280';
+    stopWarning.textContent = 'After hours — no new positions';
+  } else {
+    marketStatus.textContent = 'PRE-MARKET';
+    marketStatus.style.background = 'rgba(107,114,128,0.15)';
+    marketStatus.style.color = '#6b7280';
+    stopWarning.textContent = '';
+  }
+}
+
+function toggleSettings() {
+  const panel = document.getElementById('settingsPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  // Pre-fill existing values masked
+  const alpacaId = localStorage.getItem('alpaca_key_id');
+  const alpacaSecret = localStorage.getItem('alpaca_secret');
+  if (alpacaId) document.getElementById('alpacaKeyId2').placeholder = 'Key saved ✓ — paste new to update';
+  if (alpacaSecret) document.getElementById('alpacaSecret2').placeholder = 'Secret saved ✓ — paste new to update';
+}
+
+function updateApiKey() {
+  const key = document.getElementById('apiKeyInput2').value.trim();
+  if (!key.startsWith('sk-ant-')) { alert('Invalid API key'); return; }
+  localStorage.setItem('anthropic_api_key', key);
+  alert('Anthropic API key updated!');
+}
+
+function saveAlpacaKeys2() {
+  const keyId = document.getElementById('alpacaKeyId2').value.trim();
+  const secret = document.getElementById('alpacaSecret2').value.trim();
+  if (!keyId || !secret) { alert('Please enter both keys'); return; }
+  localStorage.setItem('alpaca_key_id', keyId);
+  localStorage.setItem('alpaca_secret', secret);
+  document.getElementById('settingsPanel').style.display = 'none';
+  alert('Alpaca keys saved! Live prices enabled for next analysis.');
+}
+
+function saveAlpacaKeys() {
+  const keyId = document.getElementById('alpacaKeyId').value.trim();
+  const secret = document.getElementById('alpacaSecret').value.trim();
+  if (!keyId || !secret) { alert('Please enter both Alpaca Key ID and Secret Key'); return; }
+  localStorage.setItem('alpaca_key_id', keyId);
+  localStorage.setItem('alpaca_secret', secret);
+  document.getElementById('alpacaKeyArea').style.display = 'none';
+  alert('Alpaca keys saved! Live prices enabled.');
+}
+
+function getAlpacaKeys() {
+  return {
+    keyId: localStorage.getItem('alpaca_key_id') || '',
+    secret: localStorage.getItem('alpaca_secret') || ''
+  };
+}
+
+function hasAlpacaKeys() {
+  const k = getAlpacaKeys();
+  return k.keyId && k.secret;
+}
+
+async function fetchAlpacaPrice(ticker) {
+  const { keyId, secret } = getAlpacaKeys();
+  if (!keyId || !secret) return null;
+  try {
+    const snapRes = await fetch(`https://data.alpaca.markets/v2/stocks/${ticker}/snapshot`, {
+      headers: { 'APCA-API-KEY-ID': keyId, 'APCA-API-SECRET-KEY': secret }
+    });
+    if (!snapRes.ok) return null;
+    const snap = await snapRes.json();
+    const price = snap?.latestTrade?.p || snap?.minuteBar?.c || null;
+    const bid = snap?.latestQuote?.bp || null;
+    const ask = snap?.latestQuote?.ap || null;
+    const prevClose = snap?.prevDailyBar?.c || null;
+    const change = price && prevClose ? ((price - prevClose) / prevClose * 100).toFixed(2) : null;
+    const dayHigh = snap?.dailyBar?.h || null;
+    const dayLow = snap?.dailyBar?.l || null;
+    const volume = snap?.dailyBar?.v || null;
+    return { price, bid, ask, prevClose, change, dayHigh, dayLow, volume };
+  } catch(e) {
+    return null;
+  }
+}
+
+function formatPrice(p) {
+  return p ? '$' + parseFloat(p).toFixed(2) : 'N/A';
+}
+
+function formatVolume(v) {
+  if (!v) return 'N/A';
+  if (v >= 1000000) return (v/1000000).toFixed(1) + 'M';
+  if (v >= 1000) return (v/1000).toFixed(0) + 'K';
+  return v.toString();
+}
+
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key.startsWith('sk-ant-')) {
+    alert('Invalid API key — should start with sk-ant-');
+    return;
+  }
+  localStorage.setItem('anthropic_api_key', key);
+  document.getElementById('apiKeyArea').style.display = 'none';
+  document.getElementById('alpacaKeyArea').style.display = 'block';
+  document.getElementById('tickerArea').style.display = 'block';
+  document.getElementById('legendArea').style.display = 'flex';
+  document.getElementById('clockBar').style.display = 'flex';
+  updateClock();
+  setInterval(updateClock, 1000);
+}
+
+function getApiKey() {
+  return localStorage.getItem('anthropic_api_key') || '';
+}
+
+// On load — check if key already saved
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('anthropic_api_key');
+  if (saved) {
+    document.getElementById('apiKeyInput').value = saved;
+    document.getElementById('apiKeyArea').style.display = 'none';
+    document.getElementById('tickerArea').style.display = 'block';
+    document.getElementById('legendArea').style.display = 'flex';
+    document.getElementById('clockBar').style.display = 'flex';
+    const alpacaSaved = localStorage.getItem('alpaca_key_id');
+    if (!alpacaSaved) {
+      document.getElementById('alpacaKeyArea').style.display = 'block';
+    }
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+});
+
+function toggleCard(header) {
+  header.closest('.ticker-card').classList.toggle('collapsed');
+}
+
+function clearAll() {
+  const resultsEl = document.getElementById('results');
+  resultsEl.innerHTML = '<div class="empty-state"><div class="empty-icon">⟳</div>Paste tickers from your TOS scanner above<br>Each gets a short score, squeeze risk, float + short interest</div>';
+}
+
+let currentAbortController = null;
+let isCancelled = false;
+
+function cancelAnalysis() {
+  isCancelled = true;
+  if (currentAbortController) currentAbortController.abort();
+  const btn = document.getElementById('analyzeBtn');
+  const cancelBtn = document.getElementById('cancelBtn');
+  btn.disabled = false;
+  btn.textContent = 'ANALYZE';
+  cancelBtn.disabled = true;
+  // Remove any remaining loading cards
+  const resultsEl = document.getElementById('results');
+  const loadingCards = resultsEl.querySelectorAll('.loading-card');
+  loadingCards.forEach(el => el.remove());
+}
+
+async function analyzeTickers() {
+  const input = document.getElementById('tickerInput').value.trim();
+  if (!input) return;
+  const tickers = input.toUpperCase().split(/[\s,]+/).filter(t => t.length > 0 && t.length <= 6).slice(0, 6);
+  if (!tickers.length) return;
+
+  const btn = document.getElementById('analyzeBtn');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const resultsEl = document.getElementById('results');
+  btn.disabled = true;
+  btn.textContent = 'ANALYZING...';
+  cancelBtn.disabled = false;
+  cancelBtn.style.display = '';
+  isCancelled = false;
+
+  // Remove empty state if present
+  const emptyState = resultsEl.querySelector('.empty-state');
+  if (emptyState) emptyState.remove();
+
+  // Filter out already-analyzed tickers
+  const existing = new Set([...resultsEl.querySelectorAll('.ticker-symbol')].map(el => el.textContent.trim()));
+  const newTickers = tickers.filter(t => !existing.has(t));
+
+  if (!newTickers.length) {
+    btn.disabled = false;
+    btn.textContent = 'ANALYZE';
+    cancelBtn.disabled = true;
+    return;
+  }
+
+  for (const ticker of newTickers) {
+    if (isCancelled) break;
+    const loadEl = createLoadingCard(ticker);
+    resultsEl.appendChild(loadEl);
+    try {
+      const [result, priceData] = await Promise.all([
+        analyzeTicker(ticker),
+        fetchAlpacaPrice(ticker)
+      ]);
+      if (isCancelled) { loadEl.remove(); break; }
+      resultsEl.replaceChild(createResultCard(result, priceData), loadEl);
+    } catch(err) {
+      if (isCancelled) { loadEl.remove(); break; }
+      resultsEl.replaceChild(createErrorCard(ticker, err.message), loadEl);
+    }
+    if (!isCancelled) await new Promise(r => setTimeout(r, 400));
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'ANALYZE';
+  cancelBtn.disabled = true;
+}
+
+async function analyzeTicker(ticker) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+  // Use proxy on GitHub Pages, direct API on Claude.ai
+  const isGithubPages = window.location.hostname.includes('github.io');
+  const apiUrl = isGithubPages
+    ? 'https://vik-trading-proxy.vercel.app/api/proxy'
+    : 'https://api.anthropic.com/v1/messages';
+  const headers = isGithubPages
+    ? { 'Content-Type': 'application/json', 'x-api-key': getApiKey() }
+    : { 'Content-Type': 'application/json', 'x-api-key': getApiKey(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' };
+  try {
+  const res = await fetch(apiUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4000,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      system: SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: `Analyze ticker: ${ticker}.
+1) Search web for latest news and catalyst driving it today
+2) Search web for float size and short interest percentage
+Return ONLY the JSON object, nothing else.` }]
+    })
+  });
+  if (!res.ok) throw new Error(`API ${res.status}`);
+  const data = await res.json();
+
+  // Try all text blocks, not just the first one
+  const textBlocks = data.content.filter(b => b.type === 'text');
+  if (!textBlocks.length) throw new Error('No text response');
+
+  // Combine all text blocks and find JSON
+  const combined = textBlocks.map(b => b.text).join('');
+  const clean = combined.replace(/```json|```/g, '').trim();
+  const match = clean.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error('JSON parse failed');
+
+  let jsonStr = match[0];
+  try {
+    return JSON.parse(jsonStr);
+  } catch(e) {
+    // Fix truncated JSON by closing open braces
+    const opens = (jsonStr.match(/\{/g) || []).length;
+    const closes = (jsonStr.match(/\}/g) || []).length;
+    jsonStr += '}'.repeat(Math.max(0, opens - closes));
+    try {
+      return JSON.parse(jsonStr);
+    } catch(e2) {
+      throw new Error('JSON parse failed — try again');
+    }
+  }
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function scoreColor(score) {
+  if (score >= 70) return '#ff4757';
+  if (score >= 40) return '#ffa502';
+  return '#3b82f6';
+}
+
+function squeezeColor(risk) {
+  if (risk === 'high') return '#ff4757';
+  if (risk === 'medium') return '#ffa502';
+  return '#00d4aa';
+}
+
+function createResultCard(d, priceData) {
+  const score = Math.min(100, Math.max(0, d.short_score || 0));
+  const sc = scoreColor(score);
+  const sb = d.score_breakdown || {};
+  const sqScore = Math.min(100, Math.max(0, d.squeeze_risk_score || 0));
+  const sqColor = squeezeColor(d.squeeze_risk || 'low');
+
+  const strengthClass = { strong:'strength-strong', weak:'strength-weak', mixed:'strength-mixed', unknown:'strength-unknown' }[d.catalyst_strength] || 'strength-unknown';
+  const strengthLabel = { strong:'Strong catalyst', weak:'Weak catalyst', mixed:'Mixed catalyst', unknown:'No catalyst' }[d.catalyst_strength] || 'Unknown';
+  const verdictClass = { short:'verdict-short', avoid:'verdict-avoid', watch:'verdict-watch' }[d.short_verdict] || 'verdict-watch';
+  const verdictLabel = { short:'SHORT CANDIDATE', avoid:'AVOID SHORT', watch:'WATCH & WAIT' }[d.short_verdict] || 'WATCH';
+  const catType = (d.catalyst_type || '').replace(/_/g,' ').toUpperCase();
+  const sqRisk = (d.squeeze_risk || 'unknown').toUpperCase();
+
+  const breakdown = [
+    { label: 'Catalyst weakness', val: sb.catalyst_weakness || 0, max: 30 },
+    { label: 'Float score', val: sb.float_score || 0, max: 25 },
+    { label: 'Volume score', val: sb.volume_score || 0, max: 25 },
+    { label: 'SI risk (inv)', val: sb.si_risk || 0, max: 20 },
+  ];
+
+  const div = document.createElement('div');
+  div.className = 'ticker-card';
+  div.innerHTML = `
+    <div class="card-header" onclick="toggleCard(this)">
+      <span class="ticker-symbol">${d.ticker || '—'}</span>
+      <span class="badge ${strengthClass}">${strengthLabel}</span>
+      ${catType ? `<span class="badge strength-unknown">${catType}</span>` : ''}
+      <span class="verdict-badge ${verdictClass}">${verdictLabel}</span>
+      <span class="collapse-icon">▼</span>
+    </div>
+    ${priceData && priceData.price ? `
+    <div class="price-bar">
+      <span class="price-main">${formatPrice(priceData.price)}</span>
+      ${priceData.change !== null ? `<span class="${parseFloat(priceData.change) >= 0 ? 'price-change-pos' : 'price-change-neg'}">${parseFloat(priceData.change) >= 0 ? '+' : ''}${priceData.change}%</span>` : ''}
+      ${priceData.bid ? `<span class="price-pill">Bid ${formatPrice(priceData.bid)}</span>` : ''}
+      ${priceData.ask ? `<span class="price-pill">Ask ${formatPrice(priceData.ask)}</span>` : ''}
+      ${priceData.dayHigh ? `<span class="price-pill">HOD ${formatPrice(priceData.dayHigh)}</span>` : ''}
+      ${priceData.dayLow ? `<span class="price-pill">LOD ${formatPrice(priceData.dayLow)}</span>` : ''}
+      ${priceData.volume ? `<span class="price-pill">Vol ${formatVolume(priceData.volume)}</span>` : ''}
+      ${priceData.prevClose ? `<span class="price-pill">Prev close ${formatPrice(priceData.prevClose)}</span>` : ''}
+    </div>` : ''}
+    <div class="card-body">
+      <div class="catalyst-line">${d.catalyst || 'No catalyst information found'}</div>
+
+      <div class="score-section">
+        <div class="score-header">
+          <span class="score-label">Short score</span>
+          <span class="score-value" style="color:${sc}">${score} / 100</span>
+        </div>
+        <div class="score-bar-track">
+          <div class="score-bar-fill" style="width:${score}%;background:${sc}"></div>
+        </div>
+        <div class="score-grid">
+          ${breakdown.map(b => `
+            <div class="score-item">
+              <div class="score-item-label">${b.label}</div>
+              <div class="score-item-value" style="color:${sc}">${b.val} <span class="score-item-max">/ ${b.max}</span></div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="stats-row">
+        ${d.float_shares ? `<div class="stat-pill">Float <span>${d.float_shares}</span></div>` : ''}
+        ${d.short_interest_pct ? `<div class="stat-pill">Short interest <span>${d.short_interest_pct}</span></div>` : ''}
+        ${d.short_interest_shares ? `<div class="stat-pill">SI shares <span>${d.short_interest_shares}</span></div>` : ''}
+        ${d.days_to_cover ? `<div class="stat-pill">Days to cover <span>${d.days_to_cover}</span></div>` : ''}
+        ${d.price_move_today ? `<div class="stat-pill">Move today <span>${d.price_move_today}</span></div>` : ''}
+        ${d.relative_volume ? `<div class="stat-pill">Rel vol <span>${d.relative_volume}</span></div>` : ''}
+        ${d.volume_today ? `<div class="stat-pill">Volume <span>${d.volume_today}</span></div>` : ''}
+        ${d.avg_volume ? `<div class="stat-pill">Avg vol <span>${d.avg_volume}</span></div>` : ''}
+      </div>
+
+      <div class="squeeze-section">
+        <div class="squeeze-header">
+          <span class="squeeze-label">Squeeze risk</span>
+          <span class="squeeze-value" style="color:${sqColor}">${sqRisk} — ${sqScore}/100</span>
+        </div>
+        <div class="squeeze-bar-track">
+          <div class="squeeze-bar-fill" style="width:${sqScore}%;background:${sqColor}"></div>
+        </div>
+      </div>
+
+      <div class="reasoning">${d.strength_reasoning || ''} ${d.verdict_reason ? '— ' + d.verdict_reason : ''}</div>
+
+    </div>`;
+  return div;
+}
+
+function createLoadingCard(ticker) {
+  const div = document.createElement('div');
+  div.className = 'loading-card';
+  div.innerHTML = `<div class="spinner"></div><div class="loading-text">Analyzing <span class="loading-ticker">${ticker}</span> — searching catalyst, float, short interest...</div>`;
+  return div;
+}
+
+function createErrorCard(ticker, msg) {
+  const div = document.createElement('div');
+  div.className = 'error-card';
+  div.textContent = `${ticker} — ${msg}`;
+  return div;
+}
+
+document.getElementById('tickerInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); analyzeTickers(); }
+});
+</script>
+</body>
+</html>
