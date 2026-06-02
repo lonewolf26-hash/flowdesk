@@ -1,10 +1,10 @@
-@echo off
-:: start_trading.bat — Windows trading session launcher
+﻿@echo off
+:: start_trading.bat â€” Windows trading session launcher
 :: Starts Tailscale, FastAPI bridge, Bookmap, and TWS/IBKR
 :: Run as Administrator for best results.
 
 setlocal EnableDelayedExpansion
-title FlowDesk — Trading Session Launcher
+title FlowDesk â€” Trading Session Launcher
 
 :: ===========================================================================
 :: CONFIGURATION
@@ -16,14 +16,14 @@ set SERVER_SCRIPT=C:\trading\bookmap_server.py
 set TAILSCALE_EXE=C:\Program Files\Tailscale\tailscale.exe
 set CHROME_PATH=C:\Program Files\Google\Chrome\Application\chrome.exe
 set DASHBOARD_PATH=C:\trading\flowdesk.html
-set TAILSCALE_IP=TAILSCALE_IP_PLACEHOLDER
+set TAILSCALE_IP=127.0.0.1
 set LOG_DIR=C:\trading\logs
 
 :: ===========================================================================
 
 echo.
 echo  =====================================================
-echo   FlowDesk v1.0 — Trading Session Launcher
+echo   FlowDesk v1.0 â€” Trading Session Launcher
 echo  =====================================================
 echo.
 
@@ -72,7 +72,7 @@ if %ERRORLEVEL% EQU 0 (
     if !ERRORLEVEL! EQU 0 (
         echo      FlowDesk Server  [LIVE]  http://localhost:8766
     ) else (
-        echo      FlowDesk Server  [WARN]  Not responding yet — check %LOG_DIR%\flowdesk_server.log
+        echo      FlowDesk Server  [WARN]  Not responding yet â€” check %LOG_DIR%\flowdesk_server.log
     )
 )
 
@@ -130,7 +130,7 @@ if exist "%CHROME_PATH%" (
 :: ---------------------------------------------------------------------------
 echo.
 echo  =====================================================
-echo   FlowDesk v1.0 — STARTUP SUMMARY
+echo   FlowDesk v1.0 â€” STARTUP SUMMARY
 echo  =====================================================
 echo   Tailscale IP  : !TS_IP!
 echo   Server LIVE   : http://localhost:8766/ping
@@ -144,3 +144,4 @@ echo  (All background services continue running.)
 echo.
 pause
 endlocal
+

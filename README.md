@@ -1,15 +1,15 @@
-# FlowDesk
+﻿# FlowDesk
 
-Live order book + signal detection from Bookmap (Windows/TOS) → FastAPI bridge → Mac dashboard.
+Live order book + signal detection from Bookmap (Windows/TOS) â†’ FastAPI bridge â†’ Mac dashboard.
 
 ```
 [Bookmap + TOS]
-      │
-bookmap_bridge.py   ← IcebergDetector + VWAPDivergenceDetector
-      │  POST /update (every 3s)
-bookmap_server.py   ← FastAPI, port 8766
-      │  GET /watchlist
-flowdesk.html       ← RelVolDetector + TRIPLE_CONFLUENCE
+      â”‚
+bookmap_bridge.py   â† IcebergDetector + VWAPDivergenceDetector
+      â”‚  POST /update (every 3s)
+bookmap_server.py   â† FastAPI, port 8766
+      â”‚  GET /watchlist
+flowdesk.html       â† RelVolDetector + TRIPLE_CONFLUENCE
       (Mac Chrome, via Tailscale)
 ```
 
@@ -19,20 +19,20 @@ flowdesk.html       ← RelVolDetector + TRIPLE_CONFLUENCE
 
 | Layer | Signal | Trigger |
 |-------|--------|---------|
-| **Order Book** | `ICEBERG_LIKELY` | 2 replenishments ≤2 s |
+| **Order Book** | `ICEBERG_LIKELY` | 2 replenishments â‰¤2 s |
 | | `ICEBERG_CONFIRMED` | 3+ replenishments or 50K absorbed |
 | | `ICEBERG_ABSORPTION` | >10K shares at single level |
-| | `ICEBERG_COB_ANOMALY` | COB >3× surrounding avg |
+| | `ICEBERG_COB_ANOMALY` | COB >3Ã— surrounding avg |
 | **VWAP** | `BEARISH_DIVERGENCE` | Price >8% above VWAP + CVD falling |
-| | `BEARISH_EXHAUSTION` | Above + >15% ext + CVD −20% + vol dry |
+| | `BEARISH_EXHAUSTION` | Above + >15% ext + CVD âˆ’20% + vol dry |
 | | `VWAP_RECLAIM_FAILURE` | Bounced toward VWAP, CVD still falling |
 | | `VWAP_MAGNET` | >10% extended, CVD flat >5 min |
-| **RelVol** | `VOLUME_SURGE` | Adjusted RelVol ≥3× |
-| | `VOLUME_SPIKE` | Adjusted RelVol ≥5× |
-| | `VOLUME_EXPLOSION` | Adjusted RelVol ≥10× |
-| | `VOLUME_CLIMAX` | Was >5×, now −30% + price off highs |
+| **RelVol** | `VOLUME_SURGE` | Adjusted RelVol â‰¥3Ã— |
+| | `VOLUME_SPIKE` | Adjusted RelVol â‰¥5Ã— |
+| | `VOLUME_EXPLOSION` | Adjusted RelVol â‰¥10Ã— |
+| | `VOLUME_CLIMAX` | Was >5Ã—, now âˆ’30% + price off highs |
 | **Composite** | `CONFLUENCE` | Iceberg + VWAP divergence simultaneous |
-| | `TRIPLE_CONFLUENCE` | RelVol + Iceberg + VWAP div, all conf ≥0.60 |
+| | `TRIPLE_CONFLUENCE` | RelVol + Iceberg + VWAP div, all conf â‰¥0.60 |
 
 ---
 
@@ -40,10 +40,10 @@ flowdesk.html       ← RelVolDetector + TRIPLE_CONFLUENCE
 
 | File | Runs on | Purpose |
 |------|---------|---------|
-| `bookmap_server.py` | Windows | FastAPI bridge — receives + serves snapshots |
+| `bookmap_server.py` | Windows | FastAPI bridge â€” receives + serves snapshots |
 | `requirements.txt` | Windows | Python deps for server |
 | `bookmap_bridge.py` | Bookmap add-on (Python 3.7.14) | Order book, CVD, VWAP, IcebergDetector, VWAPDivergenceDetector |
-| `flowdesk.html` | Mac Chrome | Full dashboard — Alpaca + Bookmap + RelVolDetector + TRIPLE_CONFLUENCE |
+| `flowdesk.html` | Mac Chrome | Full dashboard â€” Alpaca + Bookmap + RelVolDetector + TRIPLE_CONFLUENCE |
 | `alpaca_watchlist.html` | Mac Chrome | Original minimal dashboard (kept for reference) |
 | `start_trading.bat` | Windows | One-click launcher |
 | `logs/` | Windows | Daily JSON logs for icebergs, divergences, bridge |
@@ -52,8 +52,8 @@ flowdesk.html       ← RelVolDetector + TRIPLE_CONFLUENCE
 
 ## Prerequisites
 
-- **Python 3.7.14** — for Bookmap add-on (download from python.org)
-- **Python 3.9+** — for FastAPI server (any modern Python)
+- **Python 3.7.14** â€” for Bookmap add-on (download from python.org)
+- **Python 3.9+** â€” for FastAPI server (any modern Python)
 - **Bookmap** with Python add-on support and TOS data feed
 - **Tailscale** on both Windows and Mac
 - **Alpaca** paper trading account (free at alpaca.markets)
@@ -63,16 +63,16 @@ flowdesk.html       ← RelVolDetector + TRIPLE_CONFLUENCE
 
 ## Installation
 
-### Step 1 — Install Tailscale
+### Step 1 â€” Install Tailscale
 
 1. Download from https://tailscale.com/download
 2. Install on **both** Windows trading machine and Mac
 3. Sign in to the **same** Tailscale account on both
-4. On Windows, run `tailscale ip -4` — note your `100.x.x.x` address
+4. On Windows, run `tailscale ip -4` â€” note your `100.x.x.x` address
 
-### Step 2 — Replace `TAILSCALE_IP_PLACEHOLDER`
+### Step 2 â€” Replace `127.0.0.1`
 
-Global find-replace `TAILSCALE_IP_PLACEHOLDER` → your actual Tailscale IP in:
+Global find-replace `127.0.0.1` â†’ your actual Tailscale IP in:
 
 | File | Variable |
 |------|----------|
@@ -80,7 +80,7 @@ Global find-replace `TAILSCALE_IP_PLACEHOLDER` → your actual Tailscale IP in:
 | `flowdesk.html` | `const TAILSCALE_IP = "..."` (line ~5 of script) |
 | `start_trading.bat` | `set TAILSCALE_IP=...` |
 
-### Step 3 — FastAPI server (Windows)
+### Step 3 â€” FastAPI server (Windows)
 
 ```bat
 cd C:\trading
@@ -93,12 +93,12 @@ Test it:
 ```bat
 uvicorn bookmap_server:app --host 0.0.0.0 --port 8766
 ```
-Open `http://localhost:8766/health` — you should see the FlowDesk health page.
-Run `curl http://localhost:8766/ping` → `{"status":"ok"}` confirms connectivity.
+Open `http://localhost:8766/health` â€” you should see the FlowDesk health page.
+Run `curl http://localhost:8766/ping` â†’ `{"status":"ok"}` confirms connectivity.
 
 **Firewall:** Allow port 8766 inbound on the Tailscale network adapter in Windows Defender Firewall.
 
-### Step 4 — Bookmap add-on virtualenv (Python 3.7.14)
+### Step 4 â€” Bookmap add-on virtualenv (Python 3.7.14)
 
 ```bat
 :: Install Python 3.7.14 to C:\Python37
@@ -108,18 +108,18 @@ pip install requests
 ```
 
 Edit `bookmap_bridge.py` top section:
-- `TAILSCALE_IP` — your Windows Tailscale IP
-- `LOG_DIR` — path where logs should be written (default `C:/trading/logs`)
+- `TAILSCALE_IP` â€” your Windows Tailscale IP
+- `LOG_DIR` â€” path where logs should be written (default `C:/trading/logs`)
 
-### Step 5 — Install Bookmap add-on
+### Step 5 â€” Install Bookmap add-on
 
 1. Open Bookmap
-2. **Add-ons → Manage Add-ons → Add Python Add-on**
+2. **Add-ons â†’ Manage Add-ons â†’ Add Python Add-on**
 3. Script path: `C:\trading\bookmap_bridge.py`
 4. Python interpreter: `C:\trading\bm_venv\Scripts\python.exe`
-5. Enable — watch the add-on log panel for `Tracking new ticker: XXX`
+5. Enable â€” watch the add-on log panel for `Tracking new ticker: XXX`
 
-### Step 6 — Dashboard (Mac)
+### Step 6 â€” Dashboard (Mac)
 
 1. Open `flowdesk.html` in Chrome  
    (or `python3 -m http.server 8765` and visit `http://localhost:8765/flowdesk.html`)
@@ -131,7 +131,7 @@ Edit `bookmap_bridge.py` top section:
 3. Type tickers in the input bar and press **Enter**
 4. RelVol avg-volume is fetched automatically from Alpaca historical bars on first load
 
-### Step 7 — Edit `start_trading.bat`
+### Step 7 â€” Edit `start_trading.bat`
 
 Update paths at the top of the file:
 ```bat
@@ -149,7 +149,7 @@ Double-click `start_trading.bat` (Run as Administrator) at session start.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/ping` | GET | `{"status":"ok"}` — lightweight connectivity test |
+| `/ping` | GET | `{"status":"ok"}` â€” lightweight connectivity test |
 | `/health` | GET | HTML health page (browser) or JSON (curl/API) |
 | `/update` | POST | Receive snapshot from Bookmap add-on |
 | `/snapshot/{ticker}` | GET | Latest snapshot for one ticker |
@@ -221,23 +221,24 @@ The divergence log includes `price_30min_later` and `outcome` fields (initially 
 - Check `logs/flowdesk_server.log` for server errors
 
 **Bookmap add-on not posting**
-- Open Bookmap add-on log panel — look for connection errors
+- Open Bookmap add-on log panel â€” look for connection errors
 - Confirm `TAILSCALE_IP` in `bookmap_bridge.py` is set correctly
 - Verify `requests` is installed in `bm_venv`
 
 **CVD always 0**
-- CVD accumulates from `onTrade()` — requires live market hours
+- CVD accumulates from `onTrade()` â€” requires live market hours
 - No trades = no CVD movement; test during market hours
 
-**RelVol shows "—"**
+**RelVol shows "â€”"**
 - Avg daily volume fetch requires valid Alpaca keys
 - Check browser console for API errors
 
 **TRIPLE_CONFLUENCE never fires**
-- All three signals need confidence ≥ 0.60 simultaneously
-- Most common on high-momentum names 30–90 min after open
+- All three signals need confidence â‰¥ 0.60 simultaneously
+- Most common on high-momentum names 30â€“90 min after open
 - Check that Bookmap add-on is running and sending iceberg data
 
 **Port 8766 conflict**
 - Change `SERVER_PORT` in `bookmap_bridge.py` and `--port` in uvicorn command
 - Update `BOOKMAP_PORT` in `flowdesk.html`
+

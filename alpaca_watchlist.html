@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -208,22 +208,22 @@
 <body>
 
 <h1>FlowDesk</h1>
-<p class="subtitle" id="last-update">Initializing…</p>
+<p class="subtitle" id="last-update">Initializingâ€¦</p>
 
 <div id="watchlist"></div>
 
 <div id="status-bar">
-  <div>Alpaca: <span id="alpaca-status">…</span></div>
-  <div>Bookmap: <span id="bookmap-status">…</span></div>
-  <div>Updated: <span id="status-time">—</span></div>
+  <div>Alpaca: <span id="alpaca-status">â€¦</span></div>
+  <div>Bookmap: <span id="bookmap-status">â€¦</span></div>
+  <div>Updated: <span id="status-time">â€”</span></div>
 </div>
 
 <script>
 // ============================================================================
-// CONFIGURATION — replace TAILSCALE_IP_PLACEHOLDER with your Windows
+// CONFIGURATION â€” replace 127.0.0.1 with your Windows
 // Tailscale IP (e.g. 100.64.0.1) before running.
 // ============================================================================
-const TAILSCALE_IP   = "TAILSCALE_IP_PLACEHOLDER";
+const TAILSCALE_IP   = "127.0.0.1";
 const BOOKMAP_URL    = `http://${TAILSCALE_IP}:8766`;
 
 // Alpaca paper trading base URL
@@ -316,7 +316,7 @@ async function fetchBookmap() {
     });
   } catch (e) {
     bookmapReachable = false;
-    // Graceful degradation — don't clear existing data, just stop updating
+    // Graceful degradation â€” don't clear existing data, just stop updating
   }
 }
 
@@ -324,19 +324,19 @@ async function fetchBookmap() {
 // Render helpers
 // ---------------------------------------------------------------------------
 function fmt(n, decimals = 2) {
-  if (n == null) return "—";
+  if (n == null) return "â€”";
   return Number(n).toFixed(decimals);
 }
 
 function fmtVol(n) {
-  if (n == null) return "—";
+  if (n == null) return "â€”";
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
   if (n >= 1_000)     return (n / 1_000).toFixed(0) + "K";
   return String(n);
 }
 
 function cvdArrow(dir) {
-  return dir === "rising" ? "↑" : dir === "falling" ? "↓" : "→";
+  return dir === "rising" ? "â†‘" : dir === "falling" ? "â†“" : "â†’";
 }
 
 function relativeTime(isoStr) {
@@ -379,7 +379,7 @@ function renderCard(ticker) {
   // --- Bookmap section ---
   let bookmapHtml;
   if (!bm) {
-    bookmapHtml = `<div class="bm-no-data">No Bookmap data — bridge unreachable or ticker not tracked</div>`;
+    bookmapHtml = `<div class="bm-no-data">No Bookmap data â€” bridge unreachable or ticker not tracked</div>`;
   } else {
     // CVD
     const cvdClass = `bm-cvd-${bm.cvd_direction}`;
@@ -452,7 +452,7 @@ function renderCard(ticker) {
       <div class="card-header">
         <span class="card-ticker">${ticker}</span>
         <span class="card-price ${priceClass}">
-          ${price != null ? "$" + fmt(price) : "—"}
+          ${price != null ? "$" + fmt(price) : "â€”"}
           ${changePct != null ? `<small>(${changeSign}${fmt(changePct, 2)}%)</small>` : ""}
         </span>
       </div>
@@ -510,3 +510,4 @@ bookmapLoop();
 </script>
 </body>
 </html>
+

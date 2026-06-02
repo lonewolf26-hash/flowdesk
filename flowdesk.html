@@ -536,7 +536,7 @@
 // ============================================================================
 // CONFIGURATION
 // ============================================================================
-const TAILSCALE_IP      = "127.0.0.1";
+const TAILSCALE_IP      = "100.75.239.12";
 const BOOKMAP_PORT      = 8766;
 const BOOKMAP_URL       = `http://${TAILSCALE_IP}:${BOOKMAP_PORT}`;
 
@@ -1569,6 +1569,7 @@ async function alpacaLoop() {
 }
 
 async function bookmapLoop() {
+  return; // disabled until Bookmap bridge is configured
   await fetchBookmap();
   renderAll();
   setTimeout(bookmapLoop, BOOKMAP_REFRESH_MS);

@@ -1,5 +1,5 @@
-"""
-bookmap_bridge.py — FlowDesk Bookmap Python Add-on
+﻿"""
+bookmap_bridge.py â€” FlowDesk Bookmap Python Add-on
 Reads live order book + trade data from Bookmap, runs iceberg and VWAP
 divergence detection, then POSTs enriched snapshots to the FastAPI
 bridge server every SNAPSHOT_INTERVAL_SEC seconds.
@@ -27,13 +27,13 @@ except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "requests"])
     import requests
 
-# Bookmap API — available only inside a Bookmap add-on process
+# Bookmap API â€” available only inside a Bookmap add-on process
 import bookmap as bm
 
 # ===========================================================================
-# CONFIGURATION — change TAILSCALE_IP before deploying
+# CONFIGURATION â€” change TAILSCALE_IP before deploying
 # ===========================================================================
-TAILSCALE_IP = "TAILSCALE_IP_PLACEHOLDER"   # <-- replace with e.g. 100.64.0.1
+TAILSCALE_IP = "127.0.0.1"   # <-- replace with e.g. 100.64.0.1
 SERVER_PORT  = 8766
 SERVER_URL   = "http://{}:{}/update".format(TAILSCALE_IP, SERVER_PORT)
 
@@ -46,10 +46,10 @@ IMBALANCE_ALERT_PCT   = 50.0    # imbalance % that triggers alert
 # --- Iceberg detection ---
 ICEBERG_MIN_CONFIDENCE        = 0.35
 REPLENISHMENT_WINDOW_SEC      = 2.0    # max seconds between consume + reappear
-REPLENISHMENT_SIZE_TOLERANCE  = 0.20   # allowed ± ratio for size match
+REPLENISHMENT_SIZE_TOLERANCE  = 0.20   # allowed Â± ratio for size match
 WALL_ABSORPTION_THRESHOLD     = 10000  # shares traded at single level
 STRONG_ABSORPTION_THRESHOLD   = 50000  # shares for "strong" absorption
-COB_ANOMALY_MULTIPLIER        = 3.0    # COB > 3× avg surrounding → anomaly
+COB_ANOMALY_MULTIPLIER        = 3.0    # COB > 3Ã— avg surrounding â†’ anomaly
 
 # --- VWAP divergence ---
 DIVERGENCE_MIN_CONFIDENCE = 0.50
@@ -89,7 +89,7 @@ log = logging.getLogger("flowdesk_bridge")
 
 
 # ---------------------------------------------------------------------------
-# Log helpers — daily JSON line files, 7-day rotation
+# Log helpers â€” daily JSON line files, 7-day rotation
 # ---------------------------------------------------------------------------
 def _log_json(prefix, record):
     """Append a JSON record to today's log file. Never raises."""
@@ -176,12 +176,12 @@ class IcebergDetector(object):
     """
     Detects hidden institutional iceberg orders via four signals:
 
-    1. Replenishment  — level consumed then reappears within 2 s ±20% size
-    2. Trade vs size  — total traded >> initial displayed size
-    3. Absorption     — >10 K shares at a level with minimal price movement
-    4. COB anomaly    — COB at level > 3× avg of surrounding 5 levels
+    1. Replenishment  â€” level consumed then reappears within 2 s Â±20% size
+    2. Trade vs size  â€” total traded >> initial displayed size
+    3. Absorption     â€” >10 K shares at a level with minimal price movement
+    4. COB anomaly    â€” COB at level > 3Ã— avg of surrounding 5 levels
 
-    NOT thread-safe — must be called while TickerState._lock is held.
+    NOT thread-safe â€” must be called while TickerState._lock is held.
     """
 
     def __init__(self, ticker, price_multiplier):
@@ -211,7 +211,7 @@ class IcebergDetector(object):
             lh.consumed_size = prev
             lh.last_size = 0
         elif size > 0 and prev == 0 and lh.consumed_at is not None:
-            # Level reappeared — check replenishment pattern
+            # Level reappeared â€” check replenishment pattern
             elapsed = now - lh.consumed_at
             if elapsed <= REPLENISHMENT_WINDOW_SEC and lh.consumed_size > 0:
                 ratio = float(size) / float(lh.consumed_size)
@@ -253,24 +253,24 @@ class IcebergDetector(object):
         """Compute confidence and update/create iceberg record."""
         conf = 0.0
 
-        # Signal 1 — Replenishment
+        # Signal 1 â€” Replenishment
         if lh.replenishment_count >= 3:
             conf += 0.40
         elif lh.replenishment_count >= 2:
             conf += 0.20
 
-        # Signal 2 — Trade vs displayed
+        # Signal 2 â€” Trade vs displayed
         if lh.initial_size > 0:
             if lh.total_traded > lh.initial_size * 5:
                 conf += 0.20 + 0.25   # hidden size + absorption confirmed
             elif lh.total_traded > lh.initial_size * 2:
                 conf += 0.20
 
-        # Signal 3 — Absorption
+        # Signal 3 â€” Absorption
         if lh.total_traded >= WALL_ABSORPTION_THRESHOLD:
             conf += 0.25
 
-        # Signal 4 — COB anomaly
+        # Signal 4 â€” COB anomaly
         if surrounding_avg_cob > 0 and lh.last_size > surrounding_avg_cob * COB_ANOMALY_MULTIPLIER:
             conf += 0.15
 
@@ -337,14 +337,14 @@ class VWAPDivergenceDetector(object):
     """
     Detects five divergence signals between price, CVD, and VWAP:
 
-    BEARISH_DIVERGENCE    — price >8% above VWAP + CVD falling
-    BEARISH_EXHAUSTION    — above + price >15% + CVD -20% + vol exhaustion
-    BULLISH_DIVERGENCE    — price >8% below VWAP + CVD rising
-    BULLISH_EXHAUSTION    — below + price >15% + CVD recovering + vol exhaustion
-    VWAP_RECLAIM_FAILURE  — price bounced toward VWAP but CVD still falling
-    VWAP_MAGNET           — extended >10% with opposing/flat CVD >5 min
+    BEARISH_DIVERGENCE    â€” price >8% above VWAP + CVD falling
+    BEARISH_EXHAUSTION    â€” above + price >15% + CVD -20% + vol exhaustion
+    BULLISH_DIVERGENCE    â€” price >8% below VWAP + CVD rising
+    BULLISH_EXHAUSTION    â€” below + price >15% + CVD recovering + vol exhaustion
+    VWAP_RECLAIM_FAILURE  â€” price bounced toward VWAP but CVD still falling
+    VWAP_MAGNET           â€” extended >10% with opposing/flat CVD >5 min
 
-    NOT thread-safe — must be called while TickerState._lock is held.
+    NOT thread-safe â€” must be called while TickerState._lock is held.
     """
 
     _IMPLICATION = {
@@ -526,7 +526,7 @@ class VWAPDivergenceDetector(object):
 
 
 # ===========================================================================
-# TickerState — extended from original with VWAP, CVD history, detectors
+# TickerState â€” extended from original with VWAP, CVD history, detectors
 # ===========================================================================
 class TickerState(object):
     """
@@ -542,10 +542,10 @@ class TickerState(object):
     def __init__(self, ticker):
         self.ticker = ticker
 
-        # Price multiplier from Bookmap (int price → float)
+        # Price multiplier from Bookmap (int price â†’ float)
         self.price_multiplier = 0.01
 
-        # --- Order book (price_int → size) ---
+        # --- Order book (price_int â†’ size) ---
         self.bids = {}
         self.asks = {}
 
@@ -561,8 +561,8 @@ class TickerState(object):
         self.cvd_history = deque()    # (timestamp, cvd_cumulative) for slope calc
 
         # --- VWAP ---
-        self._cum_pv = 0.0   # Σ(price × volume)
-        self._cum_v  = 0.0   # Σ(volume)
+        self._cum_pv = 0.0   # Î£(price Ã— volume)
+        self._cum_v  = 0.0   # Î£(volume)
         self.vwap = 0.0
 
         # --- Volume history (timestamp, size) for 60s/prior-60s calc ---
@@ -655,7 +655,7 @@ class TickerState(object):
             if price_f < self.day_low:
                 self.day_low = price_f
 
-            # Feed iceberg detector — buy aggressor hits asks
+            # Feed iceberg detector â€” buy aggressor hits asks
             self.iceberg.on_trade(price_int, size, is_bid_aggressor)
 
     # -----------------------------------------------------------------------
@@ -906,7 +906,7 @@ def _get_or_create(alias):
 
 
 # ---------------------------------------------------------------------------
-# HTTP poster — daemon thread, never crashes Bookmap
+# HTTP poster â€” daemon thread, never crashes Bookmap
 # ---------------------------------------------------------------------------
 def _post_loop():
     session = requests.Session()
@@ -925,7 +925,7 @@ def _post_loop():
                           state.ticker, snapshot["cvd"],
                           snapshot.get("price_vwap_ext", 0))
             except requests.exceptions.ConnectionError:
-                log.warning("Cannot reach server at %s — will retry", SERVER_URL)
+                log.warning("Cannot reach server at %s â€” will retry", SERVER_URL)
             except requests.exceptions.Timeout:
                 log.warning("POST timeout for %s", state.ticker)
             except Exception as exc:
@@ -944,7 +944,7 @@ class BookmapBridge(bm.BookmapAddOn):
 
     def initialize(self, addon):
         self.addon = addon
-        log.info("FlowDesk BookmapBridge initializing — server: %s", SERVER_URL)
+        log.info("FlowDesk BookmapBridge initializing â€” server: %s", SERVER_URL)
 
         addon.addInstrumentListener(self._on_instrument)
 
@@ -995,7 +995,7 @@ def createAddOn():
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
     print("""
-FlowDesk — Bookmap Bridge Setup
+FlowDesk â€” Bookmap Bridge Setup
 ================================
 
 1. Install Python 3.7.14 from https://python.org
@@ -1006,14 +1006,15 @@ FlowDesk — Bookmap Bridge Setup
    C:\\trading\\bm_venv\\Scripts\\activate
    pip install requests
 
-3. Edit this file — replace TAILSCALE_IP_PLACEHOLDER with your
+3. Edit this file â€” replace 127.0.0.1 with your
    Windows machine's Tailscale IP (run: tailscale ip -4)
 
 4. In Bookmap:
-   Add-ons → Manage Add-ons → Add Python Add-on
+   Add-ons â†’ Manage Add-ons â†’ Add Python Add-on
    Script path:      C:\\trading\\bookmap_bridge.py
    Python path:      C:\\trading\\bm_venv\\Scripts\\python.exe
    Enable the add-on and watch the log panel.
 
 5. Log files are written to: {}
 """.format(LOG_DIR))
+
