@@ -496,6 +496,72 @@
       padding: 8px 10px; background: var(--surface2);
       border-radius: 4px; border-left: 2px solid var(--border2);
     }
+
+    /* ===================================================================
+       NEWS PANEL
+    =================================================================== */
+    .news-panel {
+      border-top: 1px solid var(--border);
+    }
+    .news-panel-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 12px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--dim);
+    }
+    .news-count-badge {
+      font-size: 10px; font-weight: 700; padding: 1px 6px;
+      border-radius: 999px; background: #dbeafe; color: #1d4ed8;
+      border: 1px solid #93c5fd;
+    }
+    .news-count-badge.has-recent { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+    .news-item {
+      display: flex; flex-direction: column; gap: 3px;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      transition: background .12s;
+    }
+    .news-item:last-child { border-bottom: none; }
+    .news-item:hover { background: #f8f9fb; }
+    .news-item-top { display: flex; align-items: flex-start; gap: 6px; }
+    .news-headline {
+      font-size: 13px; color: var(--heading); line-height: 1.4;
+      text-decoration: none; font-weight: 500; flex: 1;
+    }
+    .news-headline:hover { color: var(--blue); text-decoration: underline; }
+    .news-breaking {
+      font-size: 10px; font-weight: 800; padding: 1px 6px;
+      border-radius: 3px; background: #fef3c7; color: #92400e;
+      border: 1px solid #fcd34d; white-space: nowrap; flex-shrink: 0;
+      animation: pulse 1.5s infinite;
+    }
+    .news-meta {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .news-source { font-size: 11px; color: var(--dim); font-weight: 600; }
+    .news-time   { font-size: 11px; color: var(--dim2); }
+    .news-sentiment {
+      font-size: 10px; font-weight: 700; padding: 1px 6px;
+      border-radius: 999px; letter-spacing: .03em;
+    }
+    .ns-bullish { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+    .ns-bearish { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+    .ns-neutral { background: #f3f4f6; color: var(--dim); border: 1px solid var(--border2); }
+    .news-loading {
+      padding: 10px 12px; font-size: 12px; color: var(--dim);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .news-empty { padding: 10px 12px; font-size: 12px; color: var(--dim2); font-style: italic; }
+
+    /* News count pill in header bar */
+    .hbar-news-badge {
+      font-size: 10px; font-weight: 700; padding: 1px 5px;
+      border-radius: 999px; background: #dbeafe; color: #1d4ed8;
+      border: 1px solid #93c5fd; white-space: nowrap;
+    }
+    .hbar-news-badge.recent { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
   </style>
 </head>
 <body>
@@ -917,6 +983,8 @@ const cardOpen = {}; // ticker -> bool
 
 function toggleCardBody(ticker) {
   cardOpen[ticker] = !cardOpen[ticker];
+  // Start news refresh when card is first opened
+  if (cardOpen[ticker]) _startNewsRefresh(ticker);
   // Re-render just this card in-place
   const old = document.getElementById('card-' + ticker);
   if (!old) return;
@@ -1014,6 +1082,7 @@ function renderCard(ticker) {
         ${tc ? `<span class="badge badge-gold" style="font-size:10px;padding:1px 5px">TRIPLE</span>` : ""}
         <span class="card-status-badge ${msCls}">${msLabel}</span>
         <span class="hbar-bm-dot" style="background:${bm ? "var(--green)" : "var(--dim2)"}" title="${bm ? "Bookmap live" : "Bookmap offline"}"></span>
+        ${(() => { const nc = _newsRecentCount(ticker); const hasBreaking = (newsData[ticker]?.articles||[]).some(a=>Date.now()-new Date(a.created_at).getTime()<NEWS_BREAKING_MS); return nc>0?`<span id="news-hdr-badge-${ticker}" class="hbar-news-badge${hasBreaking?' recent':''}">${nc} news</span>`:`<span id="news-hdr-badge-${ticker}" class="hbar-news-badge" style="display:none">${nc} news</span>`; })()}
         <button class="card-remove" onclick="event.stopPropagation();removeTicker('${ticker}')" title="Remove">&#10005;</button>
       </span>
     </div>`;
@@ -1213,6 +1282,7 @@ function renderCard(ticker) {
         ${tripleSection}
         ${footer}
         <div id="cat-${ticker}" class="catalyst-panel">${_buildCatalystPanelHTML(ticker)}</div>
+        ${_buildNewsPanel(ticker)}
       </div>
     </div>`;
 }
@@ -1279,6 +1349,7 @@ function applyTickerInput() {
 
 function removeTicker(t) {
   WATCHLIST = WATCHLIST.filter(x => x !== t);
+  _stopNewsRefresh(t);
   renderAll();
 }
 
@@ -1291,6 +1362,128 @@ function clearWatchlist() {
 document.getElementById("ticker-input").addEventListener("keydown", e => {
   if (e.key === "Enter") applyTickerInput();
 });
+
+// ---------------------------------------------------------------------------
+// NEWS PANEL
+// ---------------------------------------------------------------------------
+const newsData    = {}; // ticker -> { articles: [], fetchedAt: null }
+const newsTimers  = {}; // ticker -> setInterval handle
+const NEWS_REFRESH_MS   = 5 * 60 * 1000; // 5 minutes
+const NEWS_BREAKING_MS  = 30 * 60 * 1000; // 30 minutes
+const NEWS_RECENT_HRS   = 4 * 60 * 60 * 1000; // 4 hours
+
+function _newsAgo(isoStr) {
+  if (!isoStr) return "";
+  const diff = Date.now() - new Date(isoStr).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1)  return "just now";
+  if (m < 60) return m + "m ago";
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + "h ago";
+  return Math.floor(h / 24) + "d ago";
+}
+
+function _newsRecentCount(ticker) {
+  const articles = newsData[ticker]?.articles || [];
+  const cutoff = Date.now() - NEWS_RECENT_HRS;
+  return articles.filter(a => new Date(a.created_at).getTime() > cutoff).length;
+}
+
+async function fetchTickerNews(ticker) {
+  try {
+    const r = await fetch(
+      `https://data.alpaca.markets/v1beta1/news?symbols=${ticker}&limit=5&sort=desc`,
+      {
+        headers: {
+          'APCA-API-KEY-ID':     ALPACA_KEY_ID,
+          'APCA-API-SECRET-KEY': ALPACA_SECRET_KEY,
+        },
+        signal: AbortSignal.timeout(8000),
+      }
+    );
+    if (!r.ok) return;
+    const data = await r.json();
+    newsData[ticker] = { articles: data.news || [], fetchedAt: Date.now() };
+  } catch(_) { /* fail silently */ }
+  // Update just the news panel + header badge in-place (no full re-render)
+  _refreshNewsPanelUI(ticker);
+}
+
+function _startNewsRefresh(ticker) {
+  if (newsTimers[ticker]) return; // already running
+  fetchTickerNews(ticker); // immediate first fetch
+  newsTimers[ticker] = setInterval(() => fetchTickerNews(ticker), NEWS_REFRESH_MS);
+}
+
+function _stopNewsRefresh(ticker) {
+  if (newsTimers[ticker]) { clearInterval(newsTimers[ticker]); delete newsTimers[ticker]; }
+}
+
+function _refreshNewsPanelUI(ticker) {
+  const panel = document.getElementById('news-panel-' + ticker);
+  if (panel) panel.innerHTML = _buildNewsPanelInner(ticker);
+  const badge = document.getElementById('news-hdr-badge-' + ticker);
+  if (badge) {
+    const count = _newsRecentCount(ticker);
+    const hasRecent = (newsData[ticker]?.articles || []).some(
+      a => Date.now() - new Date(a.created_at).getTime() < NEWS_BREAKING_MS
+    );
+    if (count > 0) {
+      badge.textContent = count + ' news';
+      badge.className = 'hbar-news-badge' + (hasRecent ? ' recent' : '');
+      badge.style.display = '';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+}
+
+function _buildNewsPanelInner(ticker) {
+  const nd = newsData[ticker];
+  if (!nd) {
+    return `<div class="news-loading"><div class="ca-spinner"></div>Loading news...</div>`;
+  }
+  const articles = nd.articles || [];
+  if (!articles.length) {
+    return `<div class="news-empty">No recent news found for ${ticker}</div>`;
+  }
+  return articles.map(a => {
+    const pubMs   = new Date(a.created_at).getTime();
+    const isBreaking = (Date.now() - pubMs) < NEWS_BREAKING_MS;
+    const sentiment  = (a.symbols?.find(s => s === ticker) ? null : null); // field varies
+    // Alpaca news sentiment may be in a.insights array
+    const insight = (a.insights || []).find(i => i.symbol === ticker);
+    const sent = insight?.sentiment || a.sentiment || null;
+    const sentHtml = sent ? `<span class="news-sentiment ${sent === 'positive' || sent === 'bullish' ? 'ns-bullish' : sent === 'negative' || sent === 'bearish' ? 'ns-bearish' : 'ns-neutral'}">${sent === 'positive' ? 'bullish' : sent === 'negative' ? 'bearish' : sent}</span>` : '';
+    const breakHtml = isBreaking ? `<span class="news-breaking">BREAKING</span>` : '';
+    const url = a.url || '#';
+    return `<div class="news-item">
+      <div class="news-item-top">
+        <a class="news-headline" href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${a.headline || 'No headline'}</a>
+        ${breakHtml}
+      </div>
+      <div class="news-meta">
+        <span class="news-source">${a.source || ''}</span>
+        <span class="news-time">${_newsAgo(a.created_at)}</span>
+        ${sentHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function _buildNewsPanel(ticker) {
+  return `
+    <div class="news-panel">
+      <div class="news-panel-header">
+        <span>&#128240; News</span>
+        ${newsData[ticker]?.articles?.length
+          ? `<span class="news-count-badge${(newsData[ticker].articles.some(a => Date.now()-new Date(a.created_at).getTime()<NEWS_BREAKING_MS))?' has-recent':''}">${newsData[ticker].articles.length}</span>`
+          : ''}
+        <span style="margin-left:auto;font-size:10px;color:var(--dim2);font-weight:400">auto-refresh 5m</span>
+      </div>
+      <div id="news-panel-${ticker}">${_buildNewsPanelInner(ticker)}</div>
+    </div>`;
+}
 
 // ---------------------------------------------------------------------------
 // CATALYST ANALYZER
