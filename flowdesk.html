@@ -838,7 +838,7 @@
 // ============================================================================
 // CONFIGURATION
 // ============================================================================
-const TAILSCALE_IP      = "100.75.239.12";
+const TAILSCALE_IP      = "127.0.0.1"; // use 100.75.239.12 when accessing via Tailscale
 const BOOKMAP_ENABLED   = false;   // set true when bridge is configured
 const BOOKMAP_PORT      = 8766;
 const BOOKMAP_URL       = `http://${TAILSCALE_IP}:${BOOKMAP_PORT}`;
@@ -1294,6 +1294,8 @@ function _loadFloatCache(ticker) {
     if (!raw) return null;
     const obj = JSON.parse(raw);
     if (Date.now() - obj.ts > FLOAT_CACHE_MS) { localStorage.removeItem('float_si_' + ticker); return null; }
+    // Reject cache if all values are Unknown/missing (stale bad data)
+    if (obj.float === 'Unknown' && obj.si_pct === 'Unknown') { localStorage.removeItem('float_si_' + ticker); return null; }
     return obj;
   } catch(_) { return null; }
 }
@@ -1348,11 +1350,12 @@ function formatShares(n) {
 
 async function fetchFloatFromYahoo(symbol) {
   try {
-    const res = await fetch(`http://100.75.239.12:8766/float/${symbol}`, {
-      signal: AbortSignal.timeout(8000),
+    const res = await fetch(`${BOOKMAP_URL}/float/${symbol}`, {
+      signal: AbortSignal.timeout(10000),
     });
     if (!res.ok) return null;
     const data = await res.json();
+    console.log('Float data for', symbol, data);
     if (data.float === 'Unknown' && data.si_pct === 'Unknown') return null;
     return { float: data.float, si_pct: data.si_pct, dtc: data.dtc };
   } catch(e) {
@@ -1469,9 +1472,10 @@ function renderCard(ticker) {
   const catD      = catalystState[ticker]?.data || null;
   const _fc       = _loadFloatCache(ticker) || {};
   const _floatPending = floatLoading.has(ticker);
-  const floatVal  = _floatPending ? "..." : (catD?.float          || ex.cat_float || _fc.float  || "-");
-  const siVal     = _floatPending ? "..." : (catD?.short_interest || ex.cat_si    || _fc.si_pct || "-");
-  const dtcVal    = _floatPending ? "..." : (catD?.dtc            || ex.cat_dtc   || _fc.dtc    || "-");
+  const _rv = v => (v && v !== 'Unknown' && v !== '-') ? v : null; // reject bad values
+  const floatVal  = _floatPending ? "..." : (_rv(catD?.float)          || _rv(ex.cat_float) || _rv(_fc.float)  || "-");
+  const siVal     = _floatPending ? "..." : (_rv(catD?.short_interest) || _rv(ex.cat_si)    || _rv(_fc.si_pct) || "-");
+  const dtcVal    = _floatPending ? "..." : (_rv(catD?.dtc)            || _rv(ex.cat_dtc)   || _rv(_fc.dtc)    || "-");
   const ap        = addedPrices[ticker];
   const spread    = (a?.bid && a?.ask) ? ((a.ask-a.bid)/a.ask*100).toFixed(2) : null;
   const rvCls     = rvNum==null?"rv-gray":rvNum<1?"rv-gray":rvNum<2?"rv-white":rvNum<3?"rv-yellow":rvNum<5?"rv-orange":"rv-red";
@@ -2156,13 +2160,19 @@ function getCatalystApiKey() {
 
 function _populateFloatFromCatalyst(ticker, data) {
   if (!data || !state[ticker]) return;
+  // Only use catalyst float values if they're real — don't overwrite good Yahoo data with "Unknown"
+  const _valid = v => v && v !== 'Unknown' && v !== '-';
+  const existing = _loadFloatCache(ticker);
+  const floatVal = _valid(data.float)          ? data.float          : (existing?.float  || null);
+  const siVal    = _valid(data.short_interest) ? data.short_interest : (existing?.si_pct || null);
+  const dtcVal   = _valid(data.dtc)            ? data.dtc            : (existing?.dtc    || null);
+  if (!floatVal && !siVal) return; // nothing useful to save
   if (!state[ticker].extended) state[ticker].extended = {};
-  if (data.float)          state[ticker].extended.cat_float = data.float;
-  if (data.short_interest) state[ticker].extended.cat_si    = data.short_interest;
-  if (data.dtc)            state[ticker].extended.cat_dtc   = data.dtc;
-  // Also save to float cache so Row 2 persists across reloads
-  _saveFloatCache(ticker, { float: data.float, si_pct: data.short_interest, dtc: data.dtc });
-  _applyFloatData(ticker, { float: data.float, si_pct: data.short_interest, dtc: data.dtc });
+  if (floatVal) state[ticker].extended.cat_float = floatVal;
+  if (siVal)    state[ticker].extended.cat_si    = siVal;
+  if (dtcVal)   state[ticker].extended.cat_dtc   = dtcVal;
+  _saveFloatCache(ticker, { float: floatVal, si_pct: siVal, dtc: dtcVal });
+  _applyFloatData(ticker, { float: floatVal, si_pct: siVal, dtc: dtcVal });
 }
 
 async function toggleCatalyst(ticker) {

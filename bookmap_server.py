@@ -35,16 +35,8 @@ app = FastAPI(title="FlowDesk", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    # Allow localhost dev + any Tailscale 100.x.x.x address
-    allow_origins=[
-        "http://localhost",
-        "http://localhost:8765",
-        "http://localhost:8766",
-        "http://127.0.0.1:8765",
-        "http://127.0.0.1:8766",
-    ],
-    allow_origin_regex=r"http://100\.\d+\.\d+\.\d+(:\d+)?",
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,   # must be False when allow_origins=["*"]
     allow_methods=["*"],
     allow_headers=["*"],
 )
