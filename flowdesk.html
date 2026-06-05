@@ -1308,32 +1308,53 @@ function _applyFloatData(ticker, data) {
   if (data.float)  state[ticker].extended.cat_float = data.float;
   if (data.si_pct) state[ticker].extended.cat_si    = data.si_pct;
   if (data.dtc)    state[ticker].extended.cat_dtc   = data.dtc;
-  // Refresh Section 1 in-place without full re-render
+  // Refresh the metrics ribbon (Row 2) in-place
   const card = document.getElementById('card-' + ticker);
   if (card) {
-    const sec1 = card.querySelector('.sec-float');
-    if (sec1) {
+    const ribbon = card.querySelector('.card-metrics');
+    if (ribbon) {
       const tmp = document.createElement('div');
       tmp.innerHTML = renderCard(ticker);
-      const newSec1 = tmp.querySelector('.sec-float');
-      if (newSec1) sec1.replaceWith(newSec1);
+      const newRibbon = tmp.querySelector('.card-metrics');
+      if (newRibbon) ribbon.replaceWith(newRibbon);
     }
   }
 }
 
-async function fetchFloatSI(ticker) {
-  // Already have data from catalyst? Use it.
+let _floatFetchBusy = false; // one at a time to avoid 429s
+const _floatFetchQueue = [];
+
+async function _drainFloatQueue() {
+  if (_floatFetchBusy || !_floatFetchQueue.length) return;
+  _floatFetchBusy = true;
+  const ticker = _floatFetchQueue.shift();
+  await _doFetchFloatSI(ticker);
+  _floatFetchBusy = false;
+  if (_floatFetchQueue.length) setTimeout(_drainFloatQueue, 3000); // 3s between calls
+}
+
+function fetchFloatSI(ticker) {
+  // Already have data from catalyst? Use it immediately.
   const cs = catalystState[ticker];
   if (cs?.data?.float) {
     _applyFloatData(ticker, { float: cs.data.float, si_pct: cs.data.short_interest, dtc: cs.data.dtc });
     return;
   }
-  // Check localStorage cache
+  // Check localStorage cache (24h) — instant
   const cached = _loadFloatCache(ticker);
-  if (cached) { _applyFloatData(ticker, cached); return; }
+  if (cached) { console.log('Float cache hit for', ticker); _applyFloatData(ticker, cached); return; }
+  // Queue the API call
+  if (!_floatFetchQueue.includes(ticker)) {
+    _floatFetchQueue.push(ticker);
+    _drainFloatQueue();
+  }
+}
+
+async function _doFetchFloatSI(ticker) {
   // Need Anthropic API key
   const apiKey = getCatalystApiKey();
   if (!apiKey) return;
+  console.log('Fetching float for', ticker);
   try {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 25000);
@@ -1346,14 +1367,21 @@ async function fetchFloatSI(ticker) {
         'anthropic-dangerous-direct-browser-access': 'true',
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 150,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{ role: 'user', content: `Search for the current float shares, short interest %, and days to cover for ${ticker} stock. Return ONLY this JSON with no other text:\n{"float":"38M","si_pct":"15%","dtc":"2.4"}` }],
+        messages: [{ role: 'user', content: `Return ONLY a JSON object, no other text: {"float":"XXM","si_pct":"XX%","dtc":"X.X"} for ticker ${ticker}. Use latest known data.` }],
       }),
       signal: ctrl.signal,
     });
     clearTimeout(timer);
+    if (res.status === 429) {
+      // Rate limited — push back to front of queue and retry after 30s
+      console.warn('Float fetch rate-limited for', ticker, '— retrying in 30s');
+      _floatFetchQueue.unshift(ticker);
+      setTimeout(_drainFloatQueue, 30000);
+      return;
+    }
     if (!res.ok) return;
     const data = await res.json();
     const textBlocks = (data.content || []).filter(b => b.type === 'text');
@@ -1690,6 +1718,7 @@ function removeTicker(t) {
   WATCHLIST = WATCHLIST.filter(x => x !== t);
   _stopNewsRefresh(t);
   _clearAddedPrice(t);
+  document.getElementById("ticker-input").value = WATCHLIST.join(" ");
   renderAll();
 }
 
