@@ -689,7 +689,9 @@
       padding: 10px 12px;
       border-right: 1px solid #e5e7eb;
       border-top: 3px solid transparent;
+      display: flex; flex-direction: column;
     }
+    .ah-stale { color: #6b7280; font-size: 12px; font-style: italic; margin-top: 2px; }
     .session-col:last-child { border-right: none; }
 
     /* Per-session color themes */
@@ -723,9 +725,9 @@
       color: inherit; opacity: 0.8; white-space: nowrap;
     }
     .session-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; }
-    .sl { font-size: 12px; color: #888; white-space: nowrap; }
+    .sl { font-size: 15px; font-weight: 400; color: #888; white-space: nowrap; }
     .sv { font-size: 15px; font-weight: 500; color: var(--heading); white-space: nowrap; }
-    .sv-t { font-size: 11px; color: var(--dim2); margin-left: 3px; }
+    .sv-t { font-size: 11px; color: #1f2937; font-weight: 500; margin-right: 3px; }
     .sv-bm { font-size: 13px; font-weight: 600; }
     .sv-na { font-size: 13px; color: var(--dim2); font-style: italic; }
 
@@ -1160,7 +1162,7 @@ async function fetchAlpaca() {
         state[t].extended.ah_price      = lt.p;
         state[t].extended.ah_change_abs = lt.p - db.c;
         state[t].extended.ah_change_pct = (lt.p - db.c) / db.c * 100;
-        state[t].extended.ah_updated    = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        // ah_updated is set by fetchExtendedData from actual bar timestamp — don't overwrite here
       }
 
       rvDetectors[t].update(db.v, db.o, close, db.n);
@@ -1461,12 +1463,12 @@ function renderCard(ticker) {
   const _companySpan = `<span class="hero-company" id="hero-company-${ticker}">${_coName}</span>`;
   const _rvSpan      = rvNum != null ? `&nbsp;|&nbsp; RelVol <strong class="relvol-num ${rvCls}">${rvNum.toFixed(1)}x</strong>` : "";
   const _catActive   = csOpen ? " active" : "";
-  // AH badge: before 4PM show "After 4PM", during AH show update time, after 8PM show "Closed HH:MM"
-  const _etHr = _etTime().getHours();
-  const _ahBadge = _etHr < 16 ? "After 4PM"
-                 : _etHr < 20 ? (ex.ah_updated ? `&#9200; ${ex.ah_updated}` : "Live")
-                 : (ex.ah_updated ? `Closed ${ex.ah_updated}` : "Closed");
-  const _pmHiTime    = ex.pm_high_time ? `<span class="sv-t">(${ex.pm_high_time})</span>` : "";
+  const _etHr      = _etTime().getHours();
+  const _isStaleAH = _etHr >= 20 || _etHr < 4;
+  const _ahAsOf    = _isStaleAH
+    ? (ex.ah_updated ? `Final - ${ex.ah_updated} ET` : "Final - 8:00 PM ET")
+    : (_etHr >= 16 ? "Live" : "");
+  const _pmHiTime    = ex.pm_high_time ? `<span class="sv-t">(${ex.pm_high_time})</span> ` : "";
 
   // ── ROW 1: HERO BANNER ─────────────────────────────────────────────
   const row1 = `
@@ -1537,8 +1539,8 @@ function renderCard(ticker) {
   // ── ROW 3: TEMPORAL SESSIONS GRID ──────────────────────────────────
 
   // Col A — Regular Hours
-  const hiT = ex.today_high_time ? `<span class="sv-t">(${ex.today_high_time})</span>` : "";
-  const loT = ex.today_low_time  ? `<span class="sv-t">(${ex.today_low_time})</span>`  : "";
+  const hiT = ex.today_high_time ? `<span class="sv-t">(${ex.today_high_time})</span> ` : "";
+  const loT = ex.today_low_time  ? `<span class="sv-t">(${ex.today_low_time})</span> `  : "";
   const bmHtml = bm_pt
     ? `<span class="sv-bm ${bm_pt.changePct>0?"big-move-up":"big-move-down"}">$${fmt(bm_pt.priceBefore)}-&gt;$${fmt(bm_pt.priceAfter)} (${fmtSign(bm_pt.changePct)}%)</span> <span class="cs-muted">${bmAgo}</span>`
     : `<span class="sv-na">-</span>`;
@@ -1546,11 +1548,11 @@ function renderCard(ticker) {
     <div class="session-col sc-regular">
       <div class="session-hdr">Regular Hours <span class="session-badge">&#128197; ${_fmtDate(_tradingDateStr())}</span></div>
       <div class="session-row"><span class="sl">Open</span><span class="sv">${a?.open!=null?"$"+fmt(a.open):"-"}</span></div>
-      <div class="session-row"><span class="sl">High</span><span class="sv">${a?.high!=null?"$"+fmt(a.high):"-"} ${hiT}</span></div>
-      <div class="session-row"><span class="sl">Low</span><span class="sv">${a?.low!=null?"$"+fmt(a.low):"-"} ${loT}</span></div>
+      <div class="session-row"><span class="sl">High</span><span class="sv">${hiT}${a?.high!=null?"$"+fmt(a.high):"-"}</span></div>
+      <div class="session-row"><span class="sl">Low</span><span class="sv">${loT}${a?.low!=null?"$"+fmt(a.low):"-"}</span></div>
       <div class="session-row"><span class="sl">Vol</span><span class="sv">${fmtK(a?.volume)}</span></div>
       <div class="session-row"><span class="sl">Avg Trade</span><span class="sv">${rv.avgTradeSize!=null?rv.avgTradeSize+"sh":"-"}</span></div>
-      <div class="session-row"><span class="sl">${ms==="open"||ms==="pre"?"Pace":"Final Vol"}</span><span class="sv">${rv.volPace!=null?fmtK(ms==="open"||ms==="pre"?rv.volPace:a?.volume)+(ms==="open"||ms==="pre"?" EOD":""):fmtK(a?.volume)}</span></div>
+      ${ms==="open"||ms==="pre"?`<div class="session-row"><span class="sl">Pace</span><span class="sv">${rv.volPace!=null?fmtK(rv.volPace)+" EOD":"-"}</span></div>`:""}
       <div class="session-row"><span class="sl">&#9889; Big Move</span><span class="sv">${bmHtml}</span></div>
     </div>`;
 
@@ -1560,16 +1562,17 @@ function renderCard(ticker) {
   const ahChange = ex.ah_change_abs!=null ? fmtSign(ex.ah_change_abs)+" ("+fmtSign(ex.ah_change_pct)+"%)" : "-";
   const pmRows   = ex.pm_open!=null
     ? `<div class="session-row"><span class="sl">PM Open</span><span class="sv">$${fmt(ex.pm_open)}</span></div>
-       <div class="session-row"><span class="sl">PM High</span><span class="sv" style="font-weight:700">$${fmt(ex.pm_high)} ${_pmHiTime}</span></div>
+       <div class="session-row"><span class="sl">PM High</span><span class="sv" style="font-weight:700">${_pmHiTime}$${fmt(ex.pm_high)}</span></div>
        <div class="session-row"><span class="sl">PM Low</span><span class="sv">$${fmt(ex.pm_low)}</span></div>
        <div class="session-row"><span class="sl">PM Vol</span><span class="sv">${fmtK(ex.pm_volume)}</span></div>`
     : `<div class="session-row"><span class="sl">Prev Close</span><span class="sv">${prevClose!=null?"$"+fmt(prevClose):"-"}</span></div>
        <div class="session-row"><span class="sl">Day Open</span><span class="sv">${dayOpen!=null?"$"+fmt(dayOpen):"-"}</span></div>
        <div class="session-row"><span class="sl" style="color:var(--dim2);font-style:italic">PM data unavailable</span><span></span></div>`;
-  const ahRows   = ahShow
+  const ahRows = ahShow
     ? `<div class="session-row"><span class="sl">AH Price</span><span class="sv ${ahCls}">$${fmt(ex.ah_price)}</span></div>
        <div class="session-row"><span class="sl">AH Change</span><span class="sv ${ahCls}">${ahChange}</span></div>
-       <div class="session-row"><span class="sl">AH Vol</span><span class="sv">${fmtK(ex.ah_volume)}</span></div>`
+       <div class="session-row"><span class="sl">${_isStaleAH ? "AH Vol (final)" : "AH Vol"}</span><span class="sv">${fmtK(ex.ah_volume)}</span></div>
+       ${_ahAsOf ? `<div class="ah-stale">${_ahAsOf}</div>` : ""}`
     : `<div class="session-row"><span class="sv-na">- before 4PM -</span></div>`;
 
   const colB = `
@@ -1582,19 +1585,19 @@ function renderCard(ticker) {
   // Col C — After Hours
   const colC = `
     <div class="session-col sc-afterhours">
-      <div class="session-hdr">After Hours <span class="session-badge">${_ahBadge}</span></div>
+      <div class="session-hdr">After Hours <span class="session-badge">&#128197; ${_fmtDate(_tradingDateStr())}</span></div>
       ${ahRows}
     </div>`;
 
   // Col D — Yesterday
-  const yHiT = ex.yday_high_time ? `<span class="sv-t">(${ex.yday_high_time})</span>` : "";
-  const yLoT = ex.yday_low_time  ? `<span class="sv-t">(${ex.yday_low_time})</span>`  : "";
+  const yHiT = ex.yday_high_time ? `<span class="sv-t">(${ex.yday_high_time})</span> ` : "";
+  const yLoT = ex.yday_low_time  ? `<span class="sv-t">(${ex.yday_low_time})</span> `  : "";
   const colD = `
     <div class="session-col sc-yesterday">
       <div class="session-hdr">Yesterday <span class="session-badge">&#128197; ${_fmtDate(ex.prev_bar_date||"")}</span></div>
       <div class="session-row"><span class="sl">Prev Close</span><span class="sv">${ex.prev_close!=null?"$"+fmt(ex.prev_close):"-"}</span></div>
-      <div class="session-row"><span class="sl">High</span><span class="sv">${ex.yday_high!=null?"$"+fmt(ex.yday_high):"-"} ${yHiT}</span></div>
-      <div class="session-row"><span class="sl">Low</span><span class="sv">${ex.yday_low!=null?"$"+fmt(ex.yday_low):"-"} ${yLoT}</span></div>
+      <div class="session-row"><span class="sl">High</span><span class="sv">${yHiT}${ex.yday_high!=null?"$"+fmt(ex.yday_high):"-"}</span></div>
+      <div class="session-row"><span class="sl">Low</span><span class="sv">${yLoT}${ex.yday_low!=null?"$"+fmt(ex.yday_low):"-"}</span></div>
       <div class="session-row"><span class="sl">Vol</span><span class="sv">${fmtK(ex.yday_volume)}</span></div>
     </div>`;
 
@@ -2094,6 +2097,10 @@ Return exactly this JSON structure:
 
 short_score 0-100: higher = better short candidate. Consider catalyst weakness, float size, relative volume, and short interest danger.
 squeeze_risk 0-100: higher = more dangerous to short. High SI + low float = extreme squeeze risk.
+In key_risks and supporting_factors arrays, write each item as a proper human-readable sentence or phrase with spaces — NOT as snake_case or camelCase strings.
+Examples: WRONG: 'extreme_volatility', 'no_real_contracts' — RIGHT: 'Extreme intraday volatility', 'No real contracts announced'
+Each item should be 3-6 words, title case, no underscores.
+
 Always search the web for current data. Keep all strings under 120 characters. Return only valid JSON.`;
 
 const catalystState  = {}; // ticker -> { open, status, data, priceData, error }
@@ -2243,7 +2250,7 @@ function _buildCatalystResultHTML(d) {
     <div class="ca-header-row" style="padding:10px 12px 6px;flex-wrap:wrap;gap:6px">
       <span class="ca-category-badge ${catCls}">${catLbl}</span>
       ${typeLabel ? `<span class="ca-type-chip">${typeLabel}</span>` : ''}
-      <span class="${isReal?'ca-real-no':'ca-real-yes'}">${isReal?'&#10007; Real Catalyst':'&#10003; No Real Catalyst'}</span>
+      <span class="${isReal?'ca-real-no':'ca-real-yes'}">${isReal?'&#10007; Not a Direct Catalyst':'&#10003; Confirmed Catalyst'}</span>
     </div>
     ${d.catalyst_description ? `<div class="ca-line" style="padding:0 12px 8px">${d.catalyst_description}</div>` : ''}
 
