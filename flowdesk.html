@@ -563,6 +563,17 @@
     }
     .hbar-news-badge.recent { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
 
+    /* Header action buttons (Catalyst ⚡ and News 📰) */
+    .hbar-action-btn {
+      background: none; border: 1px solid var(--border2);
+      color: var(--dim); font-size: 13px; cursor: pointer;
+      padding: 1px 6px; border-radius: 4px; line-height: 1.4;
+      transition: border-color .15s, color .15s, background .15s;
+      flex-shrink: 0;
+    }
+    .hbar-action-btn:hover,
+    .hbar-action-btn.active { border-color: var(--blue); color: var(--blue); background: #eff6ff; }
+
     /* ===================================================================
        PRICE TIMELINE SECTION
     =================================================================== */
@@ -604,74 +615,100 @@
     /* Section shared row layout */
     .cs-row {
       display: flex; align-items: center; flex-wrap: wrap;
-      gap: 4px 10px; padding: 7px 12px; font-size: 13px;
+      gap: 4px 10px; padding: 6px 12px 6px 16px;
     }
-    .cs-label { color: #666; font-size: 12px; white-space: nowrap; }
-    .cs-val   { font-weight: 500; color: var(--heading); white-space: nowrap; }
+    .cs-label { color: #888; font-size: 13px; white-space: nowrap; }
+    .cs-val   { font-size: 16px; font-weight: 500; color: var(--heading); white-space: nowrap; }
     .cs-sep   { color: var(--border2); font-size: 12px; }
     .cs-up    { color: var(--green); font-weight: 600; }
     .cs-down  { color: var(--red);   font-weight: 600; }
-    .cs-muted { color: var(--dim2); }
+    .cs-muted { color: var(--dim2); font-size: 13px; }
 
-    /* Section 1 — Float & SI (yellow) */
+    /* Shared section title */
+    .sec-title {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; color: #888;
+      padding: 6px 12px 2px 16px;
+    }
+
+    /* Section 1 — Float & SI (yellow, amber left border) */
     .sec-float {
       background: #fffbeb;
       border-top: 1px solid #fde68a;
       border-bottom: 1px solid #fde68a;
+      border-left: 3px solid #f59e0b;
     }
-    .sec-float .cs-label { color: #92400e; }
-    .sec-float .cs-val   { color: #78350f; font-weight: 600; }
+    .sec-float .cs-label { color: #92400e; font-size: 13px; }
+    .sec-float .cs-val   { color: #78350f; font-size: 16px; font-weight: 600; }
     .sec-float .cs-sep   { color: #fcd34d; }
     .dtc-tooltip { cursor: help; border-bottom: 1px dotted #d97706; }
 
     /* Section 2 — Quote (white) */
-    .sec-quote { background: var(--surface); border-top: 1px solid var(--border); padding: 8px 12px; }
-    .sec-quote-price { font-size: 26px; font-weight: 800; }
-    .sec-quote-change { font-size: 15px; font-weight: 600; margin-left: 8px; }
-    .sec-quote-meta { font-size: 13px; color: var(--dim); margin-top: 3px; }
-
-    /* Section 3 — Regular Hours (white) */
-    .sec-regular { background: var(--surface); border-top: 2px solid var(--border); }
-    .sec-regular-title {
-      font-size: 10px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .07em; color: var(--dim); padding: 5px 12px 0;
+    .sec-quote {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 8px 12px 8px 16px;
     }
-    .big-move-row { font-size: 13px; font-weight: 700; }
+    .sec-quote-price  { font-size: 20px; font-weight: 700; }
+    .sec-quote-change { font-size: 15px; font-weight: 600; margin-left: 8px; }
+    .sec-quote-meta   { font-size: 13px; color: var(--dim); margin-top: 4px; }
+    .sec-quote-meta .bid-val,
+    .sec-quote-meta .ask-val { font-size: 17px; font-weight: 600; }
+    .sec-quote-meta .spread-val { font-size: 17px; font-weight: 600; }
+    .sec-quote-meta .vwap-val   { font-size: 17px; font-weight: 600; color: var(--heading); }
+
+    /* Section 3 — Regular Hours (orange identity) */
+    .sec-regular {
+      background: #fff7ed;
+      border-top: 1px solid #fed7aa;
+      border-left: 3px solid #ea580c;
+    }
+    .sec-regular .sec-title { color: #ea580c; font-weight: 700; }
+    .sec-regular .cs-val    { font-size: 16px; font-weight: 500; }
+    .sec-regular .cs-label  { color: #9a3412; font-size: 13px; }
+    .sec-regular-title { display: none; }
+    .big-move-row  { font-size: 16px; font-weight: 600; }
     .big-move-up   { color: var(--red); }
     .big-move-down { color: var(--green); }
 
-    /* Section 4 — Pre-Market (blue) */
+    /* Section 4 — Pre-Market (blue identity) */
     .sec-premarket {
       background: #eff6ff;
       border-top: 1px solid #bfdbfe;
       border-bottom: 1px solid #bfdbfe;
+      border-left: 3px solid #2563eb;
     }
-    .sec-premarket .cs-label { color: #1e40af; }
-    .sec-premarket .cs-val   { color: #1e3a8a; font-weight: 600; }
-    .sec-premarket .cs-sep   { color: #93c5fd; }
+    .sec-premarket .sec-title { color: #2563eb; font-weight: 700; }
+    .sec-premarket .cs-label  { color: #1e40af; font-size: 13px; }
+    .sec-premarket .cs-val    { color: #1e3a8a; font-size: 16px; font-weight: 600; }
+    .sec-premarket .cs-sep    { color: #93c5fd; }
     .gap-safe   { color: var(--dim); }
     .gap-warn   { color: #d97706; font-weight: 700; }
     .gap-danger { color: var(--red); font-weight: 700; }
     .gap-green  { color: var(--green); font-weight: 700; }
 
-    /* Section 5 — Yesterday (gray) */
+    /* Section 5 — Yesterday (gray identity) */
     .sec-yesterday {
       background: #f9fafb;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
+      border-left: 3px solid #9ca3af;
     }
-    .sec-yesterday .cs-label { color: #4b5563; }
-    .sec-yesterday .cs-val   { color: var(--heading); }
+    .sec-yesterday .sec-title { color: #6b7280; font-weight: 700; }
+    .sec-yesterday .cs-label  { color: #4b5563; font-size: 13px; }
+    .sec-yesterday .cs-val    { color: var(--heading); font-size: 16px; font-weight: 500; }
 
-    /* Section 6 — After Hours (purple) */
+    /* Section 6 — After Hours (purple identity) */
     .sec-afterhours {
       background: #faf5ff;
       border-top: 1px solid #e9d5ff;
       border-bottom: 1px solid #e9d5ff;
+      border-left: 3px solid #a78bfa;
     }
-    .sec-afterhours .cs-label { color: #6b21a8; font-style: italic; }
-    .sec-afterhours .cs-val   { color: #581c87; font-weight: 600; }
-    .sec-afterhours .cs-sep   { color: #d8b4fe; }
+    .sec-afterhours .sec-title { color: #7c3aed; font-weight: 700; }
+    .sec-afterhours .cs-label  { color: #6b21a8; font-size: 13px; font-style: italic; }
+    .sec-afterhours .cs-val    { color: #581c87; font-size: 16px; font-weight: 600; }
+    .sec-afterhours .cs-sep    { color: #d8b4fe; }
 
     /* Footer — clean 3-button bar */
     .card-footer-clean {
@@ -835,7 +872,7 @@ class RelVolDetector {
   async fetchAvgVol() {
     if (this.avgDailyVol !== null) return;
     try {
-      const url = `${ALPACA_BASE}/v2/stocks/${this.ticker}/bars?timeframe=1Day&limit=20`;
+      const url = `${ALPACA_BASE}/v2/stocks/${this.ticker}/bars?timeframe=1Day&limit=30&feed=sip`;
       const r = await fetch(url, {
         headers: {
           "APCA-API-KEY-ID":     ALPACA_KEY_ID,
@@ -1052,7 +1089,7 @@ async function fetchAlpaca() {
     // Snapshot returns dailyBar (full-day OHLCV), latestTrade (price),
     // latestQuote (bid/ask), prevDailyBar (prev close) — all in one call.
     const snapRes = await fetch(
-      `${ALPACA_BASE}/v2/stocks/snapshots?symbols=${symbols}&feed=iex`, {
+      `${ALPACA_BASE}/v2/stocks/snapshots?symbols=${symbols}&feed=sip`, {
         headers: { "APCA-API-KEY-ID": ALPACA_KEY_ID, "APCA-API-SECRET-KEY": ALPACA_SECRET_KEY },
         signal: AbortSignal.timeout(8000),
       }
@@ -1094,18 +1131,39 @@ async function fetchAlpaca() {
 
       // Populate prev close + yesterday stats into extended data
       if (!state[t].extended) state[t].extended = {};
-      if (pdb.c) state[t].extended.prev_close  = pdb.c;
-      if (pdb.v) state[t].extended.yday_volume  = pdb.v;
-      if (pdb.h) state[t].extended.yday_high    = pdb.h;
-      if (pdb.l) state[t].extended.yday_low     = pdb.l;
+      if (pdb.c) state[t].extended.prev_close   = pdb.c;
+      if (pdb.v) state[t].extended.yday_volume   = pdb.v;
+      if (pdb.h) state[t].extended.yday_high     = pdb.h;
+      if (pdb.l) state[t].extended.yday_low      = pdb.l;
       if (pdb.t) state[t].extended.prev_bar_date = pdb.t.slice(0, 10);
+
+      // After-hours: derive from latestTrade vs dailyBar close
+      // latestTrade reflects the most recent trade (may be AH)
+      const msCurrent = _marketStatus();
+      if ((msCurrent === 'after' || msCurrent === 'closed') && lt.p && db.c && lt.p !== db.c) {
+        state[t].extended.ah_price      = lt.p;
+        state[t].extended.ah_change_abs = lt.p - db.c;
+        state[t].extended.ah_change_pct = (lt.p - db.c) / db.c * 100;
+        state[t].extended.ah_updated    = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+      }
 
       rvDetectors[t].update(db.v, db.o, close, db.n);
 
-      // Big move tracker — flag if price moved >5% since last poll
+      // Fallback: compute rv stats directly from daily bar when market is closed/pre/after
+      const _rv = rvDetectors[t];
+      if (_rv.volPace == null && db.v && db.o) {
+        const _etNow = _etTime();
+        const _elapsed = _marketMinutesElapsed(_etNow) || 390;
+        _rv.volPace = Math.round(db.v / _elapsed * 390);
+      }
+      if (_rv.avgTradeSize == null && db.v && db.n && db.n > 0) {
+        _rv.avgTradeSize = Math.round(db.v / db.n);
+      }
+
+      // Big move tracker — flag if price moved >3% since last poll
       if (prevPrice && close && prevPrice !== close) {
         const pct = (close - prevPrice) / prevPrice * 100;
-        if (Math.abs(pct) > 5) {
+        if (Math.abs(pct) > 3) {
           if (!bigMoves[t] || Math.abs(pct) > Math.abs(bigMoves[t].changePct)) {
             bigMoves[t] = {
               priceBefore: prevPrice, priceAfter: close, changePct: pct,
@@ -1145,9 +1203,10 @@ async function fetchBookmap() {
 const fmt  = (n, d=2)  => n == null ? "-" : (+n).toFixed(d);
 const fmtK = (n) => {
   if (n == null) return "-";
-  if (Math.abs(n) >= 1e6) return (n/1e6).toFixed(1)+"M";
-  if (Math.abs(n) >= 1e3) return (n/1e3).toFixed(0)+"K";
-  return String(n);
+  const abs = Math.abs(n);
+  if (abs >= 1e6) return (n/1e6).toFixed(1)+"M";
+  if (abs >= 1e3) return Math.round(n/1e3)+"K";
+  return Math.round(n).toString();
 };
 const fmtSign = (n, d=2) => n == null ? "-" : (n>=0?"+":"")+fmt(n,d);
 const ago = (iso) => {
@@ -1206,8 +1265,96 @@ function toggleNewsPanel(ticker) {
   if (panel) panel.style.display = newsOpen[ticker] ? 'block' : 'none';
 }
 
+// ---------------------------------------------------------------------------
+// Silent Float / SI% / DTC background fetch (cached 24h in localStorage)
+// ---------------------------------------------------------------------------
+const FLOAT_CACHE_MS = 24 * 60 * 60 * 1000;
+
+function _loadFloatCache(ticker) {
+  try {
+    const raw = localStorage.getItem('float_si_' + ticker);
+    if (!raw) return null;
+    const obj = JSON.parse(raw);
+    if (Date.now() - obj.ts > FLOAT_CACHE_MS) { localStorage.removeItem('float_si_' + ticker); return null; }
+    return obj;
+  } catch(_) { return null; }
+}
+
+function _saveFloatCache(ticker, data) {
+  try { localStorage.setItem('float_si_' + ticker, JSON.stringify({ ...data, ts: Date.now() })); } catch(_) {}
+}
+
+function _applyFloatData(ticker, data) {
+  if (!state[ticker]) return;
+  if (!state[ticker].extended) state[ticker].extended = {};
+  if (data.float)  state[ticker].extended.cat_float = data.float;
+  if (data.si_pct) state[ticker].extended.cat_si    = data.si_pct;
+  if (data.dtc)    state[ticker].extended.cat_dtc   = data.dtc;
+  // Refresh Section 1 in-place without full re-render
+  const card = document.getElementById('card-' + ticker);
+  if (card) {
+    const sec1 = card.querySelector('.sec-float');
+    if (sec1) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = renderCard(ticker);
+      const newSec1 = tmp.querySelector('.sec-float');
+      if (newSec1) sec1.replaceWith(newSec1);
+    }
+  }
+}
+
+async function fetchFloatSI(ticker) {
+  // Already have data from catalyst? Use it.
+  const cs = catalystState[ticker];
+  if (cs?.data?.float) {
+    _applyFloatData(ticker, { float: cs.data.float, si_pct: cs.data.short_interest, dtc: cs.data.dtc });
+    return;
+  }
+  // Check localStorage cache
+  const cached = _loadFloatCache(ticker);
+  if (cached) { _applyFloatData(ticker, cached); return; }
+  // Need Anthropic API key
+  const apiKey = getCatalystApiKey();
+  if (!apiKey) return;
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 25000);
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5',
+        max_tokens: 150,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: `Search for the current float shares, short interest %, and days to cover for ${ticker} stock. Return ONLY this JSON with no other text:\n{"float":"38M","si_pct":"15%","dtc":"2.4"}` }],
+      }),
+      signal: ctrl.signal,
+    });
+    clearTimeout(timer);
+    if (!res.ok) return;
+    const data = await res.json();
+    const textBlocks = (data.content || []).filter(b => b.type === 'text');
+    if (!textBlocks.length) return;
+    const combined = textBlocks.map(b => b.text).join('');
+    const match = combined.match(/\{[\s\S]*?\}/);
+    if (!match) return;
+    const parsed = JSON.parse(match[0]);
+    _saveFloatCache(ticker, parsed);
+    _applyFloatData(ticker, parsed);
+  } catch(_) { /* silent */ }
+}
+
 function toggleCardBody(ticker) {
   cardOpen[ticker] = !cardOpen[ticker];
+  if (cardOpen[ticker]) {
+    _startNewsRefresh(ticker);
+    fetchFloatSI(ticker); // silent background, no spinner
+  }
   // Re-render just this card in-place
   const old = document.getElementById('card-' + ticker);
   if (!old) return;
@@ -1226,6 +1373,7 @@ function renderCard(ticker) {
   const rv  = rvDetectors[ticker];
   const ex  = s?.extended || {};
   const isOpen = !!cardOpen[ticker];
+  const csOpen = getCatalystState(ticker).open;
 
   const cardClass = isOpen ? "is-open" : "";
 
@@ -1260,15 +1408,19 @@ function renderCard(ticker) {
       <span class="hbar-right">
         ${newsBadge}
         <span class="card-status-badge ${msCls}">${msLabel}</span>
+        <button id="cat-btn-${ticker}" class="hbar-action-btn${csOpen?" active":""}" onclick="event.stopPropagation();toggleCatalyst('${ticker}')" title="Catalyst">&#9889;</button>
+        <button class="hbar-action-btn" onclick="event.stopPropagation();toggleNewsPanel('${ticker}')" title="News">&#128240;</button>
         <button class="card-remove" onclick="event.stopPropagation();removeTicker('${ticker}')" title="Remove">&#10005;</button>
       </span>
     </div>`;
 
   // ---- SECTION 1 — Float & Short Interest ----
   const catD = catalystState[ticker]?.data || null;
-  const floatVal = catD?.float      || ex.cat_float || "-";
-  const siVal    = catD?.short_interest || ex.cat_si || "-";
-  const dtcVal   = catD?.dtc        || ex.cat_dtc   || "-";
+  // Pull from catalyst result, extended state, or localStorage cache
+  const _fc  = _loadFloatCache(ticker) || {};
+  const floatVal = catD?.float          || ex.cat_float || _fc.float  || "-";
+  const siVal    = catD?.short_interest || ex.cat_si    || _fc.si_pct || "-";
+  const dtcVal   = catD?.dtc            || ex.cat_dtc   || _fc.dtc    || "-";
   const ap = addedPrices[ticker];
   const addedCls = (ap && price) ? (price < ap.price ? "cs-up" : "cs-down") : "";
   const addedPctStr = (ap && price) ? ` <span class="${addedCls}">(${fmtSign((price-ap.price)/ap.price*100)}%)</span>` : "";
@@ -1297,9 +1449,17 @@ function renderCard(ticker) {
         ${chgAbs != null ? `<span class="sec-quote-change ${pCls}">${fmtSign(chgAbs)} (${fmtSign(chgPct)}%)</span>` : ""}
       </div>
       <div class="sec-quote-meta">
-        Bid <span style="color:var(--green)">${fmt(a?.bid)} x ${fmtK(a?.bid_sz)}</span>
-        &nbsp;&nbsp;Ask <span style="color:var(--red)">${fmt(a?.ask)} x ${fmtK(a?.ask_sz)}</span>
-        ${spread != null ? `&nbsp;&nbsp;Spread <span style="color:var(--dim)">${spread}%</span>` : ""}
+        <span style="color:#888;font-size:13px">Bid</span>
+        <span class="bid-val" style="color:var(--green)">${fmt(a?.bid)}</span>
+        <span style="color:#888;font-size:13px">x ${fmtK(a?.bid_sz)}</span>
+        &nbsp;&nbsp;
+        <span style="color:#888;font-size:13px">Ask</span>
+        <span class="ask-val" style="color:var(--red)">${fmt(a?.ask)}</span>
+        <span style="color:#888;font-size:13px">x ${fmtK(a?.ask_sz)}</span>
+        ${spread != null ? `&nbsp;&nbsp;<span style="color:#888;font-size:13px">Spread</span> <span class="spread-val" style="color:var(--dim)">${spread}%</span>` : ""}
+        &nbsp;&nbsp;
+        <span style="color:#888;font-size:13px">VWAP</span>
+        <span class="vwap-val">$${fmt(vwap)}</span>
       </div>
       ${BOOKMAP_ENABLED && bm ? `
       <div class="sec-quote-meta" style="margin-top:3px">
@@ -1322,7 +1482,7 @@ function renderCard(ticker) {
   }
   const sec3 = `
     <div class="sec-regular">
-      <div class="sec-regular-title">Regular Hours</div>
+      <div class="sec-title">Regular Hours <span style="font-weight:400;opacity:.7">[${_fmtDate(_tradingDateStr())}]</span></div>
       <div class="cs-row">
         <span class="cs-label">Open</span><span class="cs-val">${a?.open!=null?"$"+fmt(a.open):"-"}</span>
         <span class="cs-sep">|</span>
@@ -1333,13 +1493,11 @@ function renderCard(ticker) {
         <span class="cs-label">Vol</span><span class="cs-val">${fmtK(a?.volume)}</span>
       </div>
       <div class="cs-row">
-        <span class="cs-label">VWAP</span><span class="cs-val">${fmt(vwap)}</span>
-        <span class="cs-sep">|</span>
         <span class="cs-label">Avg Trade</span><span class="cs-val">${rv.avgTradeSize!=null?rv.avgTradeSize+"sh":"-"}</span>
         <span class="cs-sep">|</span>
         <span class="cs-label">Pace</span><span class="cs-val">${rv.volPace!=null?fmtK(rv.volPace)+" EOD":"-"}</span>
         <span class="cs-sep">|</span>
-        <span class="cs-label"><span class="relvol-num ${rvCls}" style="font-size:13px">${rvNum!=null?rvNum.toFixed(1)+"x":"-"}</span> RelVol</span>
+        <span class="cs-label">RelVol</span><span class="cs-val relvol-num ${rvCls}">${rvNum!=null?rvNum.toFixed(1)+"x":"-"}</span>
         <span class="cs-sep">|</span>
         <span class="cs-label">Accel</span><span class="cs-val">${accelArrow} ${rv.acceleration!=null?fmtSign(rv.acceleration,0)+"%":"-"}</span>
       </div>
@@ -1357,18 +1515,18 @@ function renderCard(ticker) {
       </div>
     </div>`;
 
-  // ---- SECTION 4 — Pre-Market ----
-  let sec4 = "";
-  if (ex.pm_open != null) {
-    const prevClose = ex.prev_close;
-    const dayOpen   = a?.open;
-    const gapPct    = (prevClose && dayOpen) ? (dayOpen - prevClose) / prevClose * 100 : null;
-    const gapCls    = gapPct==null ? "gap-safe" : Math.abs(gapPct)>=20&&gapPct>0?"gap-danger":gapPct>=5?"gap-warn":gapPct<=-10?"gap-green":"gap-safe";
-    sec4 = `
-      <div class="sec-premarket">
-        <div class="cs-row">
-          <span class="cs-label">Gap</span>
-          <span class="cs-val ${gapCls}">${gapPct!=null?fmtSign(gapPct)+"%":"-"}</span>
+  // ---- SECTION 4 — Pre-Market (always show gap; PM bars need SIP) ----
+  const prevClose = ex.prev_close ?? a?.prev_close;
+  const dayOpen   = a?.open;
+  const gapPct    = (prevClose && dayOpen) ? (dayOpen - prevClose) / prevClose * 100 : null;
+  const gapCls    = gapPct==null ? "gap-safe" : Math.abs(gapPct)>=20&&gapPct>0?"gap-danger":gapPct>=5?"gap-warn":gapPct<=-10?"gap-green":"gap-safe";
+  const sec4 = `
+    <div class="sec-premarket">
+      <div class="sec-title">Pre-Market <span style="font-weight:400;opacity:.7">[${_fmtDate(_tradingDateStr())}]</span></div>
+      <div class="cs-row">
+        <span class="cs-label">Gap</span>
+        <span class="cs-val ${gapCls}">${gapPct!=null?fmtSign(gapPct)+"%":"-"}</span>
+        ${ex.pm_open != null ? `
           <span class="cs-sep">|</span>
           <span class="cs-label">PM Open</span><span class="cs-val">$${fmt(ex.pm_open)}</span>
           <span class="cs-sep">|</span>
@@ -1379,26 +1537,33 @@ function renderCard(ticker) {
           <span class="cs-label">PM Low</span><span class="cs-val">$${fmt(ex.pm_low)}</span>
           <span class="cs-sep">|</span>
           <span class="cs-label">PM Vol</span><span class="cs-val">${fmtK(ex.pm_volume)}</span>
-        </div>
-      </div>`;
-  }
+        ` : `
+          <span class="cs-sep">|</span>
+          <span class="cs-label">Prev Close</span><span class="cs-val">${prevClose!=null?"$"+fmt(prevClose):"-"}</span>
+          <span class="cs-sep">|</span>
+          <span class="cs-label">Day Open</span><span class="cs-val">${dayOpen!=null?"$"+fmt(dayOpen):"-"}</span>
+          <span class="cs-muted" style="font-size:12px">PM data unavailable</span>
+        `}
+      </div>
+    </div>`;
 
   // ---- SECTION 5 — Yesterday ----
   const ydayHiTime = ex.yday_high_time ? ` <span class="cs-muted">(${ex.yday_high_time})</span>` : "";
   const ydayLoTime = ex.yday_low_time  ? ` <span class="cs-muted">(${ex.yday_low_time})</span>`  : "";
   const sec5 = `
     <div class="sec-yesterday">
+      <div class="sec-title">Yesterday <span style="font-weight:400;opacity:.7">[${_fmtDate(ex.prev_bar_date || '')}]</span></div>
       <div class="cs-row">
         <span class="cs-label">Prev Close</span>
         <span class="cs-val">${ex.prev_close!=null?"$"+fmt(ex.prev_close):"-"}</span>
         <span class="cs-sep">|</span>
-        <span class="cs-label">Yday High</span>
+        <span class="cs-label">High</span>
         <span class="cs-val">${ex.yday_high!=null?"$"+fmt(ex.yday_high):"-"}</span>${ydayHiTime}
         <span class="cs-sep">|</span>
-        <span class="cs-label">Yday Low</span>
+        <span class="cs-label">Low</span>
         <span class="cs-val">${ex.yday_low!=null?"$"+fmt(ex.yday_low):"-"}</span>${ydayLoTime}
         <span class="cs-sep">|</span>
-        <span class="cs-label">Yday Vol</span>
+        <span class="cs-label">Vol</span>
         <span class="cs-val">${fmtK(ex.yday_volume)}</span>
       </div>
     </div>`;
@@ -1409,8 +1574,8 @@ function renderCard(ticker) {
     const ahCls = (ex.ah_change_pct??0)>=0 ? "cs-up" : "cs-down";
     sec6 = `
       <div class="sec-afterhours">
+        <div class="sec-title">After Hours <span style="font-weight:400;opacity:.7">[${_fmtDate(_tradingDateStr())}]</span></div>
         <div class="cs-row">
-          <span class="cs-label cs-label-ah">After Hours</span>
           <span class="cs-val ${ahCls}">$${fmt(ex.ah_price)}</span>
           ${ex.ah_change_abs!=null?`
             <span class="cs-val ${ahCls}">${fmtSign(ex.ah_change_abs)} (${fmtSign(ex.ah_change_pct)}%)</span>`:``}
@@ -1421,7 +1586,6 @@ function renderCard(ticker) {
   }
 
   // ---- FOOTER ----
-  const csOpen = getCatalystState(ticker).open;
   const footer = `
     <div class="card-footer-clean">
       <button id="cat-btn-${ticker}" class="footer-btn${csOpen?" active":""}" onclick="toggleCatalyst('${ticker}')">&#9889; Catalyst</button>
@@ -1437,8 +1601,8 @@ function renderCard(ticker) {
         ${sec2}
         ${sec3}
         ${sec4}
-        ${sec5}
         ${sec6}
+        ${sec5}
         ${footer}
         <div id="cat-${ticker}" class="catalyst-panel">${_buildCatalystPanelHTML(ticker)}</div>
         ${_buildNewsPanel(ticker)}
@@ -1681,10 +1845,27 @@ function _etDateStr() {
   return _etTime().toISOString().slice(0, 10);
 }
 
+function _fmtDate(isoStr) {
+  if (!isoStr) return '';
+  const d = new Date(isoStr + 'T12:00:00Z');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// Returns the most recent trading day date string (YYYY-MM-DD ET)
+// Skips weekends; if it's before 4am ET treat as previous day
+function _tradingDateStr() {
+  const et = _etTime();
+  // If before 4am ET, use previous calendar day
+  if (et.getHours() < 4) et.setDate(et.getDate() - 1);
+  // Skip back over weekends
+  while (et.getDay() === 0 || et.getDay() === 6) et.setDate(et.getDate() - 1);
+  return et.toISOString().slice(0, 10);
+}
+
 async function fetchExtendedData() {
   const symbols = WATCHLIST.join(',');
   if (!symbols) return;
-  const today = _etDateStr();
+  const today = _tradingDateStr();
   const hdrs  = { 'APCA-API-KEY-ID': ALPACA_KEY_ID, 'APCA-API-SECRET-KEY': ALPACA_SECRET_KEY };
   const sig   = AbortSignal.timeout(10000);
 
@@ -1701,12 +1882,12 @@ async function fetchExtendedData() {
 
   try {
     const fetches = [
-      fetch(`${ALPACA_BASE}/v2/stocks/bars?symbols=${symbols}&timeframe=5Min&start=${today}T08:00:00Z&end=${today}T13:30:00Z&feed=iex&limit=500`, { headers: hdrs, signal: sig }),
-      fetch(`${ALPACA_BASE}/v2/stocks/bars?symbols=${symbols}&timeframe=5Min&start=${today}T20:00:00Z&feed=iex&limit=100`, { headers: hdrs, signal: sig }),
-      fetch(`${ALPACA_BASE}/v2/stocks/bars?symbols=${symbols}&timeframe=1Min&start=${today}T13:30:00Z&end=${today}T20:00:00Z&feed=iex&limit=1000`, { headers: hdrs, signal: sig }),
+      fetch(`${ALPACA_BASE}/v2/stocks/bars?symbols=${symbols}&timeframe=5Min&start=${today}T08:00:00Z&end=${today}T13:30:00Z&feed=sip&limit=500`, { headers: hdrs, signal: sig }),
+      fetch(`${ALPACA_BASE}/v2/stocks/bars?symbols=${symbols}&timeframe=5Min&start=${today}T20:00:00Z&feed=sip&limit=100`, { headers: hdrs, signal: sig }),
+      fetch(`${ALPACA_BASE}/v2/stocks/bars?symbols=${symbols}&timeframe=1Min&start=${today}T13:30:00Z&end=${today}T20:00:00Z&feed=sip&limit=1000`, { headers: hdrs, signal: sig }),
     ];
     if (ydayDate) fetches.push(
-      fetch(`${ALPACA_BASE}/v2/stocks/bars?symbols=${symbols}&timeframe=1Min&start=${ydayDate}T13:30:00Z&end=${ydayDate}T20:00:00Z&feed=iex&limit=1000`, { headers: hdrs, signal: sig })
+      fetch(`${ALPACA_BASE}/v2/stocks/bars?symbols=${symbols}&timeframe=1Min&start=${ydayDate}T13:30:00Z&end=${ydayDate}T20:00:00Z&feed=sip&limit=1000`, { headers: hdrs, signal: sig })
     );
 
     const results = await Promise.all(fetches);
