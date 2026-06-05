@@ -609,113 +609,126 @@
     .pt-pm-high { font-weight: 700; color: var(--heading); }
 
     /* ===================================================================
-       NEW CARD SECTIONS
+       CARD BODY — 3-ROW REDESIGN
     =================================================================== */
 
-    /* Section shared row layout */
-    .cs-row {
-      display: flex; align-items: center; flex-wrap: wrap;
-      gap: 4px 10px; padding: 6px 12px 6px 16px;
-    }
-    .cs-label { color: #888; font-size: 13px; white-space: nowrap; }
-    .cs-val   { font-size: 16px; font-weight: 500; color: var(--heading); white-space: nowrap; }
-    .cs-sep   { color: var(--border2); font-size: 12px; }
+    /* Shared utility */
     .cs-up    { color: var(--green); font-weight: 600; }
     .cs-down  { color: var(--red);   font-weight: 600; }
-    .cs-muted { color: var(--dim2); font-size: 13px; }
-
-    /* Shared section title */
-    .sec-title {
-      font-size: 12px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.05em; color: #888;
-      padding: 6px 12px 2px 16px;
-    }
-
-    /* Section 1 — Float & SI (yellow, amber left border) */
-    .sec-float {
-      background: #fffbeb;
-      border-top: 1px solid #fde68a;
-      border-bottom: 1px solid #fde68a;
-      border-left: 3px solid #f59e0b;
-    }
-    .sec-float .cs-label { color: #92400e; font-size: 13px; }
-    .sec-float .cs-val   { color: #78350f; font-size: 16px; font-weight: 600; }
-    .sec-float .cs-sep   { color: #fcd34d; }
-    .dtc-tooltip { cursor: help; border-bottom: 1px dotted #d97706; }
-
-    /* Section 2 — Quote (white) */
-    .sec-quote {
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      padding: 8px 12px 8px 16px;
-    }
-    .sec-quote-price  { font-size: 20px; font-weight: 700; }
-    .sec-quote-change { font-size: 15px; font-weight: 600; margin-left: 8px; }
-    .sec-quote-meta   { font-size: 13px; color: var(--dim); margin-top: 4px; }
-    .sec-quote-meta .bid-val,
-    .sec-quote-meta .ask-val { font-size: 17px; font-weight: 600; }
-    .sec-quote-meta .spread-val { font-size: 17px; font-weight: 600; }
-    .sec-quote-meta .vwap-val   { font-size: 17px; font-weight: 600; color: var(--heading); }
-
-    /* Section 3 — Regular Hours (orange identity) */
-    .sec-regular {
-      background: #fff7ed;
-      border-top: 1px solid #fed7aa;
-      border-left: 3px solid #ea580c;
-    }
-    .sec-regular .sec-title { color: #ea580c; font-weight: 700; }
-    .sec-regular .cs-val    { font-size: 16px; font-weight: 500; }
-    .sec-regular .cs-label  { color: #9a3412; font-size: 13px; }
-    .sec-regular-title { display: none; }
-    .big-move-row  { font-size: 16px; font-weight: 600; }
-    .big-move-up   { color: var(--red); }
-    .big-move-down { color: var(--green); }
-
-    /* Section 4 — Pre-Market (blue identity) */
-    .sec-premarket {
-      background: #eff6ff;
-      border-top: 1px solid #bfdbfe;
-      border-bottom: 1px solid #bfdbfe;
-      border-left: 3px solid #2563eb;
-    }
-    .sec-premarket .sec-title { color: #2563eb; font-weight: 700; }
-    .sec-premarket .cs-label  { color: #1e40af; font-size: 13px; }
-    .sec-premarket .cs-val    { color: #1e3a8a; font-size: 16px; font-weight: 600; }
-    .sec-premarket .cs-sep    { color: #93c5fd; }
+    .cs-muted { color: var(--dim2); font-size: 12px; }
     .gap-safe   { color: var(--dim); }
     .gap-warn   { color: #d97706; font-weight: 700; }
     .gap-danger { color: var(--red); font-weight: 700; }
     .gap-green  { color: var(--green); font-weight: 700; }
+    .dtc-tooltip { cursor: help; border-bottom: 1px dotted #d97706; }
+    .big-move-up   { color: var(--red); }
+    .big-move-down { color: var(--green); }
 
-    /* Section 5 — Yesterday (gray identity) */
-    .sec-yesterday {
-      background: #f9fafb;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      border-left: 3px solid #9ca3af;
+    /* ── ROW 1: HERO BANNER ─────────────────────────────────────── */
+    .card-hero {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 16px; padding: 14px 16px 12px;
+      background: var(--surface);
+      border-bottom: 1px solid #e5e7eb;
     }
-    .sec-yesterday .sec-title { color: #6b7280; font-weight: 700; }
-    .sec-yesterday .cs-label  { color: #4b5563; font-size: 13px; }
-    .sec-yesterday .cs-val    { color: var(--heading); font-size: 16px; font-weight: 500; }
+    .hero-left  { flex: 1; min-width: 0; }
+    .hero-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
 
-    /* Section 6 — After Hours (purple identity) */
-    .sec-afterhours {
-      background: #faf5ff;
-      border-top: 1px solid #e9d5ff;
-      border-bottom: 1px solid #e9d5ff;
-      border-left: 3px solid #a78bfa;
+    .hero-ticker-line {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;
     }
-    .sec-afterhours .sec-title { color: #7c3aed; font-weight: 700; }
-    .sec-afterhours .cs-label  { color: #6b21a8; font-size: 13px; font-style: italic; }
-    .sec-afterhours .cs-val    { color: #581c87; font-size: 16px; font-weight: 600; }
-    .sec-afterhours .cs-sep    { color: #d8b4fe; }
+    .hero-ticker  { font-size: 18px; font-weight: 800; color: var(--heading); }
+    .hero-company { font-size: 13px; color: var(--dim); }
 
-    /* Footer — clean 3-button bar */
+    .hero-price-line { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+    .hero-price  { font-size: 24px; font-weight: 700; }
+    .hero-change { font-size: 16px; font-weight: 600; }
+
+    .hero-divider { height: 1px; background: #f1f3f5; margin-bottom: 7px; }
+
+    .hero-meta-line {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px;
+      font-size: 13px; color: var(--dim);
+    }
+    .hm-label { color: #888; }
+    .hm-val   { font-size: 15px; font-weight: 600; color: var(--heading); }
+    .hm-size  { color: var(--dim2); font-size: 12px; }
+    .hm-sep   { color: #d1d5db; }
+    .hm-bid   { color: var(--green); }
+    .hm-ask   { color: var(--red); }
+
+    .hero-actions { display: flex; gap: 6px; }
+    .hero-btn {
+      background: var(--surface3); border: 1px solid var(--border2);
+      color: var(--dim); font-family: var(--sans); font-size: 12px; font-weight: 600;
+      padding: 5px 12px; border-radius: 5px; cursor: pointer; white-space: nowrap;
+    }
+    .hero-btn:hover, .hero-btn.active { border-color: var(--blue); color: var(--blue); background: #eff6ff; }
+    .hero-vol-row { font-size: 13px; color: var(--dim); text-align: right; }
+    .hero-vol-row strong { color: var(--heading); font-weight: 600; }
+
+    /* ── ROW 2: KEY METRICS RIBBON ──────────────────────────────── */
+    .card-metrics {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      background: #f8fafc;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .metrics-col {
+      padding: 10px 14px;
+      border-right: 1px solid #e5e7eb;
+    }
+    .metrics-col:last-child { border-right: none; }
+    .mc-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; color: #888; margin-bottom: 4px;
+    }
+    .mc-val { font-size: 16px; font-weight: 700; color: var(--heading); }
+
+    /* ── ROW 3: TEMPORAL SESSIONS GRID ─────────────────────────── */
+    .card-sessions {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid #e5e7eb;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      background: var(--surface);
+    }
+    .session-col {
+      padding: 10px 12px;
+      border-right: 1px solid #e5e7eb;
+      border-top: 3px solid transparent;
+    }
+    .session-col:last-child { border-right: none; }
+
+    /* Accent colors per session */
+    .sc-regular    { border-top-color: #ea580c; }
+    .sc-premarket  { border-top-color: #2563eb; }
+    .sc-afterhours { border-top-color: #7c3aed; }
+    .sc-yesterday  { border-top-color: #9ca3af; }
+
+    .session-hdr {
+      font-size: 10px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.06em; margin-bottom: 8px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .sc-regular    .session-hdr { color: #ea580c; }
+    .sc-premarket  .session-hdr { color: #2563eb; }
+    .sc-afterhours .session-hdr { color: #7c3aed; }
+    .sc-yesterday  .session-hdr { color: #6b7280; }
+
+    .session-badge {
+      font-size: 10px; font-weight: 500; padding: 1px 5px;
+      border-radius: 3px; background: var(--surface3);
+      color: var(--dim); white-space: nowrap;
+    }
+    .session-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; }
+    .sl { font-size: 12px; color: #888; white-space: nowrap; }
+    .sv { font-size: 15px; font-weight: 500; color: var(--heading); white-space: nowrap; }
+    .sv-t { font-size: 11px; color: var(--dim2); margin-left: 3px; }
+    .sv-bm { font-size: 13px; font-weight: 600; }
+    .sv-na { font-size: 13px; color: var(--dim2); font-style: italic; }
+
+    /* ── BOTTOM CONTROLS ────────────────────────────────────────── */
     .card-footer-clean {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 12px;
-      background: var(--surface2);
-      border-top: 1px solid var(--border);
+      display: none; /* buttons moved to hero-right */
     }
     .footer-btn {
       background: var(--surface3); border: 1px solid var(--border2);
@@ -1414,196 +1427,178 @@ function renderCard(ticker) {
       </span>
     </div>`;
 
-  // ---- SECTION 1 — Float & Short Interest ----
-  const catD = catalystState[ticker]?.data || null;
-  // Pull from catalyst result, extended state, or localStorage cache
-  const _fc  = _loadFloatCache(ticker) || {};
-  const floatVal = catD?.float          || ex.cat_float || _fc.float  || "-";
-  const siVal    = catD?.short_interest || ex.cat_si    || _fc.si_pct || "-";
-  const dtcVal   = catD?.dtc            || ex.cat_dtc   || _fc.dtc    || "-";
-  const ap = addedPrices[ticker];
-  const addedCls = (ap && price) ? (price < ap.price ? "cs-up" : "cs-down") : "";
-  const addedPctStr = (ap && price) ? ` <span class="${addedCls}">(${fmtSign((price-ap.price)/ap.price*100)}%)</span>` : "";
-  const sec1 = `
-    <div class="sec-float">
-      <div class="cs-row">
-        <span class="cs-label">Float</span><span class="cs-val">${floatVal}</span>
-        <span class="cs-sep">|</span>
-        <span class="cs-label">SI%</span><span class="cs-val">${siVal}</span>
-        <span class="cs-sep">|</span>
-        <span class="cs-label dtc-tooltip" title="Days To Cover — how many days for all shorts to exit at avg volume. Higher = more squeeze risk.">DTC</span>
-        <span class="cs-val">${dtcVal}</span>
-        <span class="cs-sep">|</span>
-        <span class="cs-label">Added</span>
-        <span class="cs-val ${addedCls}">${ap ? "$"+fmt(ap.price) : "-"}</span>${addedPctStr}
-      </div>
-    </div>`;
-
-  // ---- SECTION 2 — Current Quote ----
-  const spread = (a?.bid && a?.ask) ? ((a.ask-a.bid)/a.ask*100).toFixed(2) : null;
-  const cvdSlope = bm?.cvd_slope || bm?.cvd_direction;
-  const sec2 = `
-    <div class="sec-quote">
-      <div>
-        <span class="sec-quote-price ${pCls}">${price != null ? "$"+fmt(price) : "-"}</span>
-        ${chgAbs != null ? `<span class="sec-quote-change ${pCls}">${fmtSign(chgAbs)} (${fmtSign(chgPct)}%)</span>` : ""}
-      </div>
-      <div class="sec-quote-meta">
-        <span style="color:#888;font-size:13px">Bid</span>
-        <span class="bid-val" style="color:var(--green)">${fmt(a?.bid)}</span>
-        <span style="color:#888;font-size:13px">x ${fmtK(a?.bid_sz)}</span>
-        &nbsp;&nbsp;
-        <span style="color:#888;font-size:13px">Ask</span>
-        <span class="ask-val" style="color:var(--red)">${fmt(a?.ask)}</span>
-        <span style="color:#888;font-size:13px">x ${fmtK(a?.ask_sz)}</span>
-        ${spread != null ? `&nbsp;&nbsp;<span style="color:#888;font-size:13px">Spread</span> <span class="spread-val" style="color:var(--dim)">${spread}%</span>` : ""}
-        &nbsp;&nbsp;
-        <span style="color:#888;font-size:13px">VWAP</span>
-        <span class="vwap-val">$${fmt(vwap)}</span>
-      </div>
-      ${BOOKMAP_ENABLED && bm ? `
-      <div class="sec-quote-meta" style="margin-top:3px">
-        CVD <span style="color:var(--dim)">${cvdArrow(cvdSlope)} ${fmtK(bm?.cvd)}</span>
-        &nbsp;&nbsp;Imbalance <span class="${(bm?.book_imbalance_pct??0)>=0?"up":"down"}">${fmtSign(bm?.book_imbalance_pct,1)}%</span>
-      </div>` : ""}
-    </div>`;
-
-  // ---- SECTION 3 — Regular Hours ----
-  const accelArrow = rv.acceleration > 20 ? "^" : rv.acceleration < -20 ? "v" : "->";
-  const rvCls = rvNum==null?"rv-gray":rvNum<1?"rv-gray":rvNum<2?"rv-white":rvNum<3?"rv-yellow":rvNum<5?"rv-orange":"rv-red";
-  const hiTime = ex.today_high_time ? ` <span class="cs-muted">(${ex.today_high_time})</span>` : "";
-  const loTime = ex.today_low_time  ? ` <span class="cs-muted">(${ex.today_low_time})</span>`  : "";
-  const bm_pt = bigMoves[ticker];
-  let bmAgo = "-";
-  if (bm_pt) {
-    const s2 = Math.floor((Date.now()-bm_pt.timestamp)/1000);
-    const h2=Math.floor(s2/3600),m2=Math.floor((s2%3600)/60);
-    bmAgo = h2>0?`${h2}h ${m2}m ago`:`${m2}m ago`;
-  }
-  const sec3 = `
-    <div class="sec-regular">
-      <div class="sec-title">Regular Hours <span style="font-weight:400;opacity:.7">[${_fmtDate(_tradingDateStr())}]</span></div>
-      <div class="cs-row">
-        <span class="cs-label">Open</span><span class="cs-val">${a?.open!=null?"$"+fmt(a.open):"-"}</span>
-        <span class="cs-sep">|</span>
-        <span class="cs-label">High</span><span class="cs-val">${a?.high!=null?"$"+fmt(a.high):"-"}</span>${hiTime}
-        <span class="cs-sep">|</span>
-        <span class="cs-label">Low</span><span class="cs-val">${a?.low!=null?"$"+fmt(a.low):"-"}</span>${loTime}
-        <span class="cs-sep">|</span>
-        <span class="cs-label">Vol</span><span class="cs-val">${fmtK(a?.volume)}</span>
-      </div>
-      <div class="cs-row">
-        <span class="cs-label">Avg Trade</span><span class="cs-val">${rv.avgTradeSize!=null?rv.avgTradeSize+"sh":"-"}</span>
-        <span class="cs-sep">|</span>
-        <span class="cs-label">Pace</span><span class="cs-val">${rv.volPace!=null?fmtK(rv.volPace)+" EOD":"-"}</span>
-        <span class="cs-sep">|</span>
-        <span class="cs-label">RelVol</span><span class="cs-val relvol-num ${rvCls}">${rvNum!=null?rvNum.toFixed(1)+"x":"-"}</span>
-        <span class="cs-sep">|</span>
-        <span class="cs-label">Accel</span><span class="cs-val">${accelArrow} ${rv.acceleration!=null?fmtSign(rv.acceleration,0)+"%":"-"}</span>
-      </div>
-      <div class="cs-row">
-        <span class="cs-label">&#9889; Big Move</span>
-        ${bm_pt ? `
-          <span class="big-move-row ${bm_pt.changePct>0?"big-move-up":"big-move-down"}">
-            $${fmt(bm_pt.priceBefore)} -&gt; $${fmt(bm_pt.priceAfter)} (${fmtSign(bm_pt.changePct)}%)
-          </span>
-          <span class="cs-sep">|</span>
-          <span class="cs-label">at ${bm_pt.time}</span>
-          <span class="cs-sep">|</span>
-          <span class="cs-muted">${bmAgo}</span>
-        ` : `<span class="cs-muted">-</span>`}
-      </div>
-    </div>`;
-
-  // ---- SECTION 4 — Pre-Market (always show gap; PM bars need SIP) ----
+  // ===== Additional computed values =====
+  const catD      = catalystState[ticker]?.data || null;
+  const _fc       = _loadFloatCache(ticker) || {};
+  const floatVal  = catD?.float          || ex.cat_float || _fc.float  || "-";
+  const siVal     = catD?.short_interest || ex.cat_si    || _fc.si_pct || "-";
+  const dtcVal    = catD?.dtc            || ex.cat_dtc   || _fc.dtc    || "-";
+  const ap        = addedPrices[ticker];
+  const spread    = (a?.bid && a?.ask) ? ((a.ask-a.bid)/a.ask*100).toFixed(2) : null;
+  const rvCls     = rvNum==null?"rv-gray":rvNum<1?"rv-gray":rvNum<2?"rv-white":rvNum<3?"rv-yellow":rvNum<5?"rv-orange":"rv-red";
   const prevClose = ex.prev_close ?? a?.prev_close;
   const dayOpen   = a?.open;
   const gapPct    = (prevClose && dayOpen) ? (dayOpen - prevClose) / prevClose * 100 : null;
-  const gapCls    = gapPct==null ? "gap-safe" : Math.abs(gapPct)>=20&&gapPct>0?"gap-danger":gapPct>=5?"gap-warn":gapPct<=-10?"gap-green":"gap-safe";
-  const sec4 = `
-    <div class="sec-premarket">
-      <div class="sec-title">Pre-Market <span style="font-weight:400;opacity:.7">[${_fmtDate(_tradingDateStr())}]</span></div>
-      <div class="cs-row">
-        <span class="cs-label">Gap</span>
-        <span class="cs-val ${gapCls}">${gapPct!=null?fmtSign(gapPct)+"%":"-"}</span>
-        ${ex.pm_open != null ? `
-          <span class="cs-sep">|</span>
-          <span class="cs-label">PM Open</span><span class="cs-val">$${fmt(ex.pm_open)}</span>
-          <span class="cs-sep">|</span>
-          <span class="cs-label">PM High</span>
-          <span class="cs-val" style="font-weight:700">$${fmt(ex.pm_high)}</span>
-          ${ex.pm_high_time?`<span class="cs-muted">(${ex.pm_high_time})</span>`:""}
-          <span class="cs-sep">|</span>
-          <span class="cs-label">PM Low</span><span class="cs-val">$${fmt(ex.pm_low)}</span>
-          <span class="cs-sep">|</span>
-          <span class="cs-label">PM Vol</span><span class="cs-val">${fmtK(ex.pm_volume)}</span>
-        ` : `
-          <span class="cs-sep">|</span>
-          <span class="cs-label">Prev Close</span><span class="cs-val">${prevClose!=null?"$"+fmt(prevClose):"-"}</span>
-          <span class="cs-sep">|</span>
-          <span class="cs-label">Day Open</span><span class="cs-val">${dayOpen!=null?"$"+fmt(dayOpen):"-"}</span>
-          <span class="cs-muted" style="font-size:12px">PM data unavailable</span>
-        `}
-      </div>
-    </div>`;
+  const gapCls    = gapPct==null?"gap-safe":Math.abs(gapPct)>=20&&gapPct>0?"gap-danger":gapPct>=5?"gap-warn":gapPct<=-10?"gap-green":"gap-safe";
+  const bm_pt     = bigMoves[ticker];
+  const companyName = catD?.company_name || "";
 
-  // ---- SECTION 5 — Yesterday ----
-  const ydayHiTime = ex.yday_high_time ? ` <span class="cs-muted">(${ex.yday_high_time})</span>` : "";
-  const ydayLoTime = ex.yday_low_time  ? ` <span class="cs-muted">(${ex.yday_low_time})</span>`  : "";
-  const sec5 = `
-    <div class="sec-yesterday">
-      <div class="sec-title">Yesterday <span style="font-weight:400;opacity:.7">[${_fmtDate(ex.prev_bar_date || '')}]</span></div>
-      <div class="cs-row">
-        <span class="cs-label">Prev Close</span>
-        <span class="cs-val">${ex.prev_close!=null?"$"+fmt(ex.prev_close):"-"}</span>
-        <span class="cs-sep">|</span>
-        <span class="cs-label">High</span>
-        <span class="cs-val">${ex.yday_high!=null?"$"+fmt(ex.yday_high):"-"}</span>${ydayHiTime}
-        <span class="cs-sep">|</span>
-        <span class="cs-label">Low</span>
-        <span class="cs-val">${ex.yday_low!=null?"$"+fmt(ex.yday_low):"-"}</span>${ydayLoTime}
-        <span class="cs-sep">|</span>
-        <span class="cs-label">Vol</span>
-        <span class="cs-val">${fmtK(ex.yday_volume)}</span>
-      </div>
-    </div>`;
-
-  // ---- SECTION 6 — After Hours (only after 4PM) ----
-  let sec6 = "";
-  if ((ms==="after"||ms==="closed") && ex.ah_price!=null) {
-    const ahCls = (ex.ah_change_pct??0)>=0 ? "cs-up" : "cs-down";
-    sec6 = `
-      <div class="sec-afterhours">
-        <div class="sec-title">After Hours <span style="font-weight:400;opacity:.7">[${_fmtDate(_tradingDateStr())}]</span></div>
-        <div class="cs-row">
-          <span class="cs-val ${ahCls}">$${fmt(ex.ah_price)}</span>
-          ${ex.ah_change_abs!=null?`
-            <span class="cs-val ${ahCls}">${fmtSign(ex.ah_change_abs)} (${fmtSign(ex.ah_change_pct)}%)</span>`:``}
-          ${ex.ah_volume?`<span class="cs-sep">|</span><span class="cs-label">AH Vol</span><span class="cs-val">${fmtK(ex.ah_volume)}</span>`:""}
-          ${ex.ah_updated?`<span class="cs-sep">|</span><span class="cs-label">Updated</span><span class="cs-muted">${ex.ah_updated}</span>`:""}
-        </div>
-      </div>`;
+  // Big move ago
+  let bmAgo = "";
+  if (bm_pt) {
+    const s2=Math.floor((Date.now()-bm_pt.timestamp)/1000), h2=Math.floor(s2/3600), m2=Math.floor((s2%3600)/60);
+    bmAgo = h2>0?`${h2}h ${m2}m ago`:`${m2}m ago`;
   }
 
-  // ---- FOOTER ----
-  const footer = `
-    <div class="card-footer-clean">
-      <button id="cat-btn-${ticker}" class="footer-btn${csOpen?" active":""}" onclick="toggleCatalyst('${ticker}')">&#9889; Catalyst</button>
-      <button class="footer-btn" onclick="toggleNewsPanel('${ticker}')">&#128240; News</button>
-      <button class="footer-btn" onclick="copySnapshot('${ticker}')">&#128203; Copy</button>
+  // Pre-compute complex expressions to avoid deep template nesting
+  const _arrow       = chgPct != null ? (chgPct >= 0 ? "&#9650;" : "&#9660;") : "";
+  const _changeSpan  = chgAbs != null ? `<span class="hero-change ${pCls}">${_arrow} ${fmtSign(chgAbs)} (${fmtSign(chgPct)}%)</span>` : "";
+  const _spreadSpan  = spread != null ? `<span class="hm-sep">|</span><span class="hm-label">Spread</span><span class="hm-val">${spread}%</span>` : "";
+  const _companySpan = companyName ? `<span class="hero-company">${companyName}</span>` : "";
+  const _rvSpan      = rvNum != null ? `&nbsp;|&nbsp; RelVol <strong class="relvol-num ${rvCls}">${rvNum.toFixed(1)}x</strong>` : "";
+  const _catActive   = csOpen ? " active" : "";
+  const _ahBadge     = ex.ah_updated ? `&#9200; ${ex.ah_updated}` : _fmtDate(_tradingDateStr());
+  const _pmHiTime    = ex.pm_high_time ? `<span class="sv-t">(${ex.pm_high_time})</span>` : "";
+
+  // ── ROW 1: HERO BANNER ─────────────────────────────────────────────
+  const row1 = `
+    <div class="card-hero">
+      <div class="hero-left">
+        <div class="hero-ticker-line">
+          <span class="hero-ticker">${ticker}</span>
+          ${_companySpan}
+          <span class="card-status-badge ${msCls}">${msLabel}</span>
+        </div>
+        <div class="hero-price-line">
+          <span class="hero-price ${pCls}">${price!=null ? "$"+fmt(price) : "-"}</span>
+          ${_changeSpan}
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-meta-line">
+          <span class="hm-label">Bid</span>
+          <span class="hm-val hm-bid">${fmt(a?.bid)}</span>
+          <span class="hm-size">x ${fmtK(a?.bid_sz)}</span>
+          <span class="hm-sep">|</span>
+          <span class="hm-label">Ask</span>
+          <span class="hm-val hm-ask">${fmt(a?.ask)}</span>
+          <span class="hm-size">x ${fmtK(a?.ask_sz)}</span>
+          ${_spreadSpan}
+          <span class="hm-sep">|</span>
+          <span class="hm-label">VWAP</span>
+          <span class="hm-val">$${fmt(vwap)}</span>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="hero-actions">
+          <button id="cat-btn-${ticker}" class="hero-btn${_catActive}" onclick="toggleCatalyst('${ticker}')">&#9889; Catalyst</button>
+          <button class="hero-btn" onclick="toggleNewsPanel('${ticker}')">&#128240; News</button>
+          <button class="hero-btn" onclick="copySnapshot('${ticker}')">&#128203; Copy</button>
+        </div>
+        <div class="hero-vol-row">
+          Vol <strong>${fmtK(a?.volume)}</strong>
+          ${_rvSpan}
+        </div>
+      </div>
     </div>`;
+
+  // ── ROW 2: KEY METRICS RIBBON ──────────────────────────────────────
+  const addedCls = (ap&&price) ? (price<ap.price?"cs-up":"cs-down") : "";
+  const addedPct = (ap&&price) ? fmtSign((price-ap.price)/ap.price*100)+"%" : "";
+  const _addedSpan = addedPct ? ` <span class="${addedCls}" style="font-size:13px">(${addedPct})</span>` : "";
+  const addedStr = ap ? "$"+fmt(ap.price)+_addedSpan : "-";
+  const row2 = `
+    <div class="card-metrics">
+      <div class="metrics-col">
+        <div class="mc-label">Float</div>
+        <div class="mc-val">${floatVal}</div>
+      </div>
+      <div class="metrics-col">
+        <div class="mc-label">Short Interest</div>
+        <div class="mc-val">${siVal}</div>
+      </div>
+      <div class="metrics-col">
+        <div class="mc-label dtc-tooltip" title="Days To Cover — how long for all shorts to exit at avg volume">Days to Cover</div>
+        <div class="mc-val">${dtcVal}</div>
+      </div>
+      <div class="metrics-col">
+        <div class="mc-label">Added Price</div>
+        <div class="mc-val">${addedStr}</div>
+      </div>
+    </div>`;
+
+  // ── ROW 3: TEMPORAL SESSIONS GRID ──────────────────────────────────
+
+  // Col A — Regular Hours
+  const hiT = ex.today_high_time ? `<span class="sv-t">(${ex.today_high_time})</span>` : "";
+  const loT = ex.today_low_time  ? `<span class="sv-t">(${ex.today_low_time})</span>`  : "";
+  const bmHtml = bm_pt
+    ? `<span class="sv-bm ${bm_pt.changePct>0?"big-move-up":"big-move-down"}">$${fmt(bm_pt.priceBefore)}-&gt;$${fmt(bm_pt.priceAfter)} (${fmtSign(bm_pt.changePct)}%)</span> <span class="cs-muted">${bmAgo}</span>`
+    : `<span class="sv-na">-</span>`;
+  const colA = `
+    <div class="session-col sc-regular">
+      <div class="session-hdr">Regular Hours <span class="session-badge">&#128197; ${_fmtDate(_tradingDateStr())}</span></div>
+      <div class="session-row"><span class="sl">Open</span><span class="sv">${a?.open!=null?"$"+fmt(a.open):"-"}</span></div>
+      <div class="session-row"><span class="sl">High</span><span class="sv">${a?.high!=null?"$"+fmt(a.high):"-"} ${hiT}</span></div>
+      <div class="session-row"><span class="sl">Low</span><span class="sv">${a?.low!=null?"$"+fmt(a.low):"-"} ${loT}</span></div>
+      <div class="session-row"><span class="sl">Vol</span><span class="sv">${fmtK(a?.volume)}</span></div>
+      <div class="session-row"><span class="sl">Avg Trade</span><span class="sv">${rv.avgTradeSize!=null?rv.avgTradeSize+"sh":"-"}</span></div>
+      <div class="session-row"><span class="sl">Pace</span><span class="sv">${rv.volPace!=null?fmtK(rv.volPace)+" EOD":"-"}</span></div>
+      <div class="session-row"><span class="sl">&#9889; Big Move</span><span class="sv">${bmHtml}</span></div>
+    </div>`;
+
+  // Col B — Pre-Market (build rows without nesting)
+  const ahShow   = (ms==="after"||ms==="closed") && ex.ah_price!=null;
+  const ahCls    = (ex.ah_change_pct??0)>=0 ? "cs-up" : "cs-down";
+  const ahChange = ex.ah_change_abs!=null ? fmtSign(ex.ah_change_abs)+" ("+fmtSign(ex.ah_change_pct)+"%)" : "-";
+  const pmRows   = ex.pm_open!=null
+    ? `<div class="session-row"><span class="sl">PM Open</span><span class="sv">$${fmt(ex.pm_open)}</span></div>
+       <div class="session-row"><span class="sl">PM High</span><span class="sv" style="font-weight:700">$${fmt(ex.pm_high)} ${_pmHiTime}</span></div>
+       <div class="session-row"><span class="sl">PM Low</span><span class="sv">$${fmt(ex.pm_low)}</span></div>
+       <div class="session-row"><span class="sl">PM Vol</span><span class="sv">${fmtK(ex.pm_volume)}</span></div>`
+    : `<div class="session-row"><span class="sl">Prev Close</span><span class="sv">${prevClose!=null?"$"+fmt(prevClose):"-"}</span></div>
+       <div class="session-row"><span class="sl">Day Open</span><span class="sv">${dayOpen!=null?"$"+fmt(dayOpen):"-"}</span></div>
+       <div class="session-row"><span class="sl" style="color:var(--dim2);font-style:italic">PM data unavailable</span><span></span></div>`;
+  const ahRows   = ahShow
+    ? `<div class="session-row"><span class="sl">AH Price</span><span class="sv ${ahCls}">$${fmt(ex.ah_price)}</span></div>
+       <div class="session-row"><span class="sl">AH Change</span><span class="sv ${ahCls}">${ahChange}</span></div>
+       <div class="session-row"><span class="sl">AH Vol</span><span class="sv">${fmtK(ex.ah_volume)}</span></div>`
+    : `<div class="session-row"><span class="sv-na">- before 4PM -</span></div>`;
+
+  const colB = `
+    <div class="session-col sc-premarket">
+      <div class="session-hdr">Pre-Market <span class="session-badge">&#128197; ${_fmtDate(_tradingDateStr())}</span></div>
+      <div class="session-row"><span class="sl">Gap</span><span class="sv ${gapCls}">${gapPct!=null?fmtSign(gapPct)+"%":"-"}</span></div>
+      ${pmRows}
+    </div>`;
+
+  // Col C — After Hours
+  const colC = `
+    <div class="session-col sc-afterhours">
+      <div class="session-hdr">After Hours <span class="session-badge">${_ahBadge}</span></div>
+      ${ahRows}
+    </div>`;
+
+  // Col D — Yesterday
+  const yHiT = ex.yday_high_time ? `<span class="sv-t">(${ex.yday_high_time})</span>` : "";
+  const yLoT = ex.yday_low_time  ? `<span class="sv-t">(${ex.yday_low_time})</span>`  : "";
+  const colD = `
+    <div class="session-col sc-yesterday">
+      <div class="session-hdr">Yesterday <span class="session-badge">&#128197; ${_fmtDate(ex.prev_bar_date||"")}</span></div>
+      <div class="session-row"><span class="sl">Prev Close</span><span class="sv">${ex.prev_close!=null?"$"+fmt(ex.prev_close):"-"}</span></div>
+      <div class="session-row"><span class="sl">High</span><span class="sv">${ex.yday_high!=null?"$"+fmt(ex.yday_high):"-"} ${yHiT}</span></div>
+      <div class="session-row"><span class="sl">Low</span><span class="sv">${ex.yday_low!=null?"$"+fmt(ex.yday_low):"-"} ${yLoT}</span></div>
+      <div class="session-row"><span class="sl">Vol</span><span class="sv">${fmtK(ex.yday_volume)}</span></div>
+    </div>`;
+
+  const row3 = `<div class="card-sessions">${colA}${colB}${colC}${colD}</div>`;
 
   return `
     <div class="ticker-card ${cardClass}" id="card-${ticker}">
       ${headerBar}
       <div class="card-body-wrap">
-        ${sec1}
-        ${sec2}
-        ${sec3}
-        ${sec4}
-        ${sec6}
-        ${sec5}
-        ${footer}
+        ${row1}
+        ${row2}
+        ${row3}
         <div id="cat-${ticker}" class="catalyst-panel">${_buildCatalystPanelHTML(ticker)}</div>
         ${_buildNewsPanel(ticker)}
       </div>
@@ -1660,14 +1655,23 @@ function applyTickerInput() {
   const raw = document.getElementById("ticker-input").value.trim().toUpperCase();
   if (!raw) return;
   const tickers = raw.split(/[\s,]+/).filter(Boolean);
+  let added = false;
   tickers.forEach(t => {
     if (!WATCHLIST.includes(t)) {
       WATCHLIST.push(t);
       _ensureTicker(t);
       rvDetectors[t].fetchAvgVol();
+      added = true;
     }
   });
   renderAll();
+  // Keep input synced with full watchlist
+  document.getElementById("ticker-input").value = WATCHLIST.join(" ");
+  // Immediately fetch data for new tickers instead of waiting for next poll
+  if (added) {
+    fetchAlpaca().then(renderAll);
+    fetchExtendedData();
+  }
 }
 
 function removeTicker(t) {
