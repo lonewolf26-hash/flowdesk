@@ -667,29 +667,23 @@
     .hero-vol-row { font-size: 13px; color: var(--dim); text-align: right; }
     .hero-vol-row strong { color: var(--heading); font-weight: 600; }
 
-    /* ── ROW 2: KEY METRICS RIBBON ──────────────────────────────── */
+    /* ── ROW 2: METRICS RIBBON (amber tint) ─────────────────────── */
     .card-metrics {
       display: grid; grid-template-columns: repeat(4, 1fr);
-      background: #f8fafc;
-      border-bottom: 1px solid #e5e7eb;
+      background: #fffbeb;
+      border-bottom: 1px solid #fde68a;
     }
-    .metrics-col {
-      padding: 10px 14px;
-      border-right: 1px solid #e5e7eb;
-    }
+    .metrics-col { padding: 10px 14px; border-right: 1px solid #fde68a; }
     .metrics-col:last-child { border-right: none; }
-    .mc-label {
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.05em; color: #888; margin-bottom: 4px;
-    }
-    .mc-val { font-size: 16px; font-weight: 700; color: var(--heading); }
+    .mc-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #92400e; margin-bottom: 4px; }
+    .mc-val   { font-size: 16px; font-weight: 700; color: #78350f; }
 
     /* ── ROW 3: TEMPORAL SESSIONS GRID ─────────────────────────── */
     .card-sessions {
       display: grid; grid-template-columns: repeat(4, 1fr);
+      align-items: stretch;
       border-bottom: 1px solid #e5e7eb;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-      background: var(--surface);
     }
     .session-col {
       padding: 10px 12px;
@@ -698,26 +692,35 @@
     }
     .session-col:last-child { border-right: none; }
 
-    /* Accent colors per session */
-    .sc-regular    { border-top-color: #ea580c; }
-    .sc-premarket  { border-top-color: #2563eb; }
-    .sc-afterhours { border-top-color: #7c3aed; }
-    .sc-yesterday  { border-top-color: #9ca3af; }
+    /* Per-session color themes */
+    .sc-regular    { background: #fff7ed; border-top-color: #ea580c; }
+    .sc-premarket  { background: #eff6ff; border-top-color: #2563eb; }
+    .sc-afterhours { background: #faf5ff; border-top-color: #7c3aed; }
+    .sc-yesterday  { background: #f9fafb; border-top-color: #9ca3af; }
+
+    .sc-regular    .session-hdr { color: #ea580c; }
+    .sc-premarket  .session-hdr { color: #2563eb; }
+    .sc-afterhours .session-hdr { color: #7c3aed; }
+    .sc-yesterday  .session-hdr { color: #6b7280; }
+
+    .sc-regular    .sl { color: #9a3412; }
+    .sc-regular    .sv { color: #c2410c; }
+    .sc-premarket  .sl { color: #1e40af; }
+    .sc-premarket  .sv { color: #1d4ed8; }
+    .sc-afterhours .sl { color: #5b21b6; }
+    .sc-afterhours .sv { color: #6d28d9; }
+    .sc-yesterday  .sl { color: #4b5563; }
+    .sc-yesterday  .sv { color: #374151; }
 
     .session-hdr {
       font-size: 10px; font-weight: 800; text-transform: uppercase;
       letter-spacing: 0.06em; margin-bottom: 8px;
       display: flex; align-items: center; justify-content: space-between;
     }
-    .sc-regular    .session-hdr { color: #ea580c; }
-    .sc-premarket  .session-hdr { color: #2563eb; }
-    .sc-afterhours .session-hdr { color: #7c3aed; }
-    .sc-yesterday  .session-hdr { color: #6b7280; }
-
     .session-badge {
       font-size: 10px; font-weight: 500; padding: 1px 5px;
-      border-radius: 3px; background: var(--surface3);
-      color: var(--dim); white-space: nowrap;
+      border-radius: 3px; background: rgba(0,0,0,0.06);
+      color: inherit; opacity: 0.8; white-space: nowrap;
     }
     .session-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; }
     .sl { font-size: 12px; color: #888; white-space: nowrap; }
@@ -1454,10 +1457,15 @@ function renderCard(ticker) {
   const _arrow       = chgPct != null ? (chgPct >= 0 ? "&#9650;" : "&#9660;") : "";
   const _changeSpan  = chgAbs != null ? `<span class="hero-change ${pCls}">${_arrow} ${fmtSign(chgAbs)} (${fmtSign(chgPct)}%)</span>` : "";
   const _spreadSpan  = spread != null ? `<span class="hm-sep">|</span><span class="hm-label">Spread</span><span class="hm-val">${spread}%</span>` : "";
-  const _companySpan = companyName ? `<span class="hero-company">${companyName}</span>` : "";
+  const _coName      = companyNames[ticker] || companyName || "";
+  const _companySpan = `<span class="hero-company" id="hero-company-${ticker}">${_coName}</span>`;
   const _rvSpan      = rvNum != null ? `&nbsp;|&nbsp; RelVol <strong class="relvol-num ${rvCls}">${rvNum.toFixed(1)}x</strong>` : "";
   const _catActive   = csOpen ? " active" : "";
-  const _ahBadge     = ex.ah_updated ? `&#9200; ${ex.ah_updated}` : _fmtDate(_tradingDateStr());
+  // AH badge: before 4PM show "After 4PM", during AH show update time, after 8PM show "Closed HH:MM"
+  const _etHr = _etTime().getHours();
+  const _ahBadge = _etHr < 16 ? "After 4PM"
+                 : _etHr < 20 ? (ex.ah_updated ? `&#9200; ${ex.ah_updated}` : "Live")
+                 : (ex.ah_updated ? `Closed ${ex.ah_updated}` : "Closed");
   const _pmHiTime    = ex.pm_high_time ? `<span class="sv-t">(${ex.pm_high_time})</span>` : "";
 
   // ── ROW 1: HERO BANNER ─────────────────────────────────────────────
@@ -1542,7 +1550,7 @@ function renderCard(ticker) {
       <div class="session-row"><span class="sl">Low</span><span class="sv">${a?.low!=null?"$"+fmt(a.low):"-"} ${loT}</span></div>
       <div class="session-row"><span class="sl">Vol</span><span class="sv">${fmtK(a?.volume)}</span></div>
       <div class="session-row"><span class="sl">Avg Trade</span><span class="sv">${rv.avgTradeSize!=null?rv.avgTradeSize+"sh":"-"}</span></div>
-      <div class="session-row"><span class="sl">Pace</span><span class="sv">${rv.volPace!=null?fmtK(rv.volPace)+" EOD":"-"}</span></div>
+      <div class="session-row"><span class="sl">${ms==="open"||ms==="pre"?"Pace":"Final Vol"}</span><span class="sv">${rv.volPace!=null?fmtK(ms==="open"||ms==="pre"?rv.volPace:a?.volume)+(ms==="open"||ms==="pre"?" EOD":""):fmtK(a?.volume)}</span></div>
       <div class="session-row"><span class="sl">&#9889; Big Move</span><span class="sv">${bmHtml}</span></div>
     </div>`;
 
@@ -1671,6 +1679,7 @@ function applyTickerInput() {
   if (added) {
     fetchAlpaca().then(renderAll);
     fetchExtendedData();
+    tickers.forEach(t => { fetchCompanyName(t); fetchFloatSI(t); });
   }
 }
 
@@ -2390,8 +2399,40 @@ async function bookmapLoop() {
   setTimeout(bookmapLoop, BOOKMAP_REFRESH_MS);
 }
 
+// ---------------------------------------------------------------------------
+// Company name fetch (Alpaca assets endpoint)
+// ---------------------------------------------------------------------------
+const companyNames = {}; // ticker -> "Apple Inc."
+
+async function fetchCompanyName(ticker) {
+  if (companyNames[ticker]) return;
+  // Check localStorage cache
+  const cached = localStorage.getItem('company_' + ticker);
+  if (cached) { companyNames[ticker] = cached; _refreshCompanyUI(ticker); return; }
+  try {
+    const r = await fetch(`https://paper-api.alpaca.markets/v2/assets/${ticker}`, {
+      headers: { 'APCA-API-KEY-ID': ALPACA_KEY_ID, 'APCA-API-SECRET-KEY': ALPACA_SECRET_KEY },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!r.ok) return;
+    const d = await r.json();
+    if (d.name) {
+      companyNames[ticker] = d.name;
+      localStorage.setItem('company_' + ticker, d.name);
+      _refreshCompanyUI(ticker);
+    }
+  } catch(_) {}
+}
+
+function _refreshCompanyUI(ticker) {
+  const el = document.getElementById('hero-company-' + ticker);
+  if (el && companyNames[ticker]) el.textContent = companyNames[ticker];
+}
+
 // Kick off avg vol fetches for all initial tickers
 WATCHLIST.forEach(t => rvDetectors[t].fetchAvgVol());
+WATCHLIST.forEach(t => fetchCompanyName(t));
+WATCHLIST.forEach(t => fetchFloatSI(t)); // pre-fetch Float/SI on load
 
 // Load persisted added prices from localStorage
 _initAddedPrices();
