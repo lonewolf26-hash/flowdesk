@@ -562,6 +562,187 @@
       border: 1px solid #93c5fd; white-space: nowrap;
     }
     .hbar-news-badge.recent { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+
+    /* ===================================================================
+       PRICE TIMELINE SECTION
+    =================================================================== */
+    .price-timeline {
+      padding: 8px 12px 6px;
+      border-bottom: 1px solid var(--border);
+      background: #fafbfc;
+    }
+    .pt-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--dim); margin-bottom: 6px;
+    }
+    .pt-row {
+      display: flex; align-items: center; gap: 6px;
+      flex-wrap: wrap; margin-bottom: 5px; min-height: 20px;
+    }
+    .pt-row:last-child { margin-bottom: 0; }
+    .pt-label {
+      font-size: 12px; color: #666; white-space: nowrap;
+    }
+    .pt-val {
+      font-size: 14px; font-weight: 500; color: var(--heading); white-space: nowrap;
+    }
+    .pt-sep { font-size: 12px; color: var(--border2); padding: 0 2px; }
+    .pt-up      { color: var(--green); }
+    .pt-down    { color: var(--red); }
+    .pt-danger  { color: var(--red); font-weight: 700; }
+    .pt-green   { color: var(--green); }
+    .pt-red     { color: var(--red); }
+    .pt-row-bm .pt-val { font-size: 15px; font-weight: 700; }
+    .pt-row-bm .pt-label { font-size: 12px; }
+    .pt-label-ah { font-style: italic; }
+    .pt-pm-high { font-weight: 700; color: var(--heading); }
+
+    /* ===================================================================
+       NEW CARD SECTIONS
+    =================================================================== */
+
+    /* Section shared row layout */
+    .cs-row {
+      display: flex; align-items: center; flex-wrap: wrap;
+      gap: 4px 10px; padding: 7px 12px; font-size: 13px;
+    }
+    .cs-label { color: #666; font-size: 12px; white-space: nowrap; }
+    .cs-val   { font-weight: 500; color: var(--heading); white-space: nowrap; }
+    .cs-sep   { color: var(--border2); font-size: 12px; }
+    .cs-up    { color: var(--green); font-weight: 600; }
+    .cs-down  { color: var(--red);   font-weight: 600; }
+    .cs-muted { color: var(--dim2); }
+
+    /* Section 1 — Float & SI (yellow) */
+    .sec-float {
+      background: #fffbeb;
+      border-top: 1px solid #fde68a;
+      border-bottom: 1px solid #fde68a;
+    }
+    .sec-float .cs-label { color: #92400e; }
+    .sec-float .cs-val   { color: #78350f; font-weight: 600; }
+    .sec-float .cs-sep   { color: #fcd34d; }
+    .dtc-tooltip { cursor: help; border-bottom: 1px dotted #d97706; }
+
+    /* Section 2 — Quote (white) */
+    .sec-quote { background: var(--surface); border-top: 1px solid var(--border); padding: 8px 12px; }
+    .sec-quote-price { font-size: 26px; font-weight: 800; }
+    .sec-quote-change { font-size: 15px; font-weight: 600; margin-left: 8px; }
+    .sec-quote-meta { font-size: 13px; color: var(--dim); margin-top: 3px; }
+
+    /* Section 3 — Regular Hours (white) */
+    .sec-regular { background: var(--surface); border-top: 2px solid var(--border); }
+    .sec-regular-title {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--dim); padding: 5px 12px 0;
+    }
+    .big-move-row { font-size: 13px; font-weight: 700; }
+    .big-move-up   { color: var(--red); }
+    .big-move-down { color: var(--green); }
+
+    /* Section 4 — Pre-Market (blue) */
+    .sec-premarket {
+      background: #eff6ff;
+      border-top: 1px solid #bfdbfe;
+      border-bottom: 1px solid #bfdbfe;
+    }
+    .sec-premarket .cs-label { color: #1e40af; }
+    .sec-premarket .cs-val   { color: #1e3a8a; font-weight: 600; }
+    .sec-premarket .cs-sep   { color: #93c5fd; }
+    .gap-safe   { color: var(--dim); }
+    .gap-warn   { color: #d97706; font-weight: 700; }
+    .gap-danger { color: var(--red); font-weight: 700; }
+    .gap-green  { color: var(--green); font-weight: 700; }
+
+    /* Section 5 — Yesterday (gray) */
+    .sec-yesterday {
+      background: #f9fafb;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .sec-yesterday .cs-label { color: #4b5563; }
+    .sec-yesterday .cs-val   { color: var(--heading); }
+
+    /* Section 6 — After Hours (purple) */
+    .sec-afterhours {
+      background: #faf5ff;
+      border-top: 1px solid #e9d5ff;
+      border-bottom: 1px solid #e9d5ff;
+    }
+    .sec-afterhours .cs-label { color: #6b21a8; font-style: italic; }
+    .sec-afterhours .cs-val   { color: #581c87; font-weight: 600; }
+    .sec-afterhours .cs-sep   { color: #d8b4fe; }
+
+    /* Footer — clean 3-button bar */
+    .card-footer-clean {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px;
+      background: var(--surface2);
+      border-top: 1px solid var(--border);
+    }
+    .footer-btn {
+      background: var(--surface3); border: 1px solid var(--border2);
+      color: var(--dim); font-family: var(--sans); font-size: 12px; font-weight: 600;
+      padding: 4px 12px; border-radius: 4px; cursor: pointer; white-space: nowrap;
+    }
+    .footer-btn:hover { border-color: var(--blue); color: var(--blue); background: #eff6ff; }
+    .footer-btn.active { border-color: var(--blue); color: var(--blue); background: #eff6ff; }
+
+    /* ===================================================================
+       CATALYST PANEL — new design
+    =================================================================== */
+    .ca-category-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 800; padding: 5px 14px;
+      border-radius: 6px; letter-spacing: .03em; color: #fff;
+    }
+    .ca-cat-red    { background: #dc2626; }
+    .ca-cat-yellow { background: #d97706; }
+    .ca-cat-green  { background: #16a34a; }
+    .ca-cat-blue   { background: #2563eb; }
+
+    .ca-type-chip {
+      font-size: 11px; font-weight: 600; padding: 3px 8px;
+      border-radius: 4px; background: var(--surface3);
+      color: var(--dim); border: 1px solid var(--border2);
+      white-space: nowrap;
+    }
+    .ca-real-yes { color: #15803d; font-size: 12px; font-weight: 700; }
+    .ca-real-no  { color: #b91c1c; font-size: 12px; font-weight: 700; }
+
+    .ca-risk-bar-wrap { padding: 0 12px 8px; }
+    .ca-risk-label-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .ca-risk-lbl { font-size: 12px; color: var(--dim); font-weight: 600; text-transform: uppercase; letter-spacing:.05em; }
+    .ca-risk-val { font-size: 13px; font-weight: 800; }
+
+    .ca-two-col {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0; border-top: 1px solid var(--border);
+    }
+    .ca-col { padding: 10px 12px; }
+    .ca-col:first-child { border-right: 1px solid var(--border); }
+    .ca-col-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing:.06em; margin-bottom: 6px; }
+    .ca-col-title-risk  { color: var(--red); }
+    .ca-col-title-fade  { color: var(--green); }
+    .ca-bullet { display: flex; gap: 6px; font-size: 12px; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
+    .ca-dot-red   { color: var(--red); flex-shrink: 0; }
+    .ca-dot-green { color: var(--green); flex-shrink: 0; }
+
+    .ca-thesis-box {
+      margin: 0 12px 8px; padding: 9px 11px;
+      background: #f9fafb; border-radius: 5px;
+      border-left: 3px solid var(--border2);
+      font-size: 12px; color: var(--dim); line-height: 1.55; font-style: italic;
+    }
+    .ca-thesis-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing:.06em; color: var(--dim2); margin-bottom: 3px; display: block; font-style: normal; }
+
+    .ca-entry-box {
+      margin: 0 12px 8px; padding: 9px 11px;
+      background: #eff6ff; border-radius: 5px;
+      border: 1px solid #bfdbfe;
+      font-size: 12px; color: #1e40af; line-height: 1.6;
+    }
+    .ca-entry-box div { margin-bottom: 2px; }
   </style>
 </head>
 <body>
@@ -603,6 +784,7 @@
 // CONFIGURATION
 // ============================================================================
 const TAILSCALE_IP      = "100.75.239.12";
+const BOOKMAP_ENABLED   = false;   // set true when bridge is configured
 const BOOKMAP_PORT      = 8766;
 const BOOKMAP_URL       = `http://${TAILSCALE_IP}:${BOOKMAP_PORT}`;
 
@@ -614,7 +796,7 @@ const ALPACA_REFRESH_MS  = 15000;
 const BOOKMAP_REFRESH_MS = 15000;
 
 // Default watchlist " edit to match your Bookmap instruments
-let WATCHLIST = ["AAPL", "TSLA", "NVDA", "SPY", "QQQ"];
+let WATCHLIST = ["AAPL"];
 
 // Intraday RelVol time-of-day weights
 const TOD_WEIGHTS = [
@@ -865,43 +1047,77 @@ function detectTripleConfluence(ticker) {
 // ---------------------------------------------------------------------------
 async function fetchAlpaca() {
   const symbols = WATCHLIST.join(",");
+  if (!symbols) return;
   try {
-    const [barRes, qRes] = await Promise.all([
-      fetch(`${ALPACA_BASE}/v2/stocks/bars/latest?symbols=${symbols}&feed=iex`, {
+    // Snapshot returns dailyBar (full-day OHLCV), latestTrade (price),
+    // latestQuote (bid/ask), prevDailyBar (prev close) — all in one call.
+    const snapRes = await fetch(
+      `${ALPACA_BASE}/v2/stocks/snapshots?symbols=${symbols}&feed=iex`, {
         headers: { "APCA-API-KEY-ID": ALPACA_KEY_ID, "APCA-API-SECRET-KEY": ALPACA_SECRET_KEY },
-        signal: AbortSignal.timeout(6000),
-      }),
-      fetch(`${ALPACA_BASE}/v2/stocks/quotes/latest?symbols=${symbols}&feed=iex`, {
-        headers: { "APCA-API-KEY-ID": ALPACA_KEY_ID, "APCA-API-SECRET-KEY": ALPACA_SECRET_KEY },
-        signal: AbortSignal.timeout(6000),
-      }),
-    ]);
-    alpacaOk = barRes.ok;
-    const bars   = barRes.ok  ? (await barRes.json()).bars   || {} : {};
-    const quotes = qRes.ok    ? (await qRes.json()).quotes   || {} : {};
+        signal: AbortSignal.timeout(8000),
+      }
+    );
+    alpacaOk = snapRes.ok;
+    const snaps = snapRes.ok ? (await snapRes.json()) : {};
 
     WATCHLIST.forEach(t => {
-      const b = bars[t], q = quotes[t];
-      if (b) {
-        const a = state[t].alpaca || {};
-        state[t].alpaca = {
-          close:   b.c,
-          open:    b.o,
-          high:    b.h,
-          low:     b.l,
-          volume:  b.v,
-          vwap:    b.vw,
-          trades:  b.n,
-          bid:     q?.bp ?? a.bid ?? null,
-          ask:     q?.ap ?? a.ask ?? null,
-          bid_sz:  q?.bs ?? null,
-          ask_sz:  q?.as ?? null,
-          change_pct: b.o ? (b.c - b.o) / b.o * 100 : null,
-          change_abs: b.o ? b.c - b.o : null,
-          prev_close: a.prev_close ?? null,
-        };
-        rvDetectors[t].update(b.v, b.o, b.c, b.n);
+      const snap = snaps[t];
+      if (!snap) return;
+
+      const db  = snap.dailyBar      || {};  // full day: open, high, low, close, volume, vwap
+      const pdb = snap.prevDailyBar  || {};  // previous day close
+      const lt  = snap.latestTrade   || {};  // most recent trade price
+      const lq  = snap.latestQuote  || {};  // bid/ask
+
+      // Use latestTrade for current price; fall back to dailyBar close
+      const close = lt.p ?? db.c ?? null;
+
+      const a = state[t].alpaca || {};
+      const prevPrice = a.close ?? null;
+
+      state[t].alpaca = {
+        close:      close,
+        open:       db.o  ?? null,
+        high:       db.h  ?? null,
+        low:        db.l  ?? null,
+        volume:     db.v  ?? null,
+        vwap:       db.vw ?? null,
+        trades:     db.n  ?? null,
+        bid:        lq.bp ?? a.bid ?? null,
+        ask:        lq.ap ?? a.ask ?? null,
+        bid_sz:     lq.bs ?? null,
+        ask_sz:     lq.as ?? null,
+        prev_close: pdb.c ?? a.prev_close ?? null,
+        change_pct: db.o ? (close - db.o) / db.o * 100 : null,
+        change_abs: db.o ? close - db.o : null,
+      };
+
+      // Populate prev close + yesterday stats into extended data
+      if (!state[t].extended) state[t].extended = {};
+      if (pdb.c) state[t].extended.prev_close  = pdb.c;
+      if (pdb.v) state[t].extended.yday_volume  = pdb.v;
+      if (pdb.h) state[t].extended.yday_high    = pdb.h;
+      if (pdb.l) state[t].extended.yday_low     = pdb.l;
+      if (pdb.t) state[t].extended.prev_bar_date = pdb.t.slice(0, 10);
+
+      rvDetectors[t].update(db.v, db.o, close, db.n);
+
+      // Big move tracker — flag if price moved >5% since last poll
+      if (prevPrice && close && prevPrice !== close) {
+        const pct = (close - prevPrice) / prevPrice * 100;
+        if (Math.abs(pct) > 5) {
+          if (!bigMoves[t] || Math.abs(pct) > Math.abs(bigMoves[t].changePct)) {
+            bigMoves[t] = {
+              priceBefore: prevPrice, priceAfter: close, changePct: pct,
+              time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+              volume: db.v, timestamp: Date.now(),
+            };
+          }
+        }
       }
+
+      // Record added price on first data arrival for this ticker
+      if (close && !addedPrices[t]) _recordAddedPrice(t, close);
     });
   } catch (_) { alpacaOk = false; }
 }
@@ -981,10 +1197,17 @@ function buildAlertChips() {
 // ---------------------------------------------------------------------------
 const cardOpen = {}; // ticker -> bool
 
+const newsOpen = {}; // ticker -> bool
+
+function toggleNewsPanel(ticker) {
+  newsOpen[ticker] = !newsOpen[ticker];
+  if (newsOpen[ticker]) _startNewsRefresh(ticker);
+  const panel = document.getElementById('news-panel-wrap-' + ticker);
+  if (panel) panel.style.display = newsOpen[ticker] ? 'block' : 'none';
+}
+
 function toggleCardBody(ticker) {
   cardOpen[ticker] = !cardOpen[ticker];
-  // Start news refresh when card is first opened
-  if (cardOpen[ticker]) _startNewsRefresh(ticker);
   // Re-render just this card in-place
   const old = document.getElementById('card-' + ticker);
   if (!old) return;
@@ -1001,64 +1224,28 @@ function renderCard(ticker) {
   const a   = s?.alpaca;
   const bm  = s?.bookmap;
   const rv  = rvDetectors[ticker];
-  const tc  = detectTripleConfluence(ticker);
+  const ex  = s?.extended || {};
   const isOpen = !!cardOpen[ticker];
 
-  const cardClass = [
-    tc ? "has-triple" : (bm?.confluence_alert ? "has-confluence" : ""),
-    isOpen ? "is-open" : ""
-  ].filter(Boolean).join(" ");
+  const cardClass = isOpen ? "is-open" : "";
 
-  // ---- Shared computed values ----
+  // ---- Shared ----
   const ms = _marketStatus();
-  const msBadgeMap = {
-    open: ["ms-open","OPEN"], pre: ["ms-pre","PRE"],
-    after: ["ms-after","AH"], closed: ["ms-closed","CLOSED"],
-  };
+  const msBadgeMap = { open:["ms-open","LIVE"], pre:["ms-pre","PRE"], after:["ms-after","AH"], closed:["ms-closed","CLOSED"] };
   const [msCls, msLabel] = msBadgeMap[ms] || msBadgeMap.closed;
-
   const price  = a?.close ?? null;
   const chgPct = a?.change_pct ?? null;
   const chgAbs = a?.change_abs ?? null;
   const pCls   = chgPct == null ? "" : chgPct >= 0 ? "up" : "down";
-  const vwap   = bm?.vwap || a?.vwap;
-  const vwapExt = bm?.price_vwap_ext ?? null;
-  const extCls  = vwapExt == null ? "vwap-ext-ok"
-                : vwapExt >= 8   ? "vwap-ext-bear"
-                : vwapExt <= -8  ? "vwap-ext-bull"
-                : "vwap-ext-ok";
+  const vwap   = a?.vwap;
+  const rvNum  = rv.rvCurrent;
 
-  const divBadge = (() => {
-    if (!bm?.vwap_divergence) return "";
-    const sig = bm.vwap_divergence.signal;
-    const m = {
-      BEARISH_DIVERGENCE:   ["badge-red",              "v BEARISH DIV"],
-      BEARISH_EXHAUSTION:   ["badge-red badge-flash",  "!! EXHAUSTION"],
-      BULLISH_DIVERGENCE:   ["badge-green",            "^ BULLISH DIV"],
-      BULLISH_EXHAUSTION:   ["badge-green badge-flash","!! EXHAUSTION"],
-      VWAP_RECLAIM_FAILURE: ["badge-amber",            "x VWAP FAIL"],
-      VWAP_MAGNET:          ["badge-blue",             "[MAG] VWAP MAGNET"],
-    };
-    const [cls, label] = m[sig] || ["badge-amber", sig];
-    return `<span class="div-badge badge ${cls}">${label}</span>`;
-  })();
+  // News badge
+  const nc = _newsRecentCount(ticker);
+  const hasBreaking = (newsData[ticker]?.articles||[]).some(a2=>Date.now()-new Date(a2.created_at).getTime()<NEWS_BREAKING_MS);
+  const newsBadge = `<span id="news-hdr-badge-${ticker}" class="hbar-news-badge${hasBreaking?' recent':''}"${nc===0?' style="display:none"':''}>&#128240;${nc}</span>`;
 
-  const rvNum = rv.rvCurrent;
-  const rvBadgeHdr = (() => {
-    const sig = rv.signal;
-    if (!sig) return "";
-    const map = {
-      VOLUME_SURGE:     ["badge-amber",           "3x VOL"],
-      VOLUME_SPIKE:     ["badge-red",             "5x VOL"],
-      VOLUME_EXPLOSION: ["badge-red badge-flash", "10x VOL"],
-      VOLUME_CLIMAX:    ["badge-amber",           "CLIMAX"],
-      VOLUME_DRY_UP:    ["badge-blue",            "DRY UP"],
-    };
-    const [cls, lbl] = map[sig] || ["badge-amber", sig];
-    return `<span class="badge ${cls}" style="font-size:10px;padding:1px 5px">${lbl}</span>`;
-  })();
-
-  // ---- Compact header bar ----
+  // ---- HEADER BAR ----
   const headerBar = `
     <div class="card-header-bar" onclick="toggleCardBody('${ticker}')">
       <span class="card-chevron">&#9654;</span>
@@ -1068,218 +1255,190 @@ function renderCard(ticker) {
       <span class="hbar-sep"></span>
       <span class="hbar-lbl">VWAP</span>
       <span class="hbar-val">${fmt(vwap)}</span>
-      ${vwapExt != null ? `<span class="hbar-ext ${extCls}">${fmtSign(vwapExt)}%</span>` : ""}
       <span class="hbar-sep"></span>
-      <span class="hbar-ba">
-        B <span style="color:var(--green)">${fmt(a?.bid)}</span>
-        / A <span style="color:var(--red)">${fmt(a?.ask)}</span>
-      </span>
-      <span class="hbar-sep"></span>
-      <span class="hbar-vol">Vol <span>${fmtK(a?.volume)}</span>${rvNum != null ? ` &nbsp;<span class="hbar-ext ${rvNum>=3?"rv-orange":"rv-white"}">${rvNum.toFixed(1)}x</span>` : ""}</span>
+      <span class="hbar-vol">Vol <span>${fmtK(a?.volume)}</span>${rvNum!=null?` <span class="hbar-ext ${rvNum>=3?"rv-orange":"rv-white"}">${rvNum.toFixed(1)}x</span>`:""}</span>
       <span class="hbar-right">
-        ${rvBadgeHdr}
-        ${divBadge ? divBadge.replace('div-badge badge','badge').replace('font-size:10px','font-size:10px') : ""}
-        ${tc ? `<span class="badge badge-gold" style="font-size:10px;padding:1px 5px">TRIPLE</span>` : ""}
+        ${newsBadge}
         <span class="card-status-badge ${msCls}">${msLabel}</span>
-        <span class="hbar-bm-dot" style="background:${bm ? "var(--green)" : "var(--dim2)"}" title="${bm ? "Bookmap live" : "Bookmap offline"}"></span>
-        ${(() => { const nc = _newsRecentCount(ticker); const hasBreaking = (newsData[ticker]?.articles||[]).some(a=>Date.now()-new Date(a.created_at).getTime()<NEWS_BREAKING_MS); return nc>0?`<span id="news-hdr-badge-${ticker}" class="hbar-news-badge${hasBreaking?' recent':''}">${nc} news</span>`:`<span id="news-hdr-badge-${ticker}" class="hbar-news-badge" style="display:none">${nc} news</span>`; })()}
         <button class="card-remove" onclick="event.stopPropagation();removeTicker('${ticker}')" title="Remove">&#10005;</button>
       </span>
     </div>`;
 
-  // ---- Body sections (shown when expanded) ----
+  // ---- SECTION 1 — Float & Short Interest ----
+  const catD = catalystState[ticker]?.data || null;
+  const floatVal = catD?.float      || ex.cat_float || "-";
+  const siVal    = catD?.short_interest || ex.cat_si || "-";
+  const dtcVal   = catD?.dtc        || ex.cat_dtc   || "-";
+  const ap = addedPrices[ticker];
+  const addedCls = (ap && price) ? (price < ap.price ? "cs-up" : "cs-down") : "";
+  const addedPctStr = (ap && price) ? ` <span class="${addedCls}">(${fmtSign((price-ap.price)/ap.price*100)}%)</span>` : "";
+  const sec1 = `
+    <div class="sec-float">
+      <div class="cs-row">
+        <span class="cs-label">Float</span><span class="cs-val">${floatVal}</span>
+        <span class="cs-sep">|</span>
+        <span class="cs-label">SI%</span><span class="cs-val">${siVal}</span>
+        <span class="cs-sep">|</span>
+        <span class="cs-label dtc-tooltip" title="Days To Cover — how many days for all shorts to exit at avg volume. Higher = more squeeze risk.">DTC</span>
+        <span class="cs-val">${dtcVal}</span>
+        <span class="cs-sep">|</span>
+        <span class="cs-label">Added</span>
+        <span class="cs-val ${addedCls}">${ap ? "$"+fmt(ap.price) : "-"}</span>${addedPctStr}
+      </div>
+    </div>`;
 
-  // Price panel
+  // ---- SECTION 2 — Current Quote ----
   const spread = (a?.bid && a?.ask) ? ((a.ask-a.bid)/a.ask*100).toFixed(2) : null;
-  const pricePanel = `
-    <div class="price-panel">
-      <div class="price-row">
-        <span class="price-big ${pCls}">${price != null ? "$"+fmt(price) : "-"}</span>
-        ${chgAbs != null ? `<span class="price-change ${pCls}">${fmtSign(chgAbs)} (${fmtSign(chgPct)}%)</span>` : ""}
-      </div>
-      <div class="price-bid-ask">
-        Bid <span style="color:var(--green)">${fmt(a?.bid)} x ${fmtK(a?.bid_sz)}</span>
-        &nbsp;.&nbsp;
-        Ask <span style="color:var(--red)">${fmt(a?.ask)} x ${fmtK(a?.ask_sz)}</span>
-        ${spread != null ? `&nbsp;.&nbsp; Spread <span style="color:var(--dim)">${spread}%</span>` : ""}
-      </div>
-    </div>`;
-
-  // VWAP row
-  const vwapRow = `
-    <div class="vwap-row">
-      <span class="vwap-label">VWAP</span>
-      <span class="vwap-val">${fmt(vwap)}</span>
-      ${vwapExt != null ? `<span class="vwap-ext ${extCls}">${fmtSign(vwapExt)}%</span>` : ""}
-      ${bm?.vwap_divergence?.suggested_target != null
-          ? `<span style="font-size:10px;color:var(--dim)">Target <span style="color:var(--text)">$${fmt(bm.vwap_divergence.suggested_target)}</span></span>` : ""}
-      ${divBadge}
-    </div>`;
-
-  // Stats grid
   const cvdSlope = bm?.cvd_slope || bm?.cvd_direction;
-  const statsGrid = `
-    <div class="stats-grid">
-      <div class="stat-row"><span class="stat-label">High</span><span class="stat-val">${fmt(a?.high)}</span></div>
-      <div class="stat-row"><span class="stat-label">Low</span><span class="stat-val">${fmt(a?.low)}</span></div>
-      <div class="stat-row"><span class="stat-label">Open</span><span class="stat-val">${fmt(a?.open)}</span></div>
-      <div class="stat-row"><span class="stat-label">Vol</span><span class="stat-val">${fmtK(a?.volume)}</span></div>
-      <div class="stat-row">
-        <span class="stat-label">CVD</span>
-        <span class="stat-val ${cvdSlope==="rising"?"up":cvdSlope==="falling"?"down":""}">
-          ${cvdArrow(cvdSlope)} ${fmtK(bm?.cvd)}
-          ${bm?.cvd_drawdown_pct > 0 ? `<span style="font-size:10px;color:var(--dim)"> -${fmt(bm.cvd_drawdown_pct,0)}%</span>` : ""}
-        </span>
+  const sec2 = `
+    <div class="sec-quote">
+      <div>
+        <span class="sec-quote-price ${pCls}">${price != null ? "$"+fmt(price) : "-"}</span>
+        ${chgAbs != null ? `<span class="sec-quote-change ${pCls}">${fmtSign(chgAbs)} (${fmtSign(chgPct)}%)</span>` : ""}
       </div>
-      <div class="stat-row">
-        <span class="stat-label">Imbalance</span>
-        <span class="stat-val ${(bm?.book_imbalance_pct??0)>=0?"up":"down"}">
-          ${fmtSign(bm?.book_imbalance_pct, 1)}%
-        </span>
+      <div class="sec-quote-meta">
+        Bid <span style="color:var(--green)">${fmt(a?.bid)} x ${fmtK(a?.bid_sz)}</span>
+        &nbsp;&nbsp;Ask <span style="color:var(--red)">${fmt(a?.ask)} x ${fmtK(a?.ask_sz)}</span>
+        ${spread != null ? `&nbsp;&nbsp;Spread <span style="color:var(--dim)">${spread}%</span>` : ""}
       </div>
+      ${BOOKMAP_ENABLED && bm ? `
+      <div class="sec-quote-meta" style="margin-top:3px">
+        CVD <span style="color:var(--dim)">${cvdArrow(cvdSlope)} ${fmtK(bm?.cvd)}</span>
+        &nbsp;&nbsp;Imbalance <span class="${(bm?.book_imbalance_pct??0)>=0?"up":"down"}">${fmtSign(bm?.book_imbalance_pct,1)}%</span>
+      </div>` : ""}
     </div>`;
 
-  // RelVol section
-  const rvCls   = rvNum == null ? "rv-gray"
-                : rvNum < 1    ? "rv-gray"
-                : rvNum < 2    ? "rv-white"
-                : rvNum < 3    ? "rv-yellow"
-                : rvNum < 5    ? "rv-orange"
-                : "rv-red";
+  // ---- SECTION 3 — Regular Hours ----
   const accelArrow = rv.acceleration > 20 ? "^" : rv.acceleration < -20 ? "v" : "->";
-  const rvBadges = (() => {
-    const sig = rv.signal;
-    if (!sig) return "";
-    const map = {
-      VOLUME_SURGE:      ["badge-amber",           "[FIRE] 3x VOL"],
-      VOLUME_SPIKE:      ["badge-red",             "[FIRE][FIRE] 5x VOL"],
-      VOLUME_EXPLOSION:  ["badge-red badge-flash", "[BOOM] 10x VOL"],
-      VOLUME_CLIMAX:     ["badge-amber",           "[!] CLIMAX"],
-      VOLUME_DRY_UP:     ["badge-blue",            "[DOWN] DRY UP"],
-    };
-    const [cls, lbl] = map[sig] || ["badge-amber", sig];
-    return `<span class="badge ${cls}">${lbl}</span>`;
-  })();
-  const rvSection = `
-    <div class="relvol-section">
-      <div class="relvol-header">
-        <span class="relvol-num ${rvCls}">${rvNum != null ? rvNum.toFixed(1)+"x" : "-"}</span>
-        <span style="font-size:11px;color:var(--dim)">RelVol</span>
-        ${rvBadges}
-      </div>
-      <div class="relvol-meta">
-        <span>Pace: ${rv.volPace != null ? fmtK(rv.volPace)+" EOD" : "-"}</span>
-        <span>Avg trade: ${rv.avgTradeSize != null ? rv.avgTradeSize+" sh" : "-"}</span>
-        <span>Accel: ${accelArrow} ${rv.acceleration != null ? fmtSign(rv.acceleration, 0)+"%" : "-"}</span>
-      </div>
-      <div class="rv-sparkline">${rv.buildSparkline()}</div>
-    </div>`;
-
-  // Order book
-  const bidLevels = (bm?.bids || bm?.bid_levels || []).slice(0, 3);
-  const askLevels = (bm?.asks || bm?.ask_levels || []).slice(0, 3);
-  const maxBidCob = bidLevels.length ? Math.max(...bidLevels.map(l => l.cob||l.cumulative_cob||0)) : 0;
-  const maxAskCob = askLevels.length ? Math.max(...askLevels.map(l => l.cob||l.cumulative_cob||0)) : 0;
-  const levelRow = (l, isWall) => {
-    const cob = l.cob ?? l.cumulative_cob;
-    return `<div class="book-level${isWall?" wall":""}">
-      <span class="bl-price">${fmt(l.price,4)}</span>
-      <span class="bl-size">${fmtK(l.size)}</span>
-      <span class="bl-cob">${fmtK(cob)}</span>
-    </div>`;
-  };
-  const bookSection = bm ? `
-    <div class="book-summary">
-      <div class="book-bids">
-        <div class="book-side-label">Bids</div>
-        ${bidLevels.map((l,i) => levelRow(l, i===0 && (l.cob||0)===maxBidCob)).join("")}
-      </div>
-      <div class="book-asks">
-        <div class="book-side-label">Asks</div>
-        ${askLevels.map((l,i) => levelRow(l, i===0 && (l.cob||0)===maxAskCob)).join("")}
-      </div>
-    </div>` : "";
-
-  // Bookmap signals
-  let signalsSection = "";
-  if (bm) {
-    const icebergs = (bm.icebergs || []).filter(i => i.confidence >= 0.60);
-    const iceHtml = icebergs.map(ib => `
-      <div class="iceberg-row ${ib.side==="bid"?"ice-bid":"ice-ask"}"
-           title="Traded: ${fmtK(ib.total_traded)} . Replen: ${ib.replenishment_count} . ${ib.first_seen}-${ib.last_seen}">
-        ${ib.side==="bid"?"BID":"ASK"} $${fmt(ib.price,4)}
-        <span class="ice-conf">${(ib.confidence*100).toFixed(0)}%</span>
-        <span class="ice-impl">${ib.implication}</span>
-      </div>`).join("");
-    const divBadges = (() => {
-      const div = bm.vwap_divergence;
-      if (!div) return "";
-      const targets = div.suggested_target
-        ? `<span style="font-size:10px;color:var(--dim);margin-left:6px">-> $${fmt(div.suggested_target)}</span>` : "";
-      return `<div class="badge-row new-signal">${divBadge}${targets}</div>`;
-    })();
-    signalsSection = `
-      <div class="signals-section">
-        <div class="signals-title">Bookmap Signals</div>
-        ${iceHtml || ""}
-        ${divBadges}
-      </div>`;
-  } else {
-    signalsSection = `
-      <div class="signals-section">
-        <div class="signals-title">Bookmap Signals</div>
-      </div>`;
+  const rvCls = rvNum==null?"rv-gray":rvNum<1?"rv-gray":rvNum<2?"rv-white":rvNum<3?"rv-yellow":rvNum<5?"rv-orange":"rv-red";
+  const hiTime = ex.today_high_time ? ` <span class="cs-muted">(${ex.today_high_time})</span>` : "";
+  const loTime = ex.today_low_time  ? ` <span class="cs-muted">(${ex.today_low_time})</span>`  : "";
+  const bm_pt = bigMoves[ticker];
+  let bmAgo = "-";
+  if (bm_pt) {
+    const s2 = Math.floor((Date.now()-bm_pt.timestamp)/1000);
+    const h2=Math.floor(s2/3600),m2=Math.floor((s2%3600)/60);
+    bmAgo = h2>0?`${h2}h ${m2}m ago`:`${m2}m ago`;
   }
+  const sec3 = `
+    <div class="sec-regular">
+      <div class="sec-regular-title">Regular Hours</div>
+      <div class="cs-row">
+        <span class="cs-label">Open</span><span class="cs-val">${a?.open!=null?"$"+fmt(a.open):"-"}</span>
+        <span class="cs-sep">|</span>
+        <span class="cs-label">High</span><span class="cs-val">${a?.high!=null?"$"+fmt(a.high):"-"}</span>${hiTime}
+        <span class="cs-sep">|</span>
+        <span class="cs-label">Low</span><span class="cs-val">${a?.low!=null?"$"+fmt(a.low):"-"}</span>${loTime}
+        <span class="cs-sep">|</span>
+        <span class="cs-label">Vol</span><span class="cs-val">${fmtK(a?.volume)}</span>
+      </div>
+      <div class="cs-row">
+        <span class="cs-label">VWAP</span><span class="cs-val">${fmt(vwap)}</span>
+        <span class="cs-sep">|</span>
+        <span class="cs-label">Avg Trade</span><span class="cs-val">${rv.avgTradeSize!=null?rv.avgTradeSize+"sh":"-"}</span>
+        <span class="cs-sep">|</span>
+        <span class="cs-label">Pace</span><span class="cs-val">${rv.volPace!=null?fmtK(rv.volPace)+" EOD":"-"}</span>
+        <span class="cs-sep">|</span>
+        <span class="cs-label"><span class="relvol-num ${rvCls}" style="font-size:13px">${rvNum!=null?rvNum.toFixed(1)+"x":"-"}</span> RelVol</span>
+        <span class="cs-sep">|</span>
+        <span class="cs-label">Accel</span><span class="cs-val">${accelArrow} ${rv.acceleration!=null?fmtSign(rv.acceleration,0)+"%":"-"}</span>
+      </div>
+      <div class="cs-row">
+        <span class="cs-label">&#9889; Big Move</span>
+        ${bm_pt ? `
+          <span class="big-move-row ${bm_pt.changePct>0?"big-move-up":"big-move-down"}">
+            $${fmt(bm_pt.priceBefore)} -&gt; $${fmt(bm_pt.priceAfter)} (${fmtSign(bm_pt.changePct)}%)
+          </span>
+          <span class="cs-sep">|</span>
+          <span class="cs-label">at ${bm_pt.time}</span>
+          <span class="cs-sep">|</span>
+          <span class="cs-muted">${bmAgo}</span>
+        ` : `<span class="cs-muted">-</span>`}
+      </div>
+    </div>`;
 
-  // Triple confluence
-  let tripleSection = "";
-  if (tc) {
-    tripleSection = `
-      <div class="triple-section new-signal">
-        <div class="triple-title">TRIPLE CONFLUENCE</div>
-        <div class="triple-grid">
-          <div class="triple-stat">
-            <span class="triple-stat-label">Entry</span>
-            <span class="triple-stat-val" style="color:var(--text)">$${fmt(tc.suggested_entry)}</span>
-          </div>
-          <div class="triple-stat">
-            <span class="triple-stat-label">Target (VWAP)</span>
-            <span class="triple-stat-val" style="color:var(--green)">$${fmt(tc.suggested_target)}</span>
-          </div>
-          <div class="triple-stat">
-            <span class="triple-stat-label">Stop (Day Hi)</span>
-            <span class="triple-stat-val" style="color:var(--red)">$${fmt(tc.suggested_stop)}</span>
-          </div>
-        </div>
-        <div style="font-size:10px;color:var(--dim);margin-top:5px">
-          RelVol: ${tc.components.relvol||"-"} . Iceberg: ${tc.components.iceberg||"-"} . VWAP: ${tc.components.vwap||"-"}
-          . Conf: ${(tc.confidence*100).toFixed(0)}%
+  // ---- SECTION 4 — Pre-Market ----
+  let sec4 = "";
+  if (ex.pm_open != null) {
+    const prevClose = ex.prev_close;
+    const dayOpen   = a?.open;
+    const gapPct    = (prevClose && dayOpen) ? (dayOpen - prevClose) / prevClose * 100 : null;
+    const gapCls    = gapPct==null ? "gap-safe" : Math.abs(gapPct)>=20&&gapPct>0?"gap-danger":gapPct>=5?"gap-warn":gapPct<=-10?"gap-green":"gap-safe";
+    sec4 = `
+      <div class="sec-premarket">
+        <div class="cs-row">
+          <span class="cs-label">Gap</span>
+          <span class="cs-val ${gapCls}">${gapPct!=null?fmtSign(gapPct)+"%":"-"}</span>
+          <span class="cs-sep">|</span>
+          <span class="cs-label">PM Open</span><span class="cs-val">$${fmt(ex.pm_open)}</span>
+          <span class="cs-sep">|</span>
+          <span class="cs-label">PM High</span>
+          <span class="cs-val" style="font-weight:700">$${fmt(ex.pm_high)}</span>
+          ${ex.pm_high_time?`<span class="cs-muted">(${ex.pm_high_time})</span>`:""}
+          <span class="cs-sep">|</span>
+          <span class="cs-label">PM Low</span><span class="cs-val">$${fmt(ex.pm_low)}</span>
+          <span class="cs-sep">|</span>
+          <span class="cs-label">PM Vol</span><span class="cs-val">${fmtK(ex.pm_volume)}</span>
         </div>
       </div>`;
   }
 
-  // Footer
+  // ---- SECTION 5 — Yesterday ----
+  const ydayHiTime = ex.yday_high_time ? ` <span class="cs-muted">(${ex.yday_high_time})</span>` : "";
+  const ydayLoTime = ex.yday_low_time  ? ` <span class="cs-muted">(${ex.yday_low_time})</span>`  : "";
+  const sec5 = `
+    <div class="sec-yesterday">
+      <div class="cs-row">
+        <span class="cs-label">Prev Close</span>
+        <span class="cs-val">${ex.prev_close!=null?"$"+fmt(ex.prev_close):"-"}</span>
+        <span class="cs-sep">|</span>
+        <span class="cs-label">Yday High</span>
+        <span class="cs-val">${ex.yday_high!=null?"$"+fmt(ex.yday_high):"-"}</span>${ydayHiTime}
+        <span class="cs-sep">|</span>
+        <span class="cs-label">Yday Low</span>
+        <span class="cs-val">${ex.yday_low!=null?"$"+fmt(ex.yday_low):"-"}</span>${ydayLoTime}
+        <span class="cs-sep">|</span>
+        <span class="cs-label">Yday Vol</span>
+        <span class="cs-val">${fmtK(ex.yday_volume)}</span>
+      </div>
+    </div>`;
+
+  // ---- SECTION 6 — After Hours (only after 4PM) ----
+  let sec6 = "";
+  if ((ms==="after"||ms==="closed") && ex.ah_price!=null) {
+    const ahCls = (ex.ah_change_pct??0)>=0 ? "cs-up" : "cs-down";
+    sec6 = `
+      <div class="sec-afterhours">
+        <div class="cs-row">
+          <span class="cs-label cs-label-ah">After Hours</span>
+          <span class="cs-val ${ahCls}">$${fmt(ex.ah_price)}</span>
+          ${ex.ah_change_abs!=null?`
+            <span class="cs-val ${ahCls}">${fmtSign(ex.ah_change_abs)} (${fmtSign(ex.ah_change_pct)}%)</span>`:``}
+          ${ex.ah_volume?`<span class="cs-sep">|</span><span class="cs-label">AH Vol</span><span class="cs-val">${fmtK(ex.ah_volume)}</span>`:""}
+          ${ex.ah_updated?`<span class="cs-sep">|</span><span class="cs-label">Updated</span><span class="cs-muted">${ex.ah_updated}</span>`:""}
+        </div>
+      </div>`;
+  }
+
+  // ---- FOOTER ----
   const csOpen = getCatalystState(ticker).open;
   const footer = `
-    <div class="card-footer">
-      <span class="${bm ? "ts-footer" : "bm-offline"}">
-        ${bm ? ago(bm.timestamp) : "Bookmap offline"}
-      </span>
-      <button id="cat-btn-${ticker}" class="catalyst-btn${csOpen ? ' active' : ''}" onclick="toggleCatalyst('${ticker}')">⚡ Catalyst</button>
-      <button class="copy-btn" onclick="copySnapshot('${ticker}')"> Copy</button>
+    <div class="card-footer-clean">
+      <button id="cat-btn-${ticker}" class="footer-btn${csOpen?" active":""}" onclick="toggleCatalyst('${ticker}')">&#9889; Catalyst</button>
+      <button class="footer-btn" onclick="toggleNewsPanel('${ticker}')">&#128240; News</button>
+      <button class="footer-btn" onclick="copySnapshot('${ticker}')">&#128203; Copy</button>
     </div>`;
 
   return `
     <div class="ticker-card ${cardClass}" id="card-${ticker}">
       ${headerBar}
       <div class="card-body-wrap">
-        ${pricePanel}
-        ${vwapRow}
-        ${statsGrid}
-        ${rvSection}
-        ${bookSection}
-        ${signalsSection}
-        ${tripleSection}
+        ${sec1}
+        ${sec2}
+        ${sec3}
+        ${sec4}
+        ${sec5}
+        ${sec6}
         ${footer}
         <div id="cat-${ticker}" class="catalyst-panel">${_buildCatalystPanelHTML(ticker)}</div>
         ${_buildNewsPanel(ticker)}
@@ -1350,6 +1509,7 @@ function applyTickerInput() {
 function removeTicker(t) {
   WATCHLIST = WATCHLIST.filter(x => x !== t);
   _stopNewsRefresh(t);
+  _clearAddedPrice(t);
   renderAll();
 }
 
@@ -1472,57 +1632,275 @@ function _buildNewsPanelInner(ticker) {
 }
 
 function _buildNewsPanel(ticker) {
+  const visible = !!newsOpen[ticker];
   return `
-    <div class="news-panel">
-      <div class="news-panel-header">
-        <span>&#128240; News</span>
-        ${newsData[ticker]?.articles?.length
-          ? `<span class="news-count-badge${(newsData[ticker].articles.some(a => Date.now()-new Date(a.created_at).getTime()<NEWS_BREAKING_MS))?' has-recent':''}">${newsData[ticker].articles.length}</span>`
-          : ''}
-        <span style="margin-left:auto;font-size:10px;color:var(--dim2);font-weight:400">auto-refresh 5m</span>
+    <div id="news-panel-wrap-${ticker}" style="display:${visible?'block':'none'}">
+      <div class="news-panel">
+        <div class="news-panel-header">
+          <span>&#128240; News</span>
+          ${newsData[ticker]?.articles?.length
+            ? `<span class="news-count-badge${(newsData[ticker].articles.some(a => Date.now()-new Date(a.created_at).getTime()<NEWS_BREAKING_MS))?' has-recent':''}">${newsData[ticker].articles.length}</span>`
+            : ''}
+          <span style="margin-left:auto;font-size:10px;color:var(--dim2);font-weight:400">auto-refresh 5m</span>
+        </div>
+        <div id="news-panel-${ticker}">${_buildNewsPanelInner(ticker)}</div>
       </div>
-      <div id="news-panel-${ticker}">${_buildNewsPanelInner(ticker)}</div>
+    </div>`;
+}
+
+// ---------------------------------------------------------------------------
+// PRICE TIMELINE — extended data, big moves, added prices
+// ---------------------------------------------------------------------------
+const bigMoves    = {};  // ticker -> { priceBefore, priceAfter, changePct, time, volume, timestamp }
+const addedPrices = {};  // ticker -> { price, time }
+
+function _initAddedPrices() {
+  WATCHLIST.forEach(t => {
+    try {
+      const s = localStorage.getItem('added_price_' + t);
+      if (s) addedPrices[t] = JSON.parse(s);
+    } catch(_) {}
+  });
+}
+
+function _recordAddedPrice(ticker, price) {
+  if (addedPrices[ticker]) return; // already set
+  addedPrices[ticker] = {
+    price: +price,
+    time:  new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+  };
+  try { localStorage.setItem('added_price_' + ticker, JSON.stringify(addedPrices[ticker])); } catch(_) {}
+}
+
+function _clearAddedPrice(ticker) {
+  delete addedPrices[ticker];
+  try { localStorage.removeItem('added_price_' + ticker); } catch(_) {}
+}
+
+function _etDateStr() {
+  return _etTime().toISOString().slice(0, 10);
+}
+
+async function fetchExtendedData() {
+  const symbols = WATCHLIST.join(',');
+  if (!symbols) return;
+  const today = _etDateStr();
+  const hdrs  = { 'APCA-API-KEY-ID': ALPACA_KEY_ID, 'APCA-API-SECRET-KEY': ALPACA_SECRET_KEY };
+  const sig   = AbortSignal.timeout(10000);
+
+  // Get prev_bar_date from any ticker that has it (for yday 1-min fetch)
+  const ydayDate = WATCHLIST.map(t => state[t]?.extended?.prev_bar_date).find(Boolean) || null;
+
+  // Helper: format ISO time to HH:MM ET (UTC-4 EDT)
+  function _toETTime(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    const et = new Date(d.getTime() - 4 * 3600000);
+    return et.toISOString().slice(11, 16);
+  }
+
+  try {
+    const fetches = [
+      fetch(`${ALPACA_BASE}/v2/stocks/bars?symbols=${symbols}&timeframe=5Min&start=${today}T08:00:00Z&end=${today}T13:30:00Z&feed=iex&limit=500`, { headers: hdrs, signal: sig }),
+      fetch(`${ALPACA_BASE}/v2/stocks/bars?symbols=${symbols}&timeframe=5Min&start=${today}T20:00:00Z&feed=iex&limit=100`, { headers: hdrs, signal: sig }),
+      fetch(`${ALPACA_BASE}/v2/stocks/bars?symbols=${symbols}&timeframe=1Min&start=${today}T13:30:00Z&end=${today}T20:00:00Z&feed=iex&limit=1000`, { headers: hdrs, signal: sig }),
+    ];
+    if (ydayDate) fetches.push(
+      fetch(`${ALPACA_BASE}/v2/stocks/bars?symbols=${symbols}&timeframe=1Min&start=${ydayDate}T13:30:00Z&end=${ydayDate}T20:00:00Z&feed=iex&limit=1000`, { headers: hdrs, signal: sig })
+    );
+
+    const results = await Promise.all(fetches);
+    const pmBars    = results[0].ok ? (await results[0].json()).bars || {} : {};
+    const ahBars    = results[1].ok ? (await results[1].json()).bars || {} : {};
+    const todayBars = results[2].ok ? (await results[2].json()).bars || {} : {};
+    const ydayBars  = (ydayDate && results[3]?.ok) ? (await results[3].json()).bars || {} : {};
+
+    WATCHLIST.forEach(t => {
+      if (!state[t]) return;
+      if (!state[t].extended) state[t].extended = {};
+      const ex = state[t].extended;
+
+      // Premarket bars
+      const pm = pmBars[t] || [];
+      if (pm.length) {
+        ex.pm_open   = pm[0].o;
+        ex.pm_high   = Math.max(...pm.map(b => b.h));
+        ex.pm_low    = Math.min(...pm.map(b => b.l));
+        ex.pm_volume = pm.reduce((s, b) => s + b.v, 0);
+        ex.pm_last   = pm[pm.length - 1].c;
+        // PM high time
+        const pmHiBar = pm.reduce((best, b) => b.h > best.h ? b : best, pm[0]);
+        ex.pm_high_time = _toETTime(pmHiBar.t);
+      }
+
+      // After-hours bars
+      const ah = ahBars[t] || [];
+      if (ah.length) {
+        ex.ah_price = ah[ah.length - 1].c;
+        ex.ah_volume = ah.reduce((s, b) => s + b.v, 0);
+        ex.ah_updated = _toETTime(ah[ah.length - 1].t);
+        const dayClose = state[t].alpaca?.close;
+        if (dayClose) {
+          ex.ah_change_abs = ex.ah_price - dayClose;
+          ex.ah_change_pct = (ex.ah_price - dayClose) / dayClose * 100;
+        }
+      }
+
+      // Today intraday 1-min bars → High/Low times
+      const td = todayBars[t] || [];
+      if (td.length) {
+        const hiBar = td.reduce((best, b) => b.h > best.h ? b : best, td[0]);
+        const loBar = td.reduce((best, b) => b.l < best.l ? b : best, td[0]);
+        ex.today_high_time = _toETTime(hiBar.t);
+        ex.today_low_time  = _toETTime(loBar.t);
+      }
+
+      // Yesterday 1-min bars → Yday High/Low times
+      const yd = ydayBars[t] || [];
+      if (yd.length) {
+        const yhBar = yd.reduce((best, b) => b.h > best.h ? b : best, yd[0]);
+        const ylBar = yd.reduce((best, b) => b.l < best.l ? b : best, yd[0]);
+        ex.yday_high_time = _toETTime(yhBar.t);
+        ex.yday_low_time  = _toETTime(ylBar.t);
+        if (!ex.yday_high) ex.yday_high = Math.max(...yd.map(b => b.h));
+        if (!ex.yday_low)  ex.yday_low  = Math.min(...yd.map(b => b.l));
+        if (!ex.yday_volume) ex.yday_volume = yd.reduce((s, b) => s + b.v, 0);
+      }
+    });
+  } catch (_) {}
+
+  renderAll();
+}
+
+function _buildPriceTimeline(ticker) {
+  const a  = state[ticker]?.alpaca;
+  const ex = state[ticker]?.extended || {};
+  const bm = bigMoves[ticker];
+  const ap = addedPrices[ticker];
+  if (!a) return '';
+
+  const price    = a.close;
+  const prevClose = ex.prev_close ?? null;
+  const gapPct   = (prevClose && a.open) ? (a.open - prevClose) / prevClose * 100 : null;
+  const gapCls   = gapPct == null ? '' : Math.abs(gapPct) >= 20 && gapPct > 0 ? 'pt-danger' : gapPct > 0 ? 'pt-up' : 'pt-down';
+
+  const addedCls = (ap && price) ? (price < ap.price ? 'pt-green' : 'pt-red') : '';
+  const addedPctStr = (ap && price) ? ` <span class="${addedCls}" style="font-size:11px">(${fmtSign((price - ap.price) / ap.price * 100)}%)</span>` : '';
+
+  // Big move time ago
+  let bmAgo = '-';
+  if (bm) {
+    const s = Math.floor((Date.now() - bm.timestamp) / 1000);
+    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+    bmAgo = h > 0 ? `${h}h ${m}m ago` : `${m}m ago`;
+  }
+
+  const ms = _marketStatus();
+  const showAH = (ms === 'after' || ms === 'closed') && ex.ah_price != null;
+
+  return `
+    <div class="price-timeline">
+      <div class="pt-title">&#128202; Price Timeline</div>
+
+      <div class="pt-row">
+        <span class="pt-label">Prev Close</span>
+        <span class="pt-val">${prevClose != null ? '$' + fmt(prevClose) : '-'}</span>
+        <span class="pt-sep">|</span>
+        <span class="pt-label">Gap</span>
+        <span class="pt-val ${gapCls}">${gapPct != null ? fmtSign(gapPct) + '%' : '-'}</span>
+        <span class="pt-sep">|</span>
+        <span class="pt-label">Added</span>
+        <span class="pt-val ${addedCls}">${ap ? '$' + fmt(ap.price) : '-'}</span>${addedPctStr}
+      </div>
+
+      ${ex.pm_open != null ? `
+      <div class="pt-row">
+        <span class="pt-label">Pre-Market</span>
+        <span class="pt-val">$${fmt(ex.pm_open)} -&gt; $${fmt(ex.pm_last)}</span>
+        <span class="pt-sep">|</span>
+        <span class="pt-label">High</span>
+        <span class="pt-val pt-pm-high">$${fmt(ex.pm_high)}</span>
+        <span class="pt-sep">|</span>
+        <span class="pt-label">Vol</span>
+        <span class="pt-val">${fmtK(ex.pm_volume)}</span>
+      </div>` : ''}
+
+      <div class="pt-row">
+        <span class="pt-label">Day Open</span>
+        <span class="pt-val">${a.open != null ? '$' + fmt(a.open) : '-'}</span>
+        <span class="pt-sep">|</span>
+        <span class="pt-label">High</span>
+        <span class="pt-val">${a.high != null ? '$' + fmt(a.high) : '-'}</span>
+        <span class="pt-sep">|</span>
+        <span class="pt-label">Low</span>
+        <span class="pt-val">${a.low != null ? '$' + fmt(a.low) : '-'}</span>
+      </div>
+
+      <div class="pt-row pt-row-bm">
+        <span class="pt-label">Big Move</span>
+        ${bm ? `
+          <span class="pt-val" style="color:${bm.changePct > 0 ? 'var(--red)' : 'var(--green)'}">
+            $${fmt(bm.priceBefore)} -&gt; $${fmt(bm.priceAfter)}
+            (${fmtSign(bm.changePct)}%)
+          </span>
+          <span class="pt-sep">|</span>
+          <span class="pt-label">at ${bm.time}</span>
+          <span class="pt-sep">|</span>
+          <span class="pt-label">${bmAgo}</span>
+        ` : `<span class="pt-val" style="color:var(--dim2)">-</span>`}
+      </div>
+
+      ${showAH ? `
+      <div class="pt-row pt-row-ah">
+        <span class="pt-label pt-label-ah">After Hours</span>
+        <span class="pt-val ${ex.ah_change_pct >= 0 ? 'pt-up' : 'pt-down'}">$${fmt(ex.ah_price)}</span>
+        ${ex.ah_change_abs != null ? `
+          <span class="pt-val ${ex.ah_change_pct >= 0 ? 'pt-up' : 'pt-down'}">
+            ${fmtSign(ex.ah_change_abs)} (${fmtSign(ex.ah_change_pct)}%)
+          </span>` : ''}
+      </div>` : ''}
     </div>`;
 }
 
 // ---------------------------------------------------------------------------
 // CATALYST ANALYZER
 // ---------------------------------------------------------------------------
-const CATALYST_SYSTEM_PROMPT = `You are an expert short-side momentum trader analyst specializing in low-float, high-relative-volume stocks under $5. Evaluate stocks as short candidates for intraday fade trading.
+const CATALYST_SYSTEM_PROMPT = `You are an expert intraday short-side fade trader. Analyze the given ticker as a short candidate. Search the web for the latest catalyst, float, and short interest data. Return ONLY valid JSON — no markdown, no backticks, nothing outside the JSON object.
 
-Search for the latest news, float data, and short interest for the ticker, then return ONLY valid JSON with no markdown, no backticks, no explanation outside the JSON.
+CATEGORY DEFINITIONS:
+RED   = government_contract, fda_approval, major_partnership, buyout_merger, short_squeeze — AVOID shorting
+YELLOW = small_contract, phase2_trial, loi_mou, analyst_upgrade, earnings_beat — trade carefully
+GREEN  = evaluation_review, pr_only, sympathy_play, no_catalyst, dilution_risk, noncompliance — favorable short setup
+BLUE   = insider_activity, institutional_13f, sec_investigation, reverse_split, management_change — context only
 
-Return exactly this structure:
+Return exactly this JSON structure:
 {
-  "ticker": "RMSG",
-  "company_name": "Full Company Name",
-  "catalyst": "One clear sentence describing what is driving the stock today",
-  "catalyst_type": "earnings|fda_approval|fda_rejection|contract|partnership|ai_pivot|name_change|sec_filing|shelf_offering|reverse_split|no_news|rumor|macro|dilution",
-  "catalyst_strength": "strong|weak|mixed|unknown",
+  "category": "RED|YELLOW|GREEN|BLUE",
+  "catalyst_type": "government_contract|fda_approval|major_partnership|buyout_merger|short_squeeze|small_contract|phase2_trial|loi_mou|analyst_upgrade|earnings_beat|evaluation_review|pr_only|sympathy_play|no_catalyst|dilution_risk|noncompliance|insider_activity|institutional_13f|sec_investigation|reverse_split|management_change",
+  "catalyst_name": "Human-readable name e.g. Defense Evaluation (NOT a contract)",
+  "is_real_catalyst": true,
+  "catalyst_description": "One precise sentence describing what the catalyst actually is",
+  "short_risk_level": "EXTREME|HIGH|MEDIUM|LOW",
+  "short_risk_reason": "Specific reason this is risky or safe to short",
+  "fade_thesis": "When and why the fade will come — be specific with price levels or timing",
+  "best_entry_condition": "Exact conditions to wait for before shorting",
+  "avoid_until": "Specific condition or timeframe to avoid shorting until",
+  "price_target": "$X.XX",
+  "verdict": "AVOID|CAUTION|FAVORABLE|CONTEXT",
   "short_score": 78,
-  "score_breakdown": { "catalyst_weakness": 25, "float_score": 20, "volume_score": 18, "si_risk": 15 },
-  "float_shares": "8.7M",
-  "short_interest_pct": "27%",
-  "short_interest_shares": "2.3M",
-  "days_to_cover": "1.2",
-  "squeeze_risk": "high|medium|low",
-  "squeeze_risk_score": 65,
-  "price_move_today": "+178%",
-  "volume_today": "166M",
-  "avg_volume": "851K",
-  "relative_volume": "195x",
-  "strength_reasoning": "2-3 sentences explaining catalyst strength and short thesis",
-  "short_verdict": "short|avoid|watch",
-  "verdict_reason": "One sentence verdict with key risk factor"
+  "squeeze_risk": 45,
+  "float": "8.7M",
+  "short_interest": "27%",
+  "dtc": "1.2",
+  "rel_vol": "195x",
+  "move_pct": "+178%",
+  "key_risks": ["risk1", "risk2", "risk3"],
+  "supporting_factors": ["factor1", "factor2"]
 }
 
-SCORING (short_score 0-100, higher = better short candidate):
-catalyst_weakness (0-30): 30=no real catalyst, 20=weak rumor, 10=small real catalyst, 0=strong verified catalyst
-float_score (0-25): 25=under 5M, 20=5-15M, 12=15-50M, 5=50-200M, 0=over 200M
-volume_score (0-25): 25=100x+ rel vol, 20=50-100x, 15=20-50x, 8=10-20x, 0=under 10x
-si_risk (0-20, inverted): 20=under 5% SI, 12=5-15%, 5=15-25%, 0=over 25% (squeeze danger)
-squeeze_risk_score (0-100): combine SI% with float tightness.
-Always search web for current data. Return only valid JSON.`;
+short_score 0-100: higher = better short candidate. Consider catalyst weakness, float size, relative volume, and short interest danger.
+squeeze_risk 0-100: higher = more dangerous to short. High SI + low float = extreme squeeze risk.
+Always search the web for current data. Keep all strings under 120 characters. Return only valid JSON.`;
 
 const catalystState  = {}; // ticker -> { open, status, data, priceData, error }
 const _pendingCatKey = {}; // ticker -> key string typed but not yet saved
@@ -1559,6 +1937,13 @@ async function toggleCatalyst(ticker) {
         _fetchCatalystSnapshot(ticker)
       ]);
       cs.data = data; cs.priceData = priceData; cs.status = 'done';
+      // Push float/SI/DTC into extended so Section 1 updates
+      if (data && state[ticker]) {
+        if (!state[ticker].extended) state[ticker].extended = {};
+        if (data.float)          state[ticker].extended.cat_float = data.float;
+        if (data.short_interest) state[ticker].extended.cat_si    = data.short_interest;
+        if (data.dtc)            state[ticker].extended.cat_dtc   = data.dtc;
+      }
     } catch(e) {
       cs.error = e.message; cs.status = 'error';
     }
@@ -1622,47 +2007,99 @@ function _buildCatalystPanelHTML(ticker) {
   return '';
 }
 
-function _catScoreColor(s)  { return s >= 70 ? '#dc2626' : s >= 40 ? '#d97706' : '#3b82f6'; }
-function _catSqColor(risk)  { return risk === 'high' ? '#dc2626' : risk === 'medium' ? '#d97706' : '#16a34a'; }
+function _catScoreColor(s) { return s>=70?'#dc2626':s>=40?'#d97706':'#3b82f6'; }
+function _catRiskColor(r)  { return r==='EXTREME'?'#dc2626':r==='HIGH'?'#ea580c':r==='MEDIUM'?'#d97706':'#16a34a'; }
 
 function _buildCatalystResultHTML(d) {
-  const score  = Math.min(100, Math.max(0, d.short_score || 0));
-  const sc     = _catScoreColor(score);
-  const sqScore = Math.min(100, Math.max(0, d.squeeze_risk_score || 0));
-  const sqColor = _catSqColor(d.squeeze_risk || 'low');
+  const score   = Math.min(100, Math.max(0, d.short_score  || 0));
+  const sqScore = Math.min(100, Math.max(0, d.squeeze_risk || 0));
+  const sc      = _catScoreColor(score);
+  const sqColor = _catScoreColor(sqScore);
+  const riskColor = _catRiskColor(d.short_risk_level || 'MEDIUM');
 
-  const vMap = { short: ['ca-v-short','SHORT CANDIDATE'], avoid: ['ca-v-avoid','AVOID SHORT'], watch: ['ca-v-watch','WATCH & WAIT'] };
-  const sMap = { strong: ['ca-s-strong','Strong catalyst'], weak: ['ca-s-weak','Weak catalyst'], mixed: ['ca-s-mixed','Mixed catalyst'], unknown: ['ca-s-unknown','No catalyst'] };
-  const [vCls, vLbl] = vMap[d.short_verdict]   || ['ca-v-watch','WATCH'];
-  const [sCls, sLbl] = sMap[d.catalyst_strength] || ['ca-s-unknown','Unknown'];
+  // Category badge
+  const catMap = {
+    RED:    ['ca-cat-red',    '&#128308; AVOID SHORT'],
+    YELLOW: ['ca-cat-yellow', '&#128993; CAUTION'],
+    GREEN:  ['ca-cat-green',  '&#128994; FAVORABLE SETUP'],
+    BLUE:   ['ca-cat-blue',   '&#128309; CONTEXT ONLY'],
+  };
+  const [catCls, catLbl] = catMap[d.category] || catMap.BLUE;
 
+  const typeLabel = (d.catalyst_type||'').replace(/_/g,' ').toUpperCase();
+  const isReal = d.is_real_catalyst;
+
+  // Verdicts
+  const verdictMap = {AVOID:'ca-v-short',CAUTION:'ca-v-watch',FAVORABLE:'ca-s-strong',CONTEXT:'ca-s-unknown'};
+
+  // Risks / factors
+  const risks    = (d.key_risks||[]).slice(0,4);
+  const factors  = (d.supporting_factors||[]).slice(0,4);
+
+  // Stats pills
   const pills = [
-    d.float_shares       && `Float <span>${d.float_shares}</span>`,
-    d.short_interest_pct && `SI% <span>${d.short_interest_pct}</span>`,
-    d.days_to_cover      && `DTC <span>${d.days_to_cover}</span>`,
-    d.relative_volume    && `RelVol <span>${d.relative_volume}</span>`,
-    d.price_move_today   && `Move <span>${d.price_move_today}</span>`,
-    d.avg_volume         && `Avg vol <span>${d.avg_volume}</span>`,
-  ].filter(Boolean).map(p => `<div class="ca-pill">${p}</div>`).join('');
+    d.float         && `Float <span>${d.float}</span>`,
+    d.short_interest && `SI% <span>${d.short_interest}</span>`,
+    d.dtc           && `DTC <span>${d.dtc}</span>`,
+    d.rel_vol       && `RelVol <span>${d.rel_vol}</span>`,
+    d.move_pct      && `Move <span>${d.move_pct}</span>`,
+  ].filter(Boolean).map(p=>`<div class="ca-pill">${p}</div>`).join('');
 
   return `<div class="ca-body">
-    <div class="ca-header-row">
-      <span class="ca-verdict ${vCls}">${vLbl}</span>
-      <span class="ca-strength ${sCls}">${sLbl}</span>
+    <div class="ca-header-row" style="padding:10px 12px 6px;flex-wrap:wrap;gap:6px">
+      <span class="ca-category-badge ${catCls}">${catLbl}</span>
+      ${typeLabel ? `<span class="ca-type-chip">${typeLabel}</span>` : ''}
+      <span class="${isReal?'ca-real-no':'ca-real-yes'}">${isReal?'&#10007; Real Catalyst':'&#10003; No Real Catalyst'}</span>
     </div>
-    <div class="ca-line">${d.catalyst || 'No catalyst found'}</div>
-    <div class="ca-bar-row">
-      <span class="ca-bar-label">Short score</span>
-      <span class="ca-bar-val" style="color:${sc}">${score} / 100</span>
+    ${d.catalyst_description ? `<div class="ca-line" style="padding:0 12px 8px">${d.catalyst_description}</div>` : ''}
+
+    <div class="ca-risk-bar-wrap">
+      <div class="ca-risk-label-row">
+        <span class="ca-risk-lbl">Short Risk</span>
+        <span class="ca-risk-val" style="color:${riskColor}">${d.short_risk_level||'-'}</span>
+      </div>
+      <div class="ca-bar-track"><div class="ca-bar-fill" style="width:${score}%;background:${riskColor}"></div></div>
+      ${d.short_risk_reason?`<div style="font-size:11px;color:var(--dim);margin-top:2px">${d.short_risk_reason}</div>`:''}
     </div>
-    <div class="ca-bar-track"><div class="ca-bar-fill" style="width:${score}%;background:${sc}"></div></div>
-    <div class="ca-bar-row">
-      <span class="ca-bar-label">Squeeze risk</span>
-      <span class="ca-bar-val" style="color:${sqColor}">${(d.squeeze_risk||'?').toUpperCase()} — ${sqScore}/100</span>
+
+    <div class="ca-two-col">
+      <div class="ca-col">
+        <div class="ca-col-title ca-col-title-risk">&#9888; Key Risks</div>
+        ${risks.map(r=>`<div class="ca-bullet"><span class="ca-dot-red">&#8226;</span><span>${r}</span></div>`).join('')||'<div class="ca-bullet"><span class="cs-muted">None identified</span></div>'}
+      </div>
+      <div class="ca-col">
+        <div class="ca-col-title ca-col-title-fade">&#10003; Fade Factors</div>
+        ${factors.map(f=>`<div class="ca-bullet"><span class="ca-dot-green">&#8226;</span><span>${f}</span></div>`).join('')||'<div class="ca-bullet"><span class="cs-muted">None identified</span></div>'}
+      </div>
     </div>
-    <div class="ca-bar-track"><div class="ca-bar-fill" style="width:${sqScore}%;background:${sqColor}"></div></div>
-    ${pills ? `<div class="ca-pills">${pills}</div>` : ''}
-    <div class="ca-reasoning">${d.strength_reasoning || ''}${d.verdict_reason ? ' — ' + d.verdict_reason : ''}</div>
+
+    ${d.fade_thesis ? `
+    <div class="ca-thesis-box">
+      <span class="ca-thesis-label">&#128200; Fade Thesis</span>
+      ${d.fade_thesis}
+    </div>` : ''}
+
+    ${(d.best_entry_condition||d.avoid_until||d.price_target) ? `
+    <div class="ca-entry-box">
+      ${d.best_entry_condition?`<div>&#9203; Wait for: <strong>${d.best_entry_condition}</strong></div>`:''}
+      ${d.avoid_until?`<div>&#128683; Avoid until: ${d.avoid_until}</div>`:''}
+      ${d.price_target?`<div>&#127919; Target: <strong>${d.price_target}</strong></div>`:''}
+    </div>` : ''}
+
+    ${pills?`<div class="ca-pills" style="padding:0 12px 6px">${pills}</div>`:''}
+
+    <div class="ca-risk-bar-wrap">
+      <div class="ca-risk-label-row">
+        <span class="ca-risk-lbl">Short Score</span>
+        <span class="ca-risk-val" style="color:${sc}">${score} / 100</span>
+      </div>
+      <div class="ca-bar-track"><div class="ca-bar-fill" style="width:${score}%;background:${sc}"></div></div>
+      <div class="ca-risk-label-row" style="margin-top:6px">
+        <span class="ca-risk-lbl">Squeeze Risk</span>
+        <span class="ca-risk-val" style="color:${sqColor}">${sqScore} / 100</span>
+      </div>
+      <div class="ca-bar-track"><div class="ca-bar-fill" style="width:${sqScore}%;background:${sqColor}"></div></div>
+    </div>
   </div>`;
 }
 
@@ -1771,6 +2208,9 @@ async function bookmapLoop() {
 // Kick off avg vol fetches for all initial tickers
 WATCHLIST.forEach(t => rvDetectors[t].fetchAvgVol());
 
+// Load persisted added prices from localStorage
+_initAddedPrices();
+
 // Pre-fill the input
 document.getElementById("ticker-input").value = WATCHLIST.join(" ");
 
@@ -1778,6 +2218,10 @@ document.getElementById("ticker-input").value = WATCHLIST.join(" ");
 renderAll();
 alpacaLoop();
 bookmapLoop();
+
+// Extended data: fetch now then every 5 minutes
+fetchExtendedData();
+setInterval(fetchExtendedData, 5 * 60 * 1000);
 </script>
 </body>
 </html>
