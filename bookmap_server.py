@@ -11,6 +11,8 @@ import logging
 from datetime import datetime, timezone
 from typing import Dict, Optional
 
+import yfinance as yf
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
@@ -362,3 +364,50 @@ def delete_snapshot(ticker: str):
         raise HTTPException(status_code=404, detail=f"No data for {key}")
     del _snapshots[key]
     return {"status": "deleted", "ticker": key}
+
+
+# ---------------------------------------------------------------------------
+# Float / Short Interest endpoint  (via yfinance)
+# ---------------------------------------------------------------------------
+def _format_shares(n):
+    if not n:
+        return "Unknown"
+    if n >= 1e9:
+        return f"{n/1e9:.2f}B"
+    if n >= 1e6:
+        return f"{n/1e6:.1f}M"
+    if n >= 1e3:
+        return f"{n/1e3:.0f}K"
+    return str(int(n))
+
+
+@app.get("/float/{symbol}")
+async def get_float_data(symbol: str):
+    """Return float shares, short interest %, and days-to-cover via yfinance."""
+    try:
+        ticker_obj = yf.Ticker(symbol.upper())
+        info = ticker_obj.info
+
+        float_shares      = info.get("floatShares")
+        si_pct            = info.get("shortPercentOfFloat")
+        dtc               = info.get("shortRatio")
+        shares_outstanding = info.get("sharesOutstanding")
+
+        return {
+            "symbol":             symbol.upper(),
+            "float":              _format_shares(float_shares),
+            "float_raw":          float_shares,
+            "si_pct":             f"{si_pct * 100:.1f}%" if si_pct else "Unknown",
+            "dtc":                f"{dtc:.1f}" if dtc else "Unknown",
+            "shares_outstanding": _format_shares(shares_outstanding),
+            "source":             "yahoo_finance",
+        }
+    except Exception as e:
+        log.warning("Float fetch failed for %s: %s", symbol, e)
+        return {
+            "symbol":  symbol.upper(),
+            "float":   "Unknown",
+            "si_pct":  "Unknown",
+            "dtc":     "Unknown",
+            "error":   str(e),
+        }
