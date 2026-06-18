@@ -1706,24 +1706,23 @@ function applyTickerInput() {
   const raw = document.getElementById("ticker-input").value.trim().toUpperCase();
   if (!raw) return;
   const tickers = raw.split(/[\s,]+/).filter(Boolean);
-  let added = false;
-  tickers.forEach(t => {
-    if (!WATCHLIST.includes(t)) {
-      WATCHLIST.push(t);
-      _ensureTicker(t);
-      rvDetectors[t].fetchAvgVol();
-      added = true;
-    }
+
+  // Stop news refresh for removed tickers
+  WATCHLIST.forEach(t => { if (!tickers.includes(t)) _stopNewsRefresh(t); });
+
+  // Add new tickers without removing existing ones
+  const newTickers = tickers.filter(t => !WATCHLIST.includes(t));
+  WATCHLIST.push(...newTickers);
+  newTickers.forEach(t => {
+    _ensureTicker(t);
+    rvDetectors[t].fetchAvgVol();
   });
+
+  document.getElementById("ticker-input").value = "";
   renderAll();
-  // Keep input synced with full watchlist
-  document.getElementById("ticker-input").value = WATCHLIST.join(" ");
-  // Immediately fetch data for new tickers instead of waiting for next poll
-  if (added) {
-    fetchAlpaca().then(renderAll);
-    fetchExtendedData();
-    tickers.forEach((t, i) => { fetchCompanyName(t); fetchFloatSI(t, i * 800); });
-  }
+  fetchAlpaca().then(renderAll);
+  fetchExtendedData();
+  tickers.forEach((t, i) => { fetchCompanyName(t); fetchFloatSI(t, i * 800); });
 }
 
 function removeTicker(t) {
@@ -2433,7 +2432,7 @@ async function _runCatalystAPI(ticker, realFloat = null) {
     ? `\n\nReal market data for ${ticker}: Float: ${realFloat.float}, Short Interest: ${realFloat.si_pct}, DTC: ${realFloat.dtc}\nUse these exact values in your JSON response for float, short_interest, and dtc fields.`
     : '';
   const data = await callClaudeWithRetry({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-5',
     max_tokens: 4000,
     tools: [{ type: 'web_search_20250305', name: 'web_search' }],
     system: CATALYST_SYSTEM_PROMPT,
