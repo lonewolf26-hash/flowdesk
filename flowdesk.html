@@ -826,7 +826,8 @@
   <input id="ticker-input" type="text"
          placeholder="AAPL TSLA NVDA SPY QQQ  (space-separated, press Enter)"/>
   <button class="btn" onclick="applyTickerInput()">Apply</button>
-  <button class="btn" onclick="clearWatchlist()">Clear</button>
+  <button class="btn" onclick="document.getElementById('ticker-input').value=''">Clear</button>
+  <button class="btn" onclick="clearWatchlist()">Clear All</button>
 </div>
 
 <!-- =====================================================================
@@ -1729,11 +1730,13 @@ function removeTicker(t) {
   WATCHLIST = WATCHLIST.filter(x => x !== t);
   _stopNewsRefresh(t);
   _clearAddedPrice(t);
+  delete catalystState[t];
   document.getElementById("ticker-input").value = WATCHLIST.join(" ");
   renderAll();
 }
 
 function clearWatchlist() {
+  WATCHLIST.forEach(t => { _stopNewsRefresh(t); delete catalystState[t]; });
   WATCHLIST = [];
   document.getElementById("ticker-input").value = "";
   renderAll();
@@ -2176,43 +2179,36 @@ function _populateFloatFromCatalyst(ticker, data) {
 
 async function toggleCatalyst(ticker) {
   const cs = getCatalystState(ticker);
-  if (cs.open) {
-    cs.open = false;
-    _refreshCatalystUI(ticker);
+  if (cs.open && cs.status === 'done') {
+    // Panel already open — re-fetch fresh data in place
+  } else if (cs.open) {
+    // Still loading — ignore
     return;
+  } else {
+    cs.open = true;
   }
-  cs.open = true;
   if (!getCatalystApiKey()) {
     _refreshCatalystUI(ticker);
     return;
   }
-  if (cs.status === 'idle') {
-    // Check today's cache first
-    const dayCache = _loadCatalystCache(ticker);
-    if (dayCache) {
-      cs.data = dayCache; cs.status = 'done'; cs.fromCache = true;
-      _populateFloatFromCatalyst(ticker, dayCache);
-    } else {
-      cs.status = 'loading'; cs.fromCache = false;
-      _refreshCatalystUI(ticker);
-      try {
-        // Fetch fresh Yahoo float data to inject into Claude prompt
+  // Always fetch fresh — second click should pick up new news
+  cs.status = 'loading'; cs.fromCache = false; cs.error = null;
+  _refreshCatalystUI(ticker);
+  try {
     const yahooFloat = await fetchFloatFromYahoo(ticker);
     if (yahooFloat) {
       _saveFloatCache(ticker, yahooFloat);
       _applyFloatData(ticker, yahooFloat);
     }
     const [data, priceData] = await Promise.all([
-          _runCatalystAPI(ticker, yahooFloat),
-          _fetchCatalystSnapshot(ticker)
-        ]);
-        cs.data = data; cs.priceData = priceData; cs.status = 'done';
-        _saveCatalystCache(ticker, data);
-        _populateFloatFromCatalyst(ticker, data);
-      } catch(e) {
-        cs.error = e.message; cs.status = 'error';
-      }
-    }
+      _runCatalystAPI(ticker, yahooFloat),
+      _fetchCatalystSnapshot(ticker)
+    ]);
+    cs.data = data; cs.priceData = priceData; cs.status = 'done';
+    _saveCatalystCache(ticker, data);
+    _populateFloatFromCatalyst(ticker, data);
+  } catch(e) {
+    cs.error = e.message; cs.status = 'error';
   }
   _refreshCatalystUI(ticker);
 }
